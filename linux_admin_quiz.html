@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Linux Admin Quiz | 24CSE0213</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0e14;--surface:#0d1117;--surface2:#161b22;--border:#30363d;
+  --green:#39d353;--green-d:#2ea043;--amber:#d29922;--red:#f85149;
+  --blue:#58a6ff;--purple:#bc8cff;--text:#e6edf3;--muted:#8b949e;
+  --mono:'Courier New',monospace;--sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+.screen{display:none;animation:fadeIn .25s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HOME ── */
+.home{padding:20px 16px 40px;max-width:420px;margin:0 auto}
+.term-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:22px}
+.term-bar{display:flex;gap:6px;margin-bottom:14px}
+.dot{width:11px;height:11px;border-radius:50%}
+.dr{background:#ff5f56}.dy{background:#ffbd2e}.dg{background:#27c93f}
+.term-line{font-family:var(--mono);font-size:12.5px;line-height:1.8}
+.tp{color:var(--green)}.tc{color:var(--blue)}.to{color:var(--muted)}
+.home-title{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;background:linear-gradient(135deg,#39d353,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.home-sub{color:var(--muted);font-size:13.5px;line-height:1.6;margin-bottom:22px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 8px;text-align:center}
+.stat-n{font-size:24px;font-weight:800;color:var(--green);font-family:var(--mono);line-height:1}
+.stat-l{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.3}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.mode-card{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:14px 12px;cursor:pointer;transition:border-color .2s,background .2s;text-align:left}
+.mode-card:hover,.mode-card.sel{border-color:var(--green);background:rgba(57,211,83,.07)}
+.mode-tag{font-size:11px;font-family:var(--mono);color:var(--green);font-weight:700;margin-bottom:6px}
+.mode-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.mode-desc{font-size:11.5px;color:var(--muted);line-height:1.4}
+.btn{display:block;width:100%;padding:14px;border-radius:10px;border:none;cursor:pointer;font-size:15px;font-weight:700;transition:all .2s;text-align:center;letter-spacing:.2px}
+.btn-go{background:var(--green);color:#000;margin-bottom:10px}
+.btn-go:hover{background:#4ce363;transform:translateY(-1px)}
+.btn-go:active{transform:scale(.98)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+.cover-note{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5;margin-top:14px}
+
+/* ── HEADER (quiz) ── */
+.qheader{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:20}
+.qh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.qh-logo{font-family:var(--mono);color:var(--green);font-size:13px;font-weight:700}
+.qh-score{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.qh-score b{color:var(--green)}
+.prog-bar{height:3px;background:var(--border);border-radius:2px}
+.prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s ease}
+.qh-bot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.qh-ctr{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.qh-unit{font-size:11px;color:var(--blue);font-family:var(--mono);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── QUIZ BODY ── */
+.qbody{padding:16px 16px 80px;max-width:480px;margin:0 auto}
+.qtype{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.qtype-badge{padding:2px 8px;border-radius:4px;font-weight:700}
+.mcq-badge{background:rgba(88,166,255,.15);color:var(--blue)}
+.cmd-badge{background:rgba(188,140,255,.15);color:var(--purple)}
+.qtext{font-size:16px;font-weight:600;line-height:1.6;margin-bottom:20px}
+.qtext code{font-family:var(--mono);background:var(--surface2);padding:2px 7px;border-radius:4px;font-size:14px;color:var(--green);font-weight:400}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.opt{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;cursor:pointer;font-size:14px;line-height:1.45;transition:border-color .15s,background .15s;display:flex;align-items:flex-start;gap:11px;text-align:left;color:var(--text);width:100%}
+.opt:hover:not(.dis){border-color:var(--blue);background:rgba(88,166,255,.06)}
+.opt.sel{border-color:var(--blue);background:rgba(88,166,255,.1)}
+.opt.ok{border-color:var(--green)!important;background:rgba(57,211,83,.1)!important;color:var(--green)}
+.opt.no{border-color:var(--red)!important;background:rgba(248,81,73,.1)!important;color:var(--red)}
+.opt.show-ok{border-color:var(--green)!important;background:rgba(57,211,83,.06)!important}
+.opt.dis{cursor:default}
+.ol{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-weight:700;min-width:18px;padding-top:1px}
+.opt.ok .ol,.opt.no .ol{color:inherit}
+
+/* command input */
+.cmd-wrap{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.cmd-ps{font-family:var(--mono);color:var(--green);font-size:12.5px;margin-bottom:8px}
+.cmd-in{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:15px;width:100%;caret-color:var(--green)}
+.cmd-in::placeholder{color:var(--muted)}
+.cmd-hint-text{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:16px;padding-left:4px}
+
+/* feedback */
+.fb{border-radius:10px;padding:13px 15px;margin-bottom:14px;font-size:13px;line-height:1.55;display:none}
+.fb.ok{background:rgba(57,211,83,.1);border:1px solid rgba(57,211,83,.3);color:#7ee787}
+.fb.no{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:#ff7b72}
+.fb-ttl{font-weight:800;margin-bottom:4px;font-family:var(--mono);font-size:12px}
+.fb code{font-family:var(--mono);background:rgba(0,0,0,.25);padding:1px 5px;border-radius:3px}
+.actions{display:flex;gap:10px}
+.btn-check{flex:1;background:var(--blue);color:#000;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:700;padding:13px;transition:all .2s}
+.btn-check:hover{background:#79baff}
+.btn-next{flex:1;background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;padding:13px;display:none;transition:all .2s}
+.btn-next:hover{border-color:var(--green);color:var(--green)}
+.btn-skip{background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:10px 0;width:100%;text-align:center;font-family:var(--mono)}
+.btn-skip:hover{color:var(--text)}
+
+/* results */
+.results{padding:24px 16px 40px;max-width:420px;margin:0 auto;text-align:center}
+.res-ring{width:130px;height:130px;border-radius:50%;border:4px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px;position:relative}
+.res-pct{font-size:34px;font-weight:800;color:var(--green);font-family:var(--mono);line-height:1}
+.res-lbl{font-size:11px;color:var(--muted);margin-top:3px}
+.res-grade{font-size:48px;font-family:var(--mono);font-weight:800;margin-bottom:4px}
+.res-msg{font-size:15px;font-weight:600;margin-bottom:6px}
+.res-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.bkd{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left}
+.bkd-ttl{font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.bkd-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bkd-row:last-child{border-bottom:none}
+.bkd-val{font-family:var(--mono);font-weight:700}
+.gv{color:var(--green)}.rv{color:var(--red)}.av{color:var(--amber)}
+.wrong-list{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left}
+.wl-ttl{font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.wl-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.5}
+.wl-item:last-child{border-bottom:none}
+.wl-q{color:var(--text);margin-bottom:3px}
+.wl-a{color:var(--green);font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="screen active">
+<div class="home">
+  <div class="term-box">
+    <div class="term-bar"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+    <div class="term-line"><span class="tp">user@chitkara:~$</span> <span class="tc">./start_quiz.sh</span></div>
+    <div class="term-line"><span class="to">Loading 24CSE0213 Linux Administration...</span></div>
+    <div class="term-line"><span class="to">ST Test II | 40 Marks | Date: 02-05-2026</span></div>
+    <div class="term-line"><span class="tp">Ready. Good luck!</span></div>
+  </div>
+  <div class="home-title">Linux Admin Quiz</div>
+  <div class="home-sub">Covers every command and concept from your ST-II syllabus. MCQs + command typing — just like your exam.</div>
+  <div class="stat-row">
+    <div class="stat"><div class="stat-n">95</div><div class="stat-l">Total Questions</div></div>
+    <div class="stat"><div class="stat-n">13</div><div class="stat-l">Units Covered</div></div>
+    <div class="stat"><div class="stat-n">15</div><div class="stat-l">Command Drills</div></div>
+  </div>
+  <div class="mode-grid">
+    <div class="mode-card sel" data-mode="all" onclick="selectMode(this,'all')">
+      <div class="mode-tag">● ALL</div>
+      <div class="mode-name">Full Exam</div>
+      <div class="mode-desc">All 95 questions — MCQ + commands</div>
+    </div>
+    <div class="mode-card" data-mode="mcq" onclick="selectMode(this,'mcq')">
+      <div class="mode-tag">◆ MCQ</div>
+      <div class="mode-name">MCQ Only</div>
+      <div class="mode-desc">80 multiple-choice questions</div>
+    </div>
+    <div class="mode-card" data-mode="cmd" onclick="selectMode(this,'cmd')">
+      <div class="mode-tag">$ CMD</div>
+      <div class="mode-name">Command Drills</div>
+      <div class="mode-desc">Type exact commands — no typos!</div>
+    </div>
+    <div class="mode-card" data-mode="weak" onclick="selectMode(this,'weak')">
+      <div class="mode-tag">↺ REDO</div>
+      <div class="mode-name">Wrong Only</div>
+      <div class="mode-desc">Retake questions you got wrong</div>
+    </div>
+  </div>
+  <button class="btn btn-go" onclick="startQuiz()">Start Quiz →</button>
+  <button class="btn btn-ghost" onclick="startQuiz(true)">🔀 Shuffle Mode</button>
+  <div class="cover-note">Covers: Linux intro · Installation · CLI commands · chmod/chown · Process mgmt · APT · Networking · Users/Groups · Redirection · Filesystems · LVM · SSH · UFW · Shell scripting · and more</div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="qheader">
+    <div class="qh-top">
+      <div class="qh-logo">$ linux_quiz</div>
+      <div class="qh-score">Score: <b id="scoreDisplay">0</b></div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="qh-bot">
+      <div class="qh-ctr" id="qCounter">Q 1 / 95</div>
+      <div class="qh-unit" id="qUnit">Unit 1</div>
+    </div>
+  </div>
+  <div class="qbody">
+    <div class="qtype" id="qTypeRow">
+      <span class="qtype-badge mcq-badge" id="qTypeBadge">MCQ</span>
+      <span id="qTypeNote">Choose the correct answer</span>
+    </div>
+    <div class="qtext" id="qText"></div>
+
+    <!-- MCQ options -->
+    <div class="opts" id="optsWrap"></div>
+
+    <!-- CMD input -->
+    <div id="cmdWrap" style="display:none">
+      <div class="cmd-wrap">
+        <div class="cmd-ps">user@ubuntu:~$</div>
+        <input class="cmd-in" id="cmdInput" type="text" placeholder="type the exact command here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="cmd-hint-text" id="cmdHint"></div>
+    </div>
+
+    <div class="fb" id="feedback">
+      <div class="fb-ttl" id="fbTitle"></div>
+      <div id="fbBody"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-check" id="btnCheck" onclick="checkAnswer()">Check Answer</button>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next →</button>
+    </div>
+    <button class="btn-skip" id="btnSkip" onclick="skipQuestion()">skip this question</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+<div class="results">
+  <div class="res-ring">
+    <div class="res-pct" id="resPct">0%</div>
+    <div class="res-lbl">score</div>
+  </div>
+  <div class="res-grade" id="resGrade">A</div>
+  <div class="res-msg" id="resMsg">Excellent!</div>
+  <div class="res-sub" id="resSub">You're ready for ST-II</div>
+  <div class="bkd">
+    <div class="bkd-ttl">Breakdown</div>
+    <div class="bkd-row"><span>Correct</span><span class="bkd-val gv" id="bCorrect">0</span></div>
+    <div class="bkd-row"><span>Wrong</span><span class="bkd-val rv" id="bWrong">0</span></div>
+    <div class="bkd-row"><span>Skipped</span><span class="bkd-val av" id="bSkipped">0</span></div>
+    <div class="bkd-row"><span>Total</span><span class="bkd-val" id="bTotal">0</span></div>
+  </div>
+  <div class="wrong-list" id="wrongList" style="display:none">
+    <div class="wl-ttl">Questions to Review</div>
+    <div id="wrongItems"></div>
+  </div>
+  <button class="btn btn-go" onclick="showHome()" style="margin-bottom:10px">Try Again →</button>
+  <button class="btn btn-ghost" onclick="retakeWrong()">Retake Wrong Answers</button>
+</div>
+</div>
+
+<script>
+const Q = [
+// ─── UNIT 1: Introduction to Linux ───
+{id:1,unit:"U1: Intro to Linux",type:"mcq",q:"Who created the Linux kernel?",o:["Richard Stallman","Linus Torvalds","Ken Thompson","Dennis Ritchie"],a:1,ex:"Linus Torvalds created the Linux kernel in 1991 as a personal project at the University of Helsinki."},
+{id:2,unit:"U1: Intro to Linux",type:"mcq",q:"In which year was the Linux kernel first released?",o:["1983","1989","1991","1994"],a:2,ex:"Linus Torvalds released Linux kernel 0.01 in 1991. The GNU Project was launched by Richard Stallman in 1983."},
+{id:3,unit:"U1: Intro to Linux",type:"mcq",q:"What license is the Linux kernel distributed under?",o:["MIT License","Apache 2.0","GNU GPL","BSD License"],a:2,ex:"Linux is released under the GNU General Public License (GPL), making it free and open-source."},
+{id:4,unit:"U1: Intro to Linux",type:"mcq",q:"Which package manager do Debian-based distributions use?",o:["YUM / DNF","Pacman","APT / dpkg","RPM"],a:2,ex:"Debian-based distros (Ubuntu, Linux Mint, Kali Linux) use APT with .deb packages. Red Hat uses YUM/DNF/RPM."},
+{id:5,unit:"U1: Intro to Linux",type:"mcq",q:"Which Ubuntu flavor uses the KDE Plasma desktop environment?",o:["Xubuntu","Lubuntu","Ubuntu MATE","Kubuntu"],a:3,ex:"Kubuntu = KDE Plasma. Xubuntu = XFCE. Lubuntu = LXQt. All share the same Ubuntu base kernel and APT system."},
+{id:6,unit:"U1: Intro to Linux",type:"mcq",q:"What type of kernel does Linux use?",o:["Microkernel","Hybrid kernel","Monolithic kernel","Exokernel"],a:2,ex:"Linux uses a monolithic kernel — the kernel manages CPU, memory, devices directly in one large program."},
+{id:7,unit:"U1: Intro to Linux",type:"mcq",q:"Which component differentiates Ubuntu Desktop from Ubuntu Server?",o:["The kernel version","The desktop environment (GUI)","The APT package manager","The filesystem type"],a:1,ex:"Ubuntu Server has NO GUI — it's optimized for servers with minimal install. Desktop includes GNOME GUI."},
+
+// ─── UNIT 2: Installation & Configuration ───
+{id:8,unit:"U2: Installation",type:"mcq",q:"What is the minimum RAM required for Ubuntu Desktop installation?",o:["1 GB","2 GB","4 GB","8 GB"],a:2,ex:"Ubuntu Desktop: 4 GB RAM (min), 2 GHz dual-core CPU, 25 GB storage. Server: 512 MB RAM min."},
+{id:9,unit:"U2: Installation",type:"mcq",q:"Which partition table type supports drives larger than 2 TB?",o:["MBR (Master Boot Record)","GPT (GUID Partition Table)","FAT32","ext4"],a:1,ex:"GPT supports drives >2TB and up to 128 partitions. MBR is limited to 2TB and 4 primary partitions."},
+{id:10,unit:"U2: Installation",type:"mcq",q:"What is the default bootloader installed by Ubuntu?",o:["LILO","SYSLINUX","GRUB","rEFInd"],a:2,ex:"GRUB (Grand Unified Bootloader) is the default bootloader. It's installed automatically during Ubuntu setup."},
+{id:11,unit:"U2: Installation",type:"mcq",q:"BIOS-based systems use which partition table format?",o:["GPT","MBR","LVM","ext4"],a:1,ex:"BIOS uses MBR partition table. UEFI-based systems use GPT. GPT is the modern standard."},
+{id:12,unit:"U2: Installation",type:"mcq",q:"What is the recommended size for the swap partition (with 4GB RAM)?",o:["512 MB","1 GB","4–8 GB","16 GB"],a:2,ex:"Recommended swap = 1x–2x RAM size. With 4GB RAM, 4–8 GB swap is ideal. Swap acts as virtual memory on disk."},
+{id:13,unit:"U2: Installation",type:"mcq",q:"Which command views and sets the system timezone?",o:["timezone","tzconfig","timedatectl","hostnamectl"],a:2,ex:"timedatectl views/sets timezone and time. dpkg-reconfigure tzdata is also used for interactive timezone setup."},
+
+// ─── UNIT 3: Basic Command Line ───
+{id:14,unit:"U3: CLI Basics",type:"mcq",q:"What does the `$` symbol at the shell prompt indicate?",o:["Root/superuser session","Regular user session","Script is running","Background process"],a:1,ex:"$ = regular user prompt. # = root/superuser prompt. This is a key exam fact!"},
+{id:15,unit:"U3: CLI Basics",type:"mcq",q:"Where is the bash shell binary located?",o:["/usr/bin/bash","/bin/bash","/sbin/bash","/etc/bash"],a:1,ex:"bash is located at /bin/bash. The shell types include bash, sh, zsh, ksh, csh, fish."},
+{id:16,unit:"U3: CLI Basics",type:"mcq",q:"Which command displays the current logged-in username?",o:["who","id","whoami","hostname"],a:2,ex:"whoami = only your username. who = all logged-in users. id = UID, GID, and group memberships."},
+{id:17,unit:"U3: CLI Basics",type:"mcq",q:"What does `uname -r` display?",o:["System hostname","Kernel release/version","OS release info","All system info"],a:1,ex:"uname -r = kernel release only. uname -a = ALL info (kernel, hostname, OS). uname = just kernel name."},
+{id:18,unit:"U3: CLI Basics",type:"mcq",q:"Which command shows the previous commands you've run?",o:["past","log","history","recall"],a:2,ex:"history shows previously run commands, stored in ~/.bash_history. Use !number to repeat a command."},
+{id:19,unit:"U3: CLI Basics",type:"mcq",q:"Which command displays a one-line description of a command?",o:["whereis","man","which","whatis"],a:3,ex:"whatis = one-line description. whereis = finds binary+source+man paths. which = only executable path."},
+{id:20,unit:"U3: CLI Basics",type:"mcq",q:"Which directory contains essential system configuration files?",o:["/bin","/var","/etc","/usr"],a:2,ex:"/etc = config files. /bin = binaries. /var = variable data (logs, spool). /usr = user programs."},
+{id:21,unit:"U3: CLI Basics",type:"mcq",q:"Which directory is automatically cleared on every reboot?",o:["/var","/tmp","/home","/opt"],a:1,ex:"/tmp stores temporary files and is cleared on reboot. Don't store important data there!"},
+{id:22,unit:"U3: CLI Basics",type:"mcq",q:"What does `ls -la` show?",o:["Only hidden files","All files in long format (including hidden)","Only file sizes","Files sorted by modification time"],a:1,ex:"-l = long format (permissions, owner, size, date). -a = ALL files including hidden (starting with .). Combine: -la"},
+{id:23,unit:"U3: CLI Basics",type:"mcq",q:"Which command shows the full absolute path of the current directory?",o:["cd","ls","dir","pwd"],a:3,ex:"pwd = Print Working Directory. Shows your exact location in the filesystem hierarchy."},
+{id:24,unit:"U3: CLI Basics",type:"mcq",q:"What does `cd -` do?",o:["Go to root directory","Go to home directory","Go to previous directory","Go up one level"],a:2,ex:"cd - takes you to the PREVIOUS directory (toggles between two locations). cd ~ goes home. cd .. goes up one level."},
+{id:25,unit:"U3: CLI Basics",type:"mcq",q:"Which command creates nested directories including all parent directories?",o:["mkdir dir","mkdir -r dir","mkdir -p a/b/c","mkdirs a/b/c"],a:2,ex:"mkdir -p creates nested directories AND all required parents. Without -p, mkdir fails if parent doesn't exist."},
+{id:26,unit:"U3: CLI Basics",type:"mcq",q:"Which command views a file one screen at a time with scroll support?",o:["cat file","more file","less file","head file"],a:2,ex:"less = view file one screen at a time. Press q=quit, /=search, Space=next page. 'less is more than more'!"},
+{id:27,unit:"U3: CLI Basics",type:"mcq",q:"Which command monitors a log file in real time as it grows?",o:["head -f file","tail -f file","cat -f file","watch file"],a:1,ex:"tail -f follows the file and displays new lines as they're added. Perfect for monitoring /var/log/syslog."},
+{id:28,unit:"U3: CLI Basics",type:"mcq",q:"In nano text editor, which shortcut SAVES a file?",o:["Ctrl+S","Ctrl+W","Ctrl+O","Ctrl+X"],a:2,ex:"nano: Ctrl+O = save (Write Out). Ctrl+X = exit. Ctrl+W = search. Ctrl+G = help."},
+{id:29,unit:"U3: CLI Basics",type:"mcq",q:"In vim, which key enters INSERT mode?",o:["a","i","e","Esc"],a:1,ex:"Press 'i' to enter INSERT mode in vim. Press Esc to return to Normal mode. 'a' also enters insert after cursor."},
+{id:30,unit:"U3: CLI Basics",type:"mcq",q:"In vim, which command sequence saves the file and quits?",o:[":q",":w",":wq",":x!"],a:2,ex:":wq = write+quit. :q! = quit without saving. :w = save without quitting. :q = quit (only if no changes)."},
+{id:31,unit:"U3: CLI Basics",type:"mcq",q:"What is the numeric permission value for `rwx`?",o:["5","6","7","4"],a:2,ex:"r=4, w=2, x=1. rwx = 4+2+1 = 7. rw- = 6. r-x = 5. r-- = 4. Common: 755 for dirs, 644 for files."},
+{id:32,unit:"U3: CLI Basics",type:"mcq",q:"What does `chmod 755 file` give owner, group, and others?",o:["rw-, r--, r--","rwx, r--, r--","rwx, r-x, r-x","rwx, rwx, rwx"],a:2,ex:"chmod 755: owner=rwx(7), group=r-x(5), others=r-x(5). Standard for scripts and executable files."},
+{id:33,unit:"U3: CLI Basics",type:"mcq",q:"Which command changes the OWNER of a file?",o:["chgrp","chmod","chown","usermod"],a:2,ex:"chown user file = change owner. chown user:group file = change owner AND group. chgrp = change group only."},
+{id:34,unit:"U3: CLI Basics",type:"mcq",q:"What signal does `kill -9 PID` send to a process?",o:["SIGTERM (15) — graceful","SIGKILL (9) — force kill","SIGHUP (1) — reload","SIGSTOP (19) — pause"],a:1,ex:"SIGKILL(9) = force kill, cannot be caught/ignored. SIGTERM(15) = graceful termination (default kill signal)."},
+{id:35,unit:"U3: CLI Basics",type:"mcq",q:"Which command shows ALL processes from ALL users with details?",o:["ps","ps -e","ps aux","top"],a:2,ex:"ps aux: a=all users, u=user-format columns, x=processes without terminal. Shows every running process."},
+{id:36,unit:"U3: CLI Basics",type:"mcq",q:"What does the SUID special permission (chmod 4xxx) do?",o:["Sets sticky bit","Runs file with owner's privileges","Runs with group's privileges","Prevents deletion"],a:1,ex:"SUID = Set User ID. Runs the file with the FILE OWNER's privileges (not the user running it). Example: passwd command."},
+{id:37,unit:"U3: CLI Basics",type:"mcq",q:"What does the sticky bit (chmod 1777) do in a shared directory?",o:["Makes files executable","Only owner can delete their own files","Runs with group privileges","Makes directory read-only"],a:1,ex:"Sticky bit: Only the FILE OWNER can delete their files. Used on /tmp — so other users can't delete your files."},
+{id:38,unit:"U3: CLI Basics",type:"mcq",q:"Which directory contains device files for hard disks, terminals, USB drives?",o:["/proc","/sys","/dev","/mnt"],a:2,ex:"/dev = device files (everything is a file in Linux). /proc = virtual filesystem with kernel/process info. /sys = hardware info."},
+
+// ─── UNIT 4: Package Management ───
+{id:39,unit:"U4: Package Management",type:"mcq",q:"What does `apt update` do?",o:["Upgrades all installed packages","Refreshes the package index from repos","Removes unused packages","Installs security updates only"],a:1,ex:"apt update ONLY refreshes/updates the package list. It does NOT install anything. Always run before apt upgrade."},
+{id:40,unit:"U4: Package Management",type:"mcq",q:"Which command removes a package AND all its configuration files?",o:["apt remove pkg","apt delete pkg","apt purge pkg","dpkg -r pkg"],a:2,ex:"apt purge = removes package + config files. apt remove = removes package but KEEPS config files. apt autoremove = removes orphaned packages."},
+{id:41,unit:"U4: Package Management",type:"mcq",q:"Where are APT package repository sources listed?",o:["/etc/apt/packages","/etc/apt/sources.list","/var/apt/repos","/usr/apt/sources"],a:1,ex:"/etc/apt/sources.list and /etc/apt/sources.list.d/ directory contain repository URLs."},
+{id:42,unit:"U4: Package Management",type:"mcq",q:"Which command installs a local .deb package file?",o:["apt install file.deb","dpkg -i file.deb","dpkg --add file.deb","apt-get file.deb"],a:1,ex:"dpkg -i file.deb installs a local .deb file. APT handles online repos; dpkg handles local .deb files."},
+{id:43,unit:"U4: Package Management",type:"mcq",q:"What does `apt autoremove` do?",o:["Auto-updates packages daily","Removes unneeded/orphaned dependency packages","Removes all packages","Reinstalls corrupted packages"],a:1,ex:"apt autoremove removes packages installed as dependencies that are no longer needed by any installed package."},
+{id:44,unit:"U4: Package Management",type:"mcq",q:"Which dpkg command lists ALL installed packages?",o:["dpkg -s","dpkg -l","dpkg -i","dpkg --list-all"],a:1,ex:"dpkg -l = list all installed packages. dpkg -s pkg = show status/info of specific package."},
+
+// ─── UNIT 5: Basic Networking ───
+{id:45,unit:"U5: Networking",type:"mcq",q:"What is the loopback IP address?",o:["192.168.1.1","10.0.0.1","127.0.0.1","172.16.0.1"],a:2,ex:"127.0.0.1 = localhost/loopback — always refers to the local machine. Used to test networking on your own system."},
+{id:46,unit:"U5: Networking",type:"mcq",q:"Which command is the modern replacement for `ifconfig`?",o:["netstat","ip addr","nmcli","ifup"],a:1,ex:"ip addr = modern replacement for ifconfig. ss = modern replacement for netstat. Both are from iproute2 package."},
+{id:47,unit:"U5: Networking",type:"mcq",q:"Which file maps hostnames to IP addresses (checked before DNS)?",o:["/etc/resolv.conf","/etc/hostname","/etc/hosts","/etc/network"],a:2,ex:"/etc/hosts is checked BEFORE DNS. /etc/resolv.conf = DNS server addresses. /etc/hostname = system hostname."},
+{id:48,unit:"U5: Networking",type:"mcq",q:"Which command shows the route packets take to reach a destination?",o:["ping","netstat -r","traceroute","nslookup"],a:2,ex:"traceroute shows each hop (router) packets pass through on the way to the destination host."},
+{id:49,unit:"U5: Networking",type:"mcq",q:"Where are Ubuntu's netplan configuration files stored?",o:["/etc/network/interfaces","/etc/netplan/*.yaml","/etc/NetworkManager/conf.d/","/var/netplan/config/"],a:1,ex:"Netplan config = YAML files in /etc/netplan/. Apply changes with: netplan apply. Ubuntu 18+ uses netplan."},
+{id:50,unit:"U5: Networking",type:"mcq",q:"Which `ping` flag sends exactly 4 packets then stops?",o:["-n 4","-t 4","-c 4","-s 4"],a:2,ex:"ping -c 4 host sends exactly 4 ICMP echo request packets. Without -c, ping runs forever (Ctrl+C to stop)."},
+{id:51,unit:"U5: Networking",type:"mcq",q:"Which command shows listening TCP/UDP ports in numeric format?",o:["netstat -a","netstat -tuln","ss -a","ip addr"],a:1,ex:"netstat -tuln: -t=TCP, -u=UDP, -l=listening, -n=numeric (show port numbers not service names). ss -tuln is the modern equivalent."},
+{id:52,unit:"U5: Networking",type:"mcq",q:"What does DHCP automatically assign to devices?",o:["Hostname","MAC address","IP address","Default gateway only"],a:2,ex:"DHCP (Dynamic Host Configuration Protocol) automatically assigns IP addresses, subnet mask, gateway, and DNS to devices."},
+
+// ─── UNIT 6: User & Group Management ───
+{id:53,unit:"U6: Users & Groups",type:"mcq",q:"What does 'x' in the password field of /etc/passwd indicate?",o:["Account is disabled","Password encoded here","Password is in /etc/shadow","No password set"],a:2,ex:"'x' means the actual hashed password is stored in /etc/shadow. Only root can read /etc/shadow."},
+{id:54,unit:"U6: Users & Groups",type:"mcq",q:"What UID range is assigned to regular users in Ubuntu?",o:["0–99","100–499","500–999","1000+"],a:3,ex:"UID 0 = root. UID 1–999 = system/service accounts. UID 1000+ = regular human users (in Ubuntu)."},
+{id:55,unit:"U6: Users & Groups",type:"mcq",q:"Which command adds user 'alice' to supplementary group 'sudo'?",o:["groupadd -a alice sudo","usermod -aG sudo alice","adduser sudo alice","gpasswd sudo alice"],a:1,ex:"usermod -aG sudo alice: -a=append (don't remove from other groups), -G=supplementary groups to add."},
+{id:56,unit:"U6: Users & Groups",type:"mcq",q:"What is the correct format of /etc/passwd entries?",o:["username:UID:GID:home:shell","username:password:UID:GID:GECOS:home_dir:shell","username:hash:UID:GID","UID:username:password:group:home"],a:1,ex:"Format: username:password(x):UID:GID:GECOS(comment):home_directory:login_shell"},
+{id:57,unit:"U6: Users & Groups",type:"mcq",q:"Which command deletes a user AND their home directory?",o:["deluser username","userdel username","userdel -r username","rm -r /home/username"],a:2,ex:"userdel -r username: deletes user account AND removes home directory. Without -r, home stays."},
+{id:58,unit:"U6: Users & Groups",type:"mcq",q:"Which command shows login HISTORY of all users?",o:["who","w","last","history"],a:2,ex:"last = login history. who = currently logged-in users. w = logged-in users + what they're doing right now."},
+{id:59,unit:"U6: Users & Groups",type:"mcq",q:"Which command/file controls sudo privileges?",o:["/etc/sudo.conf via sudoedit","visudo → /etc/sudoers","chmod on sudo binary","usermod --sudo username"],a:1,ex:"Edit /etc/sudoers using 'visudo' — it validates syntax first. Never edit /etc/sudoers directly (risk of lockout)."},
+{id:60,unit:"U6: Users & Groups",type:"mcq",q:"What does `id` command show?",o:["Only the username","Only UID number","UID, primary GID, and all group memberships","Login history"],a:2,ex:"id shows: uid=1000(username) gid=1000(username) groups=1000,27(sudo)... — full identity info."},
+
+// ─── UNIT 7: Streams, Redirection, Piping ───
+{id:61,unit:"U7: Streams & Redirection",type:"mcq",q:"Which operator APPENDS stdout to a file without overwriting?",o:[">>",">>>","2>","<"],a:0,ex:">> appends to file (preserves existing). > overwrites the file completely. Both redirect stdout (file descriptor 1)."},
+{id:62,unit:"U7: Streams & Redirection",type:"mcq",q:"What is the file descriptor number for stderr?",o:["0 (stdin)","1 (stdout)","2 (stderr)","3 (stdlog)"],a:2,ex:"stdin=0, stdout=1, stderr=2. To redirect stderr: cmd 2> errors.txt. To redirect both: cmd &> all.txt"},
+{id:63,unit:"U7: Streams & Redirection",type:"mcq",q:"What must be done BEFORE `uniq` for proper deduplication?",o:["Use grep to filter","Sort the data first","Use wc -l","Use cut to select fields"],a:1,ex:"uniq only removes CONSECUTIVE duplicate lines. Always pipe through sort first: sort file | uniq"},
+{id:64,unit:"U7: Streams & Redirection",type:"mcq",q:"Which cut command extracts field 1 using colon as delimiter?",o:["cut -c1 file","cut -f1 file","cut -d: -f1 file","cut -s: -f1 file"],a:2,ex:"cut -d: -f1: -d = delimiter, -f = field number. Example: cut -d: -f1 /etc/passwd extracts usernames."},
+{id:65,unit:"U7: Streams & Redirection",type:"mcq",q:"What does `2>&1` accomplish?",o:["Redirects stdin to stderr","Redirects stderr to same destination as stdout","Closes stderr completely","Creates file descriptor 3"],a:1,ex:"2>&1 sends stderr (2) to wherever stdout (1) is going. Useful: cmd > out.txt 2>&1 captures ALL output."},
+{id:66,unit:"U7: Streams & Redirection",type:"mcq",q:"Which `wc` flag counts only the number of LINES in a file?",o:["wc -w","wc -l","wc -c","wc -m"],a:1,ex:"wc -l = line count. wc -w = word count. wc -c = byte count. wc alone shows all three."},
+{id:67,unit:"U7: Streams & Redirection",type:"mcq",q:"What does `sort -r` do?",o:["Sort by random order","Sort numerically","Sort in reverse order","Sort by date"],a:2,ex:"sort -r = reverse order (Z→A or 9→0). sort -n = numeric. sort -k2 = sort by 2nd column. sort -u = sort + remove duplicates."},
+
+// ─── UNIT 8: File Systems & Disk Management ───
+{id:68,unit:"U8: File Systems",type:"mcq",q:"What is the default filesystem used by Ubuntu?",o:["xfs","btrfs","ext3","ext4"],a:3,ex:"ext4 (4th Extended Filesystem) = Ubuntu's default. xfs = preferred on Red Hat/CentOS. Both support journaling."},
+{id:69,unit:"U8: File Systems",type:"mcq",q:"Which command shows FREE disk space on mounted filesystems?",o:["du -h","df -h","lsblk","fdisk -l"],a:1,ex:"df = disk free (for mounted filesystems). du = disk usage (for files/directories). df -h = human readable sizes."},
+{id:70,unit:"U8: File Systems",type:"mcq",q:"Which command lists all disks and their partitions?",o:["lsblk","fdisk -l","parted print","blkid"],a:1,ex:"fdisk -l lists all disks and partitions. lsblk shows block devices in a tree format. blkid shows UUIDs and FS types."},
+{id:71,unit:"U8: File Systems",type:"mcq",q:"Which file defines filesystems to mount automatically at boot?",o:["/etc/mount.conf","/etc/fstab","/etc/mounts","/boot/mounts.conf"],a:1,ex:"/etc/fstab (filesystem table): device, mount point, fs type, options, dump, pass — all 6 fields matter!"},
+{id:72,unit:"U8: File Systems",type:"mcq",q:"Which partitioning tool supports BOTH MBR and GPT?",o:["fdisk","gdisk","parted","mkfs"],a:2,ex:"parted supports both MBR and GPT. fdisk = MBR. gdisk = GPT only. mkfs = FORMAT (not partition) a device."},
+{id:73,unit:"U8: File Systems",type:"mcq",q:"What does `du -sh /var` show?",o:["Disk free space of /var","Summary size of /var in human-readable format","Disk usage of all subdirs in /var","Inode count of /var"],a:1,ex:"du -sh: -s = summary (total only), -h = human readable (MB/GB). du -sh * shows size of each item in current dir."},
+
+// ─── UNIT 9: Advanced FS Management ───
+{id:74,unit:"U9: Advanced FS",type:"mcq",q:"What is the correct LVM hierarchy?",o:["LV → VG → PV","PV → VG → LV","VG → PV → LV","PV → LV → VG"],a:1,ex:"LVM: Physical Volumes (PV) → Volume Groups (VG) → Logical Volumes (LV). PVs are combined into VGs, then sliced into LVs."},
+{id:75,unit:"U9: Advanced FS",type:"mcq",q:"After `lvextend`, which command resizes the ext4 filesystem on the LV?",o:["fsck","mkfs.ext4","resize2fs","e2fsck"],a:2,ex:"resize2fs resizes ext4 to fill the extended LV. For XFS, use: xfs_growfs. Always resize FS after extending LV."},
+{id:76,unit:"U9: Advanced FS",type:"mcq",q:"Which rsync option makes destination MIRROR the source (deletes extras)?",o:["rsync -av","rsync --mirror","rsync --delete","rsync -z"],a:2,ex:"rsync --delete removes files in destination that don't exist in source, creating a perfect mirror."},
+{id:77,unit:"U9: Advanced FS",type:"mcq",q:"When MUST fsck be run?",o:["While the filesystem is mounted","Only on ext3 filesystems","On an UNMOUNTED filesystem","Before every reboot"],a:2,ex:"fsck MUST run on UNMOUNTED filesystems. On a mounted FS it can cause data corruption. Run from live boot or single-user mode."},
+{id:78,unit:"U9: Advanced FS",type:"mcq",q:"What does `tar -czvf backup.tar.gz /dir` do?",o:["Extracts a .tar.gz file","Creates a gzip-compressed tar archive of /dir","Lists contents of an archive","Copies /dir to a backup location"],a:1,ex:"tar -czvf: c=create, z=gzip compress, v=verbose output, f=output filename. Use -x to extract, -t to list."},
+
+// ─── UNIT 10: Advanced Networking ───
+{id:79,unit:"U10: Advanced Networking",type:"mcq",q:"UFW (Uncomplicated Firewall) is a frontend for which tool?",o:["nftables only","netfilter directly","iptables","firewalld"],a:2,ex:"UFW is a frontend that simplifies iptables rules management. It makes firewall config much easier."},
+{id:80,unit:"U10: Advanced Networking",type:"mcq",q:"What is the recommended UFW default for incoming connections?",o:["allow","reject","deny","limit"],a:2,ex:"ufw default deny incoming — block everything by default, then explicitly allow needed ports. Critical security practice."},
+{id:81,unit:"U10: Advanced Networking",type:"mcq",q:"Which command captures network packets on interface eth0?",o:["wireshark eth0","tcpdump -i eth0","netstat -i eth0","nmap -i eth0"],a:1,ex:"tcpdump -i eth0 captures packets on eth0 (requires root). Wireshark = GUI for packet analysis, can open .pcap files."},
+{id:82,unit:"U10: Advanced Networking",type:"mcq",q:"What MUST you do before `ufw enable` to avoid SSH lockout?",o:["ufw allow 80","ufw allow 443","ufw allow 22","ufw reset"],a:2,ex:"ALWAYS run 'ufw allow 22' or 'ufw allow ssh' BEFORE enabling UFW, or you'll be locked out of SSH!"},
+{id:83,unit:"U10: Advanced Networking",type:"mcq",q:"Which command tests config and auto-rolls back if not confirmed?",o:["netplan apply","netplan test","netplan try","netplan check"],a:2,ex:"netplan try applies config but auto-reverts after timeout if you don't confirm. Safer than netplan apply for remote servers."},
+
+// ─── UNIT 11: System Monitoring ───
+{id:84,unit:"U11: Monitoring",type:"mcq",q:"The three load average numbers from `uptime` represent what intervals?",o:["1s, 10s, 60s","1, 5, 15 minutes","5, 10, 30 minutes","CPU, RAM, Disk usage"],a:1,ex:"Load average = system load over last 1, 5, and 15 minutes. Value = number of CPUs means 100% utilized."},
+{id:85,unit:"U11: Monitoring",type:"mcq",q:"Which command shows virtual memory AND CPU statistics?",o:["iostat","vmstat","top","free"],a:1,ex:"vmstat = virtual memory stats (memory, swap, CPU, I/O). iostat = I/O device stats. free = just memory."},
+{id:86,unit:"U11: Monitoring",type:"mcq",q:"What is the default vm.swappiness value in Ubuntu?",o:["0","30","60","100"],a:2,ex:"Default swappiness=60. Lower = less swap use. sysctl -w vm.swappiness=10 reduces swap. 0 = minimize swap."},
+{id:87,unit:"U11: Monitoring",type:"mcq",q:"Which log file records authentication events and sudo usage?",o:["/var/log/syslog","/var/log/auth.log","/var/log/kern.log","/var/log/dpkg.log"],a:1,ex:"/var/log/auth.log = all logins, SSH attempts, sudo usage. Critical for security auditing. journalctl = systemd logs."},
+{id:88,unit:"U11: Monitoring",type:"mcq",q:"Which journalctl flag follows the journal in real time?",o:["journalctl -u","journalctl -f","journalctl -xe","journalctl --since"],a:1,ex:"journalctl -f follows journal in real time (like tail -f). -xe = recent entries with extra info. -u = specific service."},
+{id:89,unit:"U11: Monitoring",type:"mcq",q:"What does `nice -n 10 cmd` do?",o:["Runs cmd with highest priority","Runs cmd with lower priority (nice 10)","Renames the process","Runs cmd 10 times"],a:1,ex:"nice -n 10 = lower priority (range: -20=highest to 19=lowest). Only root can set negative nice values."},
+
+// ─── UNIT 12: Security ───
+{id:90,unit:"U12: Security",type:"mcq",q:"What does fail2ban protect against?",o:["Virus/malware attacks","SQL injection","Brute-force login attacks","DDoS flooding"],a:2,ex:"fail2ban monitors log files, bans IPs after too many failed attempts. Default SSH: 5 failures = 10-minute ban."},
+{id:91,unit:"U12: Security",type:"mcq",q:"What is the default SSH port?",o:["21 (FTP)","22 (SSH)","23 (Telnet)","25 (SMTP)"],a:1,ex:"SSH uses port 22 by default. Changing it improves security by avoiding automated scans targeting port 22."},
+{id:92,unit:"U12: Security",type:"mcq",q:"Which Mandatory Access Control framework does Ubuntu use?",o:["SELinux","AppArmor","TOMOYO","grsecurity"],a:1,ex:"Ubuntu uses AppArmor for MAC. RHEL/Fedora/CentOS use SELinux. Both implement Mandatory Access Control."},
+{id:93,unit:"U12: Security",type:"mcq",q:"Which setting in sshd_config disables password login (keys only)?",o:["AllowPassword no","PasswordAuth disabled","PasswordAuthentication no","UsePassword false"],a:2,ex:"PasswordAuthentication no in /etc/ssh/sshd_config forces key-only auth. Run 'systemctl restart ssh' after."},
+
+// ─── UNIT 13: Shell Scripting ───
+{id:94,unit:"U13: Shell Scripting",type:"mcq",q:"What is the correct shebang line for a bash script?",o:["#bash","#!/bash","#!/bin/bash","#!bash/bin"],a:2,ex:"#!/bin/bash tells the OS to use the bash interpreter at /bin/bash to execute this script. Required on line 1."},
+{id:95,unit:"U13: Shell Scripting",type:"mcq",q:"What does `$#` contain in a shell script?",o:["The script name ($0)","The last argument","Number of arguments passed","Exit status of last command ($?)"],a:2,ex:"$# = number of args. $0 = script name. $1,$2... = individual args. $? = exit status. $* = all args as string."},
+{id:96,unit:"U13: Shell Scripting",type:"mcq",q:"What does exit status 0 mean?",o:["Fatal error","Script terminated by signal","Success / No error","No output produced"],a:2,ex:"Exit status 0 = success. Non-zero = error. Check with $? after any command. exit 0 and exit 1 are most common."},
+{id:97,unit:"U13: Shell Scripting",type:"mcq",q:"Which loop runs UNTIL the condition becomes true?",o:["for loop","while loop","until loop","repeat loop"],a:2,ex:"until: runs while condition is FALSE, stops when condition becomes TRUE. Opposite of while. Both use 'do...done'."},
+{id:98,unit:"U13: Shell Scripting",type:"mcq",q:"Which bash command checks syntax WITHOUT executing the script?",o:["bash -v script.sh","bash -x script.sh","bash -n script.sh","bash -d script.sh"],a:2,ex:"bash -n = syntax check only (no execution). bash -x = run with debug trace. bash -v = verbose (prints each line)."},
+{id:99,unit:"U13: Shell Scripting",type:"mcq",q:"What is the correct bash arithmetic syntax?",o:["$(3 + 4)","$((3 + 4))","calc(3+4)","let(3+4)"],a:1,ex:"$(( expr )) = arithmetic expansion. echo $((5*3)) outputs 15. expr 5 + 3 also works (spaces required). bc for floats."},
+{id:100,unit:"U13: Shell Scripting",type:"mcq",q:"What is the nice value range for Linux processes?",o:["-10 to 10","0 to 19","-20 to 19","-100 to 100"],a:2,ex:"Nice values: -20 = highest priority, 19 = lowest. Only root can set negative nice values. Default = 0."},
+{id:101,unit:"U13: Shell Scripting",type:"mcq",q:"Which bracket type is PREFERRED in bash for string/file tests?",o:["[ ] — POSIX test","[[ ]] — bash extended test","(( )) — arithmetic evaluation","{ } — command grouping"],a:1,ex:"[[ ]] is bash extended test: supports regex (=~), safer variable handling, no word splitting. Preferred in bash."},
+{id:102,unit:"U13: Shell Scripting",type:"mcq",q:"What does `${VAR:-default}` do?",o:["Always assigns default to VAR","Uses default value only if VAR is unset or empty","Deletes VAR and uses default","Exports VAR as default"],a:1,ex:"${VAR:-default} = use default if VAR is unset/empty, but doesn't change VAR. ${VAR:=default} assigns AND uses default."},
+{id:103,unit:"U13: Shell Scripting",type:"mcq",q:"Which test flag checks if a FILE (not dir) exists and is readable?",o:["-d file","-f file","-r file","-e file"],a:2,ex:"-r file = true if file is readable. -f = regular file exists. -d = directory exists. -e = any file/dir exists. -x = executable."},
+{id:104,unit:"U13: Shell Scripting",type:"mcq",q:"What does `set -e` do in a shell script?",o:["Enables debug trace","Exits immediately if any command fails","Treats unset variables as errors","Catches errors in pipelines"],a:1,ex:"set -e = exit immediately on any command failure. set -u = error on unset vars. set -x = debug trace. Combine: set -euxo pipefail"},
+{id:105,unit:"U13: Shell Scripting",type:"mcq",q:"What is `$@` in a shell script?",o:["Process ID of script","All args as a single string","All args as separate quoted strings","Name of the script"],a:2,ex:"$@ = all arguments as separate quoted strings (preserves whitespace). $* = all args as single string. Prefer $@ in loops."},
+
+// ─── COMMAND DRILL QUESTIONS ───
+{id:106,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to display the full path of your current directory:",a:["pwd"],hint:"Print Working Directory",ex:"pwd (Print Working Directory) — shows your exact absolute path in the filesystem."},
+{id:107,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to list ALL files (including hidden) in LONG format:",a:["ls -la","ls -al"],hint:"combine -l and -a flags",ex:"ls -la: -l = long format (permissions, owner, size, date), -a = all including hidden files (.dotfiles)."},
+{id:108,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to create nested directories path/to/dir (creating parents):",a:["mkdir -p path/to/dir"],hint:"-p flag creates parent directories",ex:"mkdir -p: creates all parent dirs as needed. Without -p, mkdir fails if parent doesn't exist."},
+{id:109,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to set permissions to rwxr-xr-x using numeric mode:",a:["chmod 755 file","chmod 755"],hint:"owner=rwx(7) group=r-x(5) others=r-x(5)",ex:"chmod 755: r=4+w=2+x=1=7 for owner, r=4+x=1=5 for group and others. Standard for executables."},
+{id:110,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to show last 10 lines of a file AND follow it live:",a:["tail -f file","tail -f"],hint:"-f flag follows file updates",ex:"tail -f file: shows last 10 lines and displays new lines as they're written. Great for log monitoring."},
+{id:111,unit:"U4: Package Mgmt",type:"cmd",q:"Type the command to refresh (update) the APT package list:",a:["apt update","sudo apt update"],hint:"update ≠ upgrade",ex:"apt update refreshes the package index from repositories. Does NOT install anything. Run before upgrade."},
+{id:112,unit:"U4: Package Mgmt",type:"cmd",q:"Type the command to install a package named 'nginx':",a:["apt install nginx","sudo apt install nginx"],hint:"apt install <package>",ex:"apt install nginx downloads and installs nginx with all dependencies automatically resolved."},
+{id:113,unit:"U5: Networking",type:"cmd",q:"Type the modern command to display all network interfaces and their IP addresses:",a:["ip addr","ip address","ip a"],hint:"modern replacement for ifconfig",ex:"ip addr (or ip a) shows all network interfaces with IP addresses. Replaces the older ifconfig command."},
+{id:114,unit:"U5: Networking",type:"cmd",q:"Type the command to send exactly 4 ping packets to 8.8.8.8:",a:["ping -c 4 8.8.8.8"],hint:"use -c for count",ex:"ping -c 4 8.8.8.8 sends exactly 4 ICMP echo request packets then exits automatically."},
+{id:115,unit:"U5: Networking",type:"cmd",q:"Type the command to apply netplan network configuration changes:",a:["netplan apply"],hint:"netplan <action>",ex:"netplan apply applies the YAML config files in /etc/netplan/ immediately."},
+{id:116,unit:"U6: Users & Groups",type:"cmd",q:"Type the command to add user 'john' to supplementary group 'sudo':",a:["usermod -aG sudo john"],hint:"-aG flags are critical — don't miss -a!",ex:"usermod -aG sudo john: -a=append (keep other groups), -G=add to this supplementary group."},
+{id:117,unit:"U6: Users & Groups",type:"cmd",q:"Type the command to create a new group named 'developers':",a:["groupadd developers"],hint:"groupadd <groupname>",ex:"groupadd developers creates a new group. Use groupdel to delete, groupmod -n to rename."},
+{id:118,unit:"U7: Redirection",type:"cmd",q:"Type the command to redirect ONLY error messages to a file called errors.txt:",a:["ls /fake 2> errors.txt","2> errors.txt","cmd 2> errors.txt"],hint:"stderr file descriptor is 2",ex:"2> errors.txt redirects stderr (fd 2) to file. > redirects stdout (fd 1). &> redirects both."},
+{id:119,unit:"U9: Advanced FS",type:"cmd",q:"Type the tar command to CREATE a gzip-compressed archive of /home/user:",a:["tar -czvf backup.tar.gz /home/user"],hint:"c=create z=gzip v=verbose f=file",ex:"tar -czvf: c=create, z=gzip, v=verbose, f=filename. Use -x to extract: tar -xzvf backup.tar.gz"},
+{id:120,unit:"U10: Networking",type:"cmd",q:"Type the UFW command to allow SSH connections through the firewall:",a:["ufw allow ssh","ufw allow 22"],hint:"allow by service name or port number",ex:"ufw allow ssh (or ufw allow 22) — always do this BEFORE ufw enable to avoid SSH lockout!"},
+{id:121,unit:"U11: Monitoring",type:"cmd",q:"Type the command to show disk space usage in human-readable format:",a:["df -h"],hint:"disk free, human readable",ex:"df -h shows free/used space on all mounted filesystems in GB/MB. -T also shows filesystem type."},
+{id:122,unit:"U12: Security",type:"cmd",q:"Type the command to check the status of the UFW firewall:",a:["ufw status"],hint:"ufw status",ex:"ufw status shows if firewall is active/inactive and lists all current allow/deny rules."},
+{id:123,unit:"U13: Shell Scripting",type:"cmd",q:"Type the command to run a shell script with debug trace (shows each command):",a:["bash -x script.sh"],hint:"-x flag = execution trace",ex:"bash -x script.sh executes the script and prints each command with a + prefix as it runs. Best debugging tool."},
+{id:124,unit:"U3: CLI Basics",type:"cmd",q:"Type the command to recursively copy directory 'src' to 'dest':",a:["cp -r src dest"],hint:"-r flag for recursive",ex:"cp -r src dest copies src directory and ALL its contents recursively to dest."},
+{id:125,unit:"U6: Users & Groups",type:"cmd",q:"Type the command to change ownership of 'file.txt' to user 'alice' and group 'devs':",a:["chown alice:devs file.txt"],hint:"chown user:group file",ex:"chown alice:devs file.txt changes both owner (alice) and group (devs) in one command."},
+];
+
+let mode='all', shuffle=false, queue=[], current=0, score=0, skipped=0, wrongIds=[], answered=false;
+
+function selectMode(el,m){
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); mode=m;
+}
+
+function buildQueue(shuf=false){
+  let all=[...Q];
+  if(mode==='mcq') all=all.filter(q=>q.type==='mcq');
+  else if(mode==='cmd') all=all.filter(q=>q.type==='cmd');
+  else if(mode==='weak'){
+    const stored=JSON.parse(localStorage.getItem&&localStorage.getItem('wrongIds')||'[]');
+    if(stored.length) all=all.filter(q=>stored.includes(q.id));
+    else { alert('No wrong answers yet! Complete a quiz first.'); return false; }
+  }
+  if(shuf) all.sort(()=>Math.random()-.5);
+  queue=all; return true;
+}
+
+function startQuiz(shuf=false){
+  shuffle=shuf;
+  if(!buildQueue(shuf)) return;
+  current=0; score=0; skipped=0; wrongIds=[];
+  show('quiz'); renderQ();
+}
+
+function retakeWrong(){
+  mode='weak'; startQuiz();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQ(){
+  if(current>=queue.length){ showResults(); return; }
+  const q=queue[current];
+  answered=false;
+
+  // header
+  const pct=Math.round(current/queue.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('qCounter').textContent='Q '+(current+1)+' / '+queue.length;
+  document.getElementById('qUnit').textContent=q.unit;
+  document.getElementById('scoreDisplay').textContent=score;
+
+  // type badge
+  const isMcq=q.type==='mcq';
+  document.getElementById('qTypeBadge').textContent=isMcq?'MCQ':'CMD';
+  document.getElementById('qTypeBadge').className='qtype-badge '+(isMcq?'mcq-badge':'cmd-badge');
+  document.getElementById('qTypeNote').textContent=isMcq?'Choose the correct answer':'Type the exact command';
+
+  // question
+  document.getElementById('qText').innerHTML=q.q;
+
+  // feedback reset
+  const fb=document.getElementById('feedback');
+  fb.className='fb'; fb.style.display='none';
+
+  // buttons reset
+  document.getElementById('btnCheck').style.display='flex';
+  document.getElementById('btnNext').style.display='none';
+  document.getElementById('btnSkip').style.display='block';
+
+  if(isMcq){
+    document.getElementById('optsWrap').style.display='flex';
+    document.getElementById('cmdWrap').style.display='none';
+    const wrap=document.getElementById('optsWrap');
+    wrap.innerHTML='';
+    q.o.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt';
+      btn.innerHTML=`<span class="ol">${'ABCD'[i]}.</span><span>${opt}</span>`;
+      btn.onclick=()=>selectOpt(i);
+      btn.dataset.idx=i;
+      wrap.appendChild(btn);
+    });
+  } else {
+    document.getElementById('optsWrap').style.display='none';
+    document.getElementById('cmdWrap').style.display='block';
+    const inp=document.getElementById('cmdInput');
+    inp.value='';
+    document.getElementById('cmdHint').textContent='Hint: '+q.hint;
+    inp.focus();
+    inp.onkeydown=e=>{ if(e.key==='Enter') checkAnswer(); };
+  }
+}
+
+function selectOpt(idx){
+  if(answered) return;
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  document.querySelector(`.opt[data-idx="${idx}"]`).classList.add('sel');
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const q=queue[current];
+  const fb=document.getElementById('feedback');
+  answered=true;
+
+  if(q.type==='mcq'){
+    const sel=document.querySelector('.opt.sel');
+    if(!sel){ answered=false; return; }
+    const chosen=parseInt(sel.dataset.idx);
+    const correct=chosen===q.a;
+
+    document.querySelectorAll('.opt').forEach((b,i)=>{
+      b.classList.add('dis');
+      if(i===q.a) b.classList.add(chosen===i ? 'ok' : 'show-ok');
+      else if(i===chosen && !correct) b.classList.add('no');
+    });
+
+    if(correct){ score++; showFb(true,'Correct! ✓',q.ex); }
+    else { wrongIds.push(q.id); showFb(false,'Wrong ✗',`Correct answer: <b>${q.o[q.a]}</b><br>${q.ex}`); }
+
+  } else {
+    const val=document.getElementById('cmdInput').value.trim();
+    const correct=q.a.some(ans=>val===ans || val===ans.replace(/^sudo\s+/,'') || ans===val.replace(/^sudo\s+/,''));
+
+    if(correct){ score++; showFb(true,'Correct! ✓',q.ex); }
+    else {
+      wrongIds.push(q.id);
+      showFb(false,'Wrong ✗',`Expected: <code>${q.a[0]}</code><br>${q.ex}`);
+    }
+  }
+
+  document.getElementById('btnCheck').style.display='none';
+  document.getElementById('btnNext').style.display='flex';
+  document.getElementById('btnSkip').style.display='none';
+  document.getElementById('scoreDisplay').textContent=score;
+}
+
+function showFb(ok, title, body){
+  const fb=document.getElementById('feedback');
+  fb.className='fb '+(ok?'ok':'no');
+  fb.style.display='block';
+  document.getElementById('fbTitle').textContent=title;
+  document.getElementById('fbBody').innerHTML=body;
+}
+
+function nextQuestion(){ current++; renderQ(); }
+
+function skipQuestion(){
+  if(!answered){ skipped++; wrongIds.push(queue[current].id); current++; renderQ(); }
+}
+
+function showResults(){
+  // save wrong ids
+  try{ localStorage.setItem('wrongIds',JSON.stringify([...new Set(wrongIds)])); }catch(e){}
+
+  const total=queue.length, pct=Math.round(score/total*100);
+  let grade,msg,sub;
+  if(pct>=90){grade='A+';msg='Outstanding! 🎉';sub='You are fully exam-ready!';}
+  else if(pct>=80){grade='A';msg='Excellent! ✓';sub='Very strong preparation.';}
+  else if(pct>=70){grade='B';msg='Good job!';sub='Review the wrong ones and you are set.';}
+  else if(pct>=60){grade='C';msg='Average';sub='Focus on the weak areas below.';}
+  else if(pct>=50){grade='D';msg='Needs more practice';sub='Go through the study guide again.';}
+  else{grade='F';msg='Keep studying!';sub='Revisit commands and concepts carefully.';}
+
+  document.getElementById('resPct').textContent=pct+'%';
+  document.getElementById('resGrade').textContent=grade;
+  document.getElementById('resMsg').textContent=msg;
+  document.getElementById('resSub').textContent=sub;
+  document.getElementById('bCorrect').textContent=score;
+  document.getElementById('bWrong').textContent=(total-score-skipped);
+  document.getElementById('bSkipped').textContent=skipped;
+  document.getElementById('bTotal').textContent=total;
+
+  const wrong=queue.filter(q=>wrongIds.includes(q.id));
+  const wl=document.getElementById('wrongList');
+  const wi=document.getElementById('wrongItems');
+  if(wrong.length){
+    wl.style.display='block';
+    wi.innerHTML=wrong.slice(0,20).map(q=>{
+      const ans=q.type==='mcq'?q.o[q.a]:q.a[0];
+      return `<div class="wl-item"><div class="wl-q">${q.q}</div><div class="wl-a">→ ${ans}</div></div>`;
+    }).join('');
+    if(wrong.length>20) wi.innerHTML+=`<div class="wl-item"><div class="wl-q" style="color:var(--muted)">...and ${wrong.length-20} more. Use "Retake Wrong" to practice them.</div></div>`;
+  } else wl.style.display='none';
+
+  show('results');
+}
+
+function showHome(){ show('home'); }
+
+// prevent zoom on double tap
+let lastTap=0;
+document.addEventListener('touchend',e=>{
+  const now=Date.now();
+  if(now-lastTap<300) e.preventDefault();
+  lastTap=now;
+},{passive:false});
+</script>
+</body>
+</html>

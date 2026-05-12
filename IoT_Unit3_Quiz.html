@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IoT Unit 3 – Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: #1e2d45;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background: radial-gradient(ellipse at 20% 20%, rgba(0,212,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+
+  /* ========== HOME SCREEN ========== */
+  #home {
+    position:relative; z-index:1;
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:40px 20px; text-align:center;
+  }
+  .logo-tag {
+    font-family:'Space Mono', monospace;
+    font-size:11px; color:var(--accent); letter-spacing:4px; text-transform:uppercase;
+    border:1px solid rgba(0,212,255,0.3); padding:6px 16px; border-radius:20px;
+    margin-bottom:28px; display:inline-block;
+  }
+  h1.hero {
+    font-size:clamp(32px,6vw,68px); font-weight:800; line-height:1.1;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:16px;
+  }
+  .hero-sub {
+    font-size:16px; color:var(--muted); max-width:480px; line-height:1.7; margin-bottom:48px;
+  }
+  .stats-row {
+    display:flex; gap:24px; margin-bottom:52px; flex-wrap:wrap; justify-content:center;
+  }
+  .stat-pill {
+    background:var(--card); border:1px solid var(--border);
+    padding:12px 24px; border-radius:12px; text-align:center;
+  }
+  .stat-num { font-size:28px; font-weight:800; color:var(--accent); font-family:'Space Mono',monospace; }
+  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+  .mode-cards {
+    display:flex; gap:24px; flex-wrap:wrap; justify-content:center; max-width:700px;
+  }
+  .mode-card {
+    background:var(--card); border:2px solid var(--border);
+    border-radius:20px; padding:36px 32px; flex:1; min-width:260px; cursor:pointer;
+    transition:all .3s; text-align:left; position:relative; overflow:hidden;
+  }
+  .mode-card::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, transparent 60%, rgba(0,212,255,0.05));
+    transition:opacity .3s;
+  }
+  .mode-card:hover { border-color:var(--accent); transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,212,255,0.1); }
+  .mode-card.rapid:hover { border-color:var(--accent2); box-shadow:0 20px 60px rgba(124,58,237,0.1); }
+  .mode-icon { font-size:40px; margin-bottom:16px; }
+  .mode-title { font-size:22px; font-weight:700; margin-bottom:8px; }
+  .mode-card.rapid .mode-title { color:var(--accent2); }
+  .mode-card.learn .mode-title { color:var(--accent); }
+  .mode-desc { font-size:14px; color:var(--muted); line-height:1.7; }
+  .mode-tag {
+    display:inline-block; margin-top:16px; font-size:11px; font-family:'Space Mono',monospace;
+    padding:4px 10px; border-radius:6px; text-transform:uppercase; letter-spacing:1px;
+  }
+  .mode-card.learn .mode-tag { background:rgba(0,212,255,0.1); color:var(--accent); }
+  .mode-card.rapid .mode-tag { background:rgba(124,58,237,0.1); color:var(--accent2); }
+
+  /* ========== QUIZ SCREEN ========== */
+  #quiz { display:none; position:relative; z-index:1; min-height:100vh; padding:20px; }
+
+  .quiz-header {
+    max-width:800px; margin:0 auto 24px; display:flex;
+    align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  .quiz-mode-badge {
+    font-family:'Space Mono',monospace; font-size:11px; padding:6px 14px;
+    border-radius:20px; text-transform:uppercase; letter-spacing:2px; font-weight:700;
+  }
+  .badge-learn { background:rgba(0,212,255,0.15); color:var(--accent); border:1px solid rgba(0,212,255,0.3); }
+  .badge-rapid { background:rgba(124,58,237,0.15); color:var(--accent2); border:1px solid rgba(124,58,237,0.3); }
+  .quiz-counter { font-family:'Space Mono',monospace; font-size:13px; color:var(--muted); }
+  .btn-home {
+    background:none; border:1px solid var(--border); color:var(--muted);
+    padding:6px 14px; border-radius:8px; font-size:12px; cursor:pointer;
+    font-family:'Sora',sans-serif; transition:all .2s;
+  }
+  .btn-home:hover { border-color:var(--accent); color:var(--accent); }
+
+  .progress-bar-wrap { max-width:800px; margin:0 auto 28px; }
+  .progress-bar-bg { background:var(--border); height:4px; border-radius:2px; }
+  .progress-bar-fill { height:4px; border-radius:2px; transition:width .4s ease; }
+  .fill-learn { background:linear-gradient(90deg,var(--accent),#0099cc); }
+  .fill-rapid { background:linear-gradient(90deg,var(--accent2),#a855f7); }
+
+  .question-card {
+    max-width:800px; margin:0 auto;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:24px; padding:40px; box-shadow:0 8px 40px rgba(0,0,0,0.4);
+  }
+  .question-meta {
+    display:flex; gap:10px; align-items:center; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .topic-tag {
+    font-size:11px; font-family:'Space Mono',monospace; padding:4px 10px;
+    border-radius:6px; background:rgba(0,212,255,0.08); color:var(--accent);
+    border:1px solid rgba(0,212,255,0.2); text-transform:uppercase; letter-spacing:1px;
+  }
+  .q-number { font-size:12px; color:var(--muted); font-family:'Space Mono',monospace; }
+  .question-text {
+    font-size:clamp(16px,2.2vw,20px); font-weight:600; line-height:1.6;
+    margin-bottom:28px; color:#fff;
+  }
+  .options-grid { display:flex; flex-direction:column; gap:12px; }
+  .option-btn {
+    background:var(--card2); border:1.5px solid var(--border);
+    border-radius:14px; padding:16px 20px; cursor:pointer; text-align:left;
+    font-family:'Sora',sans-serif; font-size:15px; color:var(--text);
+    transition:all .2s; display:flex; align-items:center; gap:14px;
+    position:relative; overflow:hidden;
+  }
+  .option-btn:hover:not(:disabled) { border-color:var(--accent); background:#1a2e44; transform:translateX(4px); }
+  .option-label {
+    width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.05);
+    display:flex; align-items:center; justify-content:center; font-size:12px;
+    font-family:'Space Mono',monospace; font-weight:700; flex-shrink:0; transition:all .2s;
+  }
+  .option-btn.correct { border-color:var(--green); background:rgba(16,185,129,0.08); }
+  .option-btn.correct .option-label { background:var(--green); color:#fff; }
+  .option-btn.wrong { border-color:var(--red); background:rgba(239,68,68,0.08); }
+  .option-btn.wrong .option-label { background:var(--red); color:#fff; }
+  .option-btn.disabled { opacity:0.5; cursor:default; }
+  .option-btn:disabled { cursor:default; }
+
+  .feedback-box {
+    margin-top:20px; padding:18px 20px; border-radius:14px; display:none;
+    font-size:14px; line-height:1.7;
+  }
+  .feedback-box.correct { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#6ee7b7; }
+  .feedback-box.wrong { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; }
+  .feedback-box.show { display:block; }
+  .feedback-icon { font-size:20px; margin-bottom:6px; }
+
+  .action-row {
+    display:flex; gap:12px; justify-content:flex-end; margin-top:28px; flex-wrap:wrap;
+  }
+  .btn-nav {
+    padding:12px 28px; border-radius:12px; font-size:14px; font-weight:600;
+    cursor:pointer; font-family:'Sora',sans-serif; transition:all .2s; border:none;
+  }
+  .btn-prev { background:var(--card2); border:1px solid var(--border); color:var(--muted); }
+  .btn-prev:hover { border-color:var(--muted); color:var(--text); }
+  .btn-next-learn { background:linear-gradient(135deg,var(--accent),#0099cc); color:#000; font-weight:700; }
+  .btn-next-rapid { background:linear-gradient(135deg,var(--accent2),#a855f7); color:#fff; font-weight:700; }
+  .btn-nav:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+
+  /* rapid fire status */
+  .rapid-status {
+    max-width:800px; margin:0 auto 16px;
+    display:flex; gap:4px; align-items:center; flex-wrap:wrap;
+  }
+  .dot { width:10px; height:10px; border-radius:50%; background:var(--border); transition:all .3s; }
+  .dot.correct { background:var(--green); box-shadow:0 0 6px rgba(16,185,129,0.6); }
+  .dot.wrong { background:var(--red); box-shadow:0 0 6px rgba(239,68,68,0.6); }
+
+  /* ========== RESULTS SCREEN ========== */
+  #results { display:none; position:relative; z-index:1; min-height:100vh; padding:40px 20px; }
+  .results-inner { max-width:700px; margin:0 auto; text-align:center; }
+  .result-badge { font-size:72px; margin-bottom:20px; }
+  .result-title { font-size:clamp(28px,5vw,48px); font-weight:800; margin-bottom:12px; }
+  .result-sub { font-size:16px; color:var(--muted); margin-bottom:40px; }
+  .score-ring {
+    width:160px; height:160px; border-radius:50%; margin:0 auto 40px;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    border:3px solid transparent; position:relative;
+  }
+  .score-ring::before {
+    content:''; position:absolute; inset:-3px; border-radius:50%;
+    background:conic-gradient(var(--accent) var(--pct), var(--border) 0);
+    -webkit-mask:radial-gradient(circle, transparent 68px, black 69px);
+    mask:radial-gradient(circle, transparent 68px, black 69px);
+  }
+  .score-pct { font-size:40px; font-weight:800; font-family:'Space Mono',monospace; color:var(--accent); }
+  .score-label { font-size:13px; color:var(--muted); }
+  .result-stats {
+    display:flex; gap:16px; justify-content:center; margin-bottom:40px; flex-wrap:wrap;
+  }
+  .r-stat { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px 28px; }
+  .r-stat-num { font-size:32px; font-weight:800; font-family:'Space Mono',monospace; }
+  .r-stat-label { font-size:12px; color:var(--muted); margin-top:4px; }
+  .r-stat.green .r-stat-num { color:var(--green); }
+  .r-stat.red .r-stat-num { color:var(--red); }
+  .result-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn-result {
+    padding:14px 32px; border-radius:12px; font-size:15px; font-weight:600;
+    cursor:pointer; font-family:'Sora',sans-serif; transition:all .2s; border:none;
+  }
+  .btn-retake-wrong { background:var(--red); color:#fff; }
+  .btn-restart { background:linear-gradient(135deg,var(--accent),#0099cc); color:#000; }
+  .btn-home2 { background:var(--card); border:1px solid var(--border); color:var(--text); }
+  .btn-result:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+  .btn-result:disabled { opacity:0.4; cursor:default; transform:none; }
+
+  /* wrong answers list */
+  .wrong-list { margin-top:32px; text-align:left; }
+  .wrong-list-title { font-size:14px; font-weight:700; color:var(--red); margin-bottom:16px; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:1px; }
+  .wrong-item { background:var(--card); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:16px; margin-bottom:10px; font-size:13px; }
+  .wrong-q { color:var(--text); margin-bottom:6px; font-weight:600; }
+  .wrong-ans { color:var(--green); font-size:12px; }
+
+  @media(max-width:600px) {
+    .question-card { padding:24px 18px; }
+    .mode-card { min-width:100%; }
+  }
+
+  .glow-learn { animation: glow-l 2s infinite alternate; }
+  @keyframes glow-l { from { box-shadow:0 0 0 rgba(0,212,255,0.2); } to { box-shadow:0 0 30px rgba(0,212,255,0.2); } }
+  .glow-rapid { animation: glow-r 2s infinite alternate; }
+  @keyframes glow-r { from { box-shadow:0 0 0 rgba(124,58,237,0.2); } to { box-shadow:0 0 30px rgba(124,58,237,0.2); } }
+
+  .rapid-stop-msg {
+    background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.4);
+    border-radius:12px; padding:14px 18px; margin-bottom:16px; max-width:800px; margin-left:auto; margin-right:auto;
+    color:#fca5a5; font-size:14px; display:none;
+  }
+  .rapid-stop-msg.show { display:block; }
+</style>
+</head>
+<body>
+
+<!-- ====== HOME ====== -->
+<div id="home">
+  <div class="logo-tag">📡 IoT — Unit 3</div>
+  <h1 class="hero">Master IoT<br>Unit 3</h1>
+  <p class="hero-sub">Complete coverage of every concept from your PPT — from Building Blocks to Lightweight Cryptography.</p>
+  <div class="stats-row">
+    <div class="stat-pill"><div class="stat-num" id="totalQCount">120</div><div class="stat-label">Questions</div></div>
+    <div class="stat-pill"><div class="stat-num">15</div><div class="stat-label">Topics</div></div>
+    <div class="stat-pill"><div class="stat-num">4</div><div class="stat-label">Options each</div></div>
+  </div>
+  <div class="mode-cards">
+    <div class="mode-card learn glow-learn" onclick="startMode('learn')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-title">Learning Mode</div>
+      <p class="mode-desc">Select an answer, get instant feedback showing whether you're right or wrong. Move at your own pace using the Next button.</p>
+      <span class="mode-tag">Self-paced</span>
+    </div>
+    <div class="mode-card rapid glow-rapid" onclick="startMode('rapid')">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-title">Rapid Fire Mode</div>
+      <p class="mode-desc">Auto-advance on correct answers. Halt on wrong ones — correct it manually to continue. Navigate freely with Prev / Next.</p>
+      <span class="mode-tag">Fast-paced</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== QUIZ ====== -->
+<div id="quiz">
+  <div class="quiz-header">
+    <span class="quiz-mode-badge" id="modeBadge"></span>
+    <span class="quiz-counter" id="qCounter"></span>
+    <button class="btn-home" onclick="goHome()">⌂ Home</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="rapid-status" id="rapidStatus"></div>
+  <div class="rapid-stop-msg" id="rapidStopMsg">❌ Wrong answer! Correct the answer or click <strong>Next</strong> to continue.</div>
+  <div class="question-card">
+    <div class="question-meta">
+      <span class="topic-tag" id="qTopic"></span>
+      <span class="q-number" id="qNum"></span>
+    </div>
+    <div class="question-text" id="qText"></div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="feedback-box" id="feedbackBox"></div>
+    <div class="action-row">
+      <button class="btn-nav btn-prev" id="btnPrev" onclick="navigate(-1)" style="display:none">← Prev</button>
+      <button class="btn-nav" id="btnNext" onclick="navigate(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== RESULTS ====== -->
+<div id="results">
+  <div class="results-inner">
+    <div class="result-badge" id="resultBadge">🎉</div>
+    <h2 class="result-title" id="resultTitle">Quiz Complete!</h2>
+    <p class="result-sub" id="resultSub"></p>
+    <div class="score-ring" id="scoreRing" style="--pct:0deg">
+      <div class="score-pct" id="scorePct">0%</div>
+      <div class="score-label">Score</div>
+    </div>
+    <div class="result-stats">
+      <div class="r-stat green"><div class="r-stat-num" id="correctCount">0</div><div class="r-stat-label">Correct</div></div>
+      <div class="r-stat red"><div class="r-stat-num" id="wrongCount">0</div><div class="r-stat-label">Wrong</div></div>
+      <div class="r-stat"><div class="r-stat-num" id="totalDone">0</div><div class="r-stat-label">Total</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-result btn-retake-wrong" id="btnRetakeWrong" onclick="retakeWrong()">Retake Wrong Only</button>
+      <button class="btn-result btn-restart" onclick="restart()">Restart All</button>
+      <button class="btn-result btn-home2" onclick="goHome()">Home</button>
+    </div>
+    <div class="wrong-list" id="wrongList"></div>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  // ── WHAT IS IoT ──
+  {topic:"What is IoT", q:"What does IoT stand for?", o:["Internet of Things","Interconnected Online Technology","Integrated Operational Technology","Internal Object Transfer"], a:0},
+  {topic:"What is IoT", q:"IoT refers to the interconnectedness of physical devices embedded with:", o:["Only hardware components","Software, sensors, and connectivity","Manual switches and controllers","Fiber optic cables only"], a:1},
+  {topic:"What is IoT", q:"IoT enables objects to connect and exchange data without:", o:["Sensors","Human interaction","Power supply","Network protocols"], a:1},
+  {topic:"What is IoT", q:"A 'Thing' in IoT is defined as an entity with unique identifier, embedded system, and ability to:", o:["Store data permanently","Transfer data over the network","Display visual information","Perform manual computation"], a:1},
+  {topic:"What is IoT", q:"IoT devices collect useful data and then autonomously flow data between:", o:["Only human operators","Only cloud servers","Other devices","Only gateways"], a:2},
+
+  // ── BUILDING BLOCKS ──
+  {topic:"Building Blocks", q:"Which are the four basic building blocks of an IoT system?", o:["Sensors, Processors, Gateways, Applications","Cameras, Displays, Routers, Databases","Actuators, CPUs, Modems, Software","Nodes, Hubs, Switches, Routers"], a:0},
+  {topic:"Building Blocks", q:"What is the main purpose of sensors in IoT?", o:["Process raw data","Route data to cloud","Collect data from surroundings or give out data","Provide user interface"], a:2},
+  {topic:"Building Blocks", q:"Sensors in IoT must have a unique IP address so that they can be:", o:["Powered wirelessly","Easily identifiable over a large network","Connected to cellular networks","Programmed remotely"], a:1},
+  {topic:"Building Blocks", q:"Which IoT building block is referred to as the 'brain' of the IoT system?", o:["Sensors","Gateways","Applications","Processors"], a:3},
+  {topic:"Building Blocks", q:"Processors in IoT are responsible for performing:", o:["Sensor calibration","Encryption and decryption of data","Physical device connections","User authentication"], a:1},
+  {topic:"Building Blocks", q:"Gateways in IoT are responsible for:", o:["Collecting raw data","Routing processed data to proper locations","Displaying user interfaces","Running machine learning models"], a:1},
+  {topic:"Building Blocks", q:"LAN, WAN, PAN are examples of which IoT building block?", o:["Sensors","Processors","Network Gateways","Applications"], a:2},
+  {topic:"Building Blocks", q:"IoT Applications are responsible for:", o:["Sensing environmental data","Routing packets","Rendering effective meaning to collected data","Encrypting communication"], a:2},
+  {topic:"Building Blocks", q:"Which of the following is an example of an IoT Application?", o:["Gas sensor","Microcontroller","Home automation app","Ethernet cable"], a:2},
+  {topic:"Building Blocks", q:"Sensors in IoT can work autonomously or be controlled by:", o:["Gateways","Processors only","The user","Network administrators"], a:2},
+
+  // ── CHARACTERISTICS OF IoT ──
+  {topic:"IoT Characteristics", q:"Which IoT characteristic ensures that anyone, anywhere, anytime can connect?", o:["Scalability","Connectivity","Safety","Self Configuring"], a:1},
+  {topic:"IoT Characteristics", q:"Each IoT device has a unique identity helpful for:", o:["Reducing power consumption","Tracking equipment and querying status","Encrypting data","Improving speed"], a:1},
+  {topic:"IoT Characteristics", q:"The number of elements connected to IoT is increasing day by day — which characteristic handles this?", o:["Safety","Interoperability","Scalability","Architecture"], a:2},
+  {topic:"IoT Characteristics", q:"A surveillance camera adapting to work in different light conditions (morning, afternoon, night) demonstrates which IoT characteristic?", o:["Self Configuring","Connectivity","Dynamic and Self-Adapting","Safety"], a:2},
+  {topic:"IoT Characteristics", q:"IoT Architecture should be hybrid, supporting different manufacturers' products. This refers to which characteristic?", o:["Safety","Architecture","Interoperability","Intelligence"], a:1},
+  {topic:"IoT Characteristics", q:"Which characteristic involves danger of sensitive personal details getting compromised when devices connect to internet?", o:["Scalability","Architecture","Self Configuring","Safety"], a:3},
+  {topic:"IoT Characteristics", q:"IoT devices upgrading their software with minimum user participation refers to which characteristic?", o:["Connectivity","Dynamic and Self-Adapting","Self Configuring","Intelligence and Identity"], a:2},
+  {topic:"IoT Characteristics", q:"The ability of different IoT devices to communicate regardless of underlying technology or manufacturer is called:", o:["Scalability","Self Configuring","Safety","Interoperability"], a:3},
+  {topic:"IoT Characteristics", q:"How many characteristics of IoT are described in the PPT?", o:["5","6","7","8"], a:3},
+
+  // ── APPLICATIONS OF IoT ──
+  {topic:"IoT Applications", q:"Which IoT application domain deals with real-time traffic management and environmental monitoring?", o:["Healthcare","Smart Cities","Industrial IoT","Agriculture"], a:1},
+  {topic:"IoT Applications", q:"Remote patient monitoring and real-time diagnostics are IoT applications in which sector?", o:["Agriculture","Smart Cities","Healthcare","Education"], a:2},
+  {topic:"IoT Applications", q:"Predictive maintenance and real-time quality control are examples of:", o:["Healthcare IoT","Smart Home IoT","Industrial IoT (IIoT)","Smart Cities IoT"], a:2},
+  {topic:"IoT Applications", q:"IIoT focuses on using cyber-physical systems to monitor factory processes and make:", o:["Manual decisions","Data-based automated decisions","Random decisions","Operator-based decisions"], a:1},
+  {topic:"IoT Applications", q:"IIoT brings in the concept of 'a connected factory leads to a ___ factory'.", o:["Digital","Smart","Automated","Virtual"], a:1},
+  {topic:"IoT Applications", q:"Which IIoT application enables monitoring of events across a supply chain?", o:["Facility management","Quality control","Inventory management","Packaging Optimization"], a:2},
+  {topic:"IoT Applications", q:"IoT combined with big data analysis can improve workers' safety in the plant — this is which IIoT application?", o:["Logistics","Quality control","Plant Safety and Security","Production flow monitoring"], a:2},
+  {topic:"IoT Applications", q:"IoT sensors in products helping manufacturers gain insights into usage patterns and handling is related to:", o:["Inventory management","Packaging Optimization","Logistics","Facility management"], a:1},
+
+  // ── FOG COMPUTING ──
+  {topic:"Fog Computing", q:"Fog computing is defined as:", o:["Cloud storage at central servers","Distributed computing infrastructure bringing computation closer to the data source","Internet-only computing","On-premise server management"], a:1},
+  {topic:"Fog Computing", q:"Traditional cloud-based IoT solutions struggle with:", o:["Cost and scalability","Latency, bandwidth, and security","Power management","Device compatibility"], a:1},
+  {topic:"Fog Computing", q:"Edge computing processes data at:", o:["Central cloud servers","The edge of a device's network","IoT gateways","Fog nodes"], a:1},
+  {topic:"Fog Computing", q:"An autonomous vehicle processing camera/sensor data in milliseconds for self-parking is an example of:", o:["Fog computing","Cloud computing","Edge computing","Grid computing"], a:2},
+  {topic:"Fog Computing", q:"Fog nodes receive data from edge computers and analyze what's important, then transfer important data to the cloud. What happens to unimportant data?", o:["Sent to cloud","Deleted or kept for further analysis","Encrypted","Sent back to sensors"], a:1},
+  {topic:"Fog Computing", q:"Fog computing reduces processing time because fog nodes are deployed:", o:["In centralized data centers","At the network edge, closer to IoT devices","In the cloud backbone","At ISP headquarters"], a:1},
+  {topic:"Fog Computing", q:"Which of the following is a component of Fog Computing?", o:["Centralized storage","Edge devices (sensors, PLCs, gateway routers)","Mainframe servers","Satellite links"], a:1},
+  {topic:"Fog Computing", q:"Fog computing in IoT is a ___ computing model.", o:["Centralized","Distributed","Hybrid","Sequential"], a:1},
+  {topic:"Fog Computing", q:"PLCs in the context of fog computing stand for:", o:["Packet Layer Controllers","Programmable Logic Controllers","Protocol Link Converters","Processing Latency Components"], a:1},
+
+  // ── REAL-TIME ANALYTICS ──
+  {topic:"Real-Time Analytics", q:"Real-time analytics in IoT refers to analysing data generated by connected devices:", o:["At the end of each day","Without any delay","After aggregation in cloud","Once per week"], a:1},
+  {topic:"Real-Time Analytics", q:"Which are the '3 Vs' of IoT data that make real-time analytics necessary?", o:["Volume, Velocity, Variety","Value, Veracity, Volume","Velocity, Visibility, Variance","Volume, Validity, Variance"], a:0},
+  {topic:"Real-Time Analytics", q:"Which benefit of real-time analytics helps prevent equipment failures before they happen?", o:["Fraud detection","Improved decision-making","Predictive maintenance","Personalized experiences"], a:2},
+
+  // ── IoT LAYERED ARCHITECTURE ──
+  {topic:"IoT Architecture", q:"Which layer of IoT architecture uses sensors, actuators, and devices to collect data from the physical world?", o:["Transport Layer","Processing Layer","Perception Layer","Application Layer"], a:2},
+  {topic:"IoT Architecture", q:"Wi-Fi, cellular, and Bluetooth connectivity for data transmission belong to which IoT layer?", o:["Perception Layer","Transport Layer","Processing Layer","Application Layer"], a:1},
+  {topic:"IoT Architecture", q:"Data aggregation, processing, and storage (fog and cloud) happen in which layer?", o:["Application Layer","Perception Layer","Transport Layer","Processing Layer"], a:3},
+  {topic:"IoT Architecture", q:"Value-added services and applications based on processed data belong to which IoT layer?", o:["Transport Layer","Perception Layer","Application Layer","Processing Layer"], a:2},
+  {topic:"IoT Architecture", q:"A five-layer IoT architecture adds which additional layer to the standard four?", o:["Security Layer","Management Layer","Business Layer","Monitoring Layer"], a:2},
+  {topic:"IoT Architecture", q:"The Perception Layer is also called the:", o:["Network Layer","Sensing Layer","Data Layer","Control Layer"], a:1},
+  {topic:"IoT Architecture", q:"The Transport Layer is also called the:", o:["Sensing Layer","Data Processing Layer","Network Layer","Business Layer"], a:2},
+
+  // ── SOA ──
+  {topic:"SOA", q:"SOA stands for:", o:["System-Oriented Architecture","Service-Oriented Architecture","Sensor-Oriented Architecture","Software-Only Architecture"], a:1},
+  {topic:"SOA", q:"SOA defines a way to make software components reusable using:", o:["Hardware devices","Interfaces","Physical cables","Database schemas"], a:1},
+  {topic:"SOA", q:"In SOA, each service is a complete ___ function in itself.", o:["Software","Technical","Business","Security"], a:2},
+  {topic:"SOA", q:"SOA aims to be independent of:", o:["Users","Vendors, products, and technologies","Data formats","Programming paradigms"], a:1},
+  {topic:"SOA", q:"Which two roles are defined in Service-Oriented Architecture?", o:["Producer and Consumer","Service Provider and Service Consumer","Server and Client","Publisher and Subscriber"], a:1},
+  {topic:"SOA", q:"The service provider can publish services in a ___ to advertise them.", o:["Database","Registry","Gateway","Broker"], a:1},
+  {topic:"SOA", q:"CRM stands for:", o:["Customer Resource Management","Customer Relationship Management","Centralized Resource Module","Client Relationship Model"], a:1},
+  {topic:"SOA", q:"ERP stands for:", o:["Enterprise Resource Planning","Electronic Routing Protocol","Embedded Runtime Platform","Event Response Protocol"], a:0},
+  {topic:"SOA", q:"Which of the following is an advantage of SOA?", o:["High overhead","Platform independent","Complex service management","High initial investment"], a:1},
+  {topic:"SOA", q:"Which of the following is a disadvantage of SOA?", o:["Service reusability","Easy maintenance","High overhead due to input validation","Availability"], a:2},
+  {topic:"SOA", q:"In SOA-based IoT architecture, which layer creates and manages services required by users or applications?", o:["Sensing layer","Network layer","Service layer","Interfaces layer"], a:2},
+  {topic:"SOA", q:"Which practical application uses SOA for situational awareness systems?", o:["Banking","Military and air forces","Social media","Retail"], a:1},
+  {topic:"SOA", q:"SaaS stands for:", o:["System as a Service","Software as a Service","Storage as a Service","Server as a Service"], a:1},
+
+  // ── API ARCHITECTURE ──
+  {topic:"API Architecture", q:"API stands for:", o:["Application Programming Interface","Automated Protocol Integration","Advanced Packet Interface","Adaptive Programming Integration"], a:0},
+  {topic:"API Architecture", q:"API architecture refers to developing a software interface that exposes backend data for use in:", o:["Only internal applications","New applications","Physical devices","Embedded systems only"], a:1},
+  {topic:"API Architecture", q:"How many layers does API Architecture have according to the PPT?", o:["2","3","4","5"], a:2},
+  {topic:"API Architecture", q:"The layer in API architecture where applications and services used by customers interact with business apps is:", o:["Information Management Layer","Application Layer","Integration Layer","Interaction Layer"], a:3},
+  {topic:"API Architecture", q:"SOAP stands for:", o:["Simple Object Access Protocol","Secure Online Application Protocol","System Object API Protocol","Standard Output Architecture Protocol"], a:0},
+  {topic:"API Architecture", q:"SOAP APIs support only which data transfer format?", o:["JSON","XML","CSV","HTML"], a:1},
+  {topic:"API Architecture", q:"SOAP is mostly used for applications requiring:", o:["Low bandwidth","High security like payments","Open-source development","Simple file transfers"], a:1},
+  {topic:"API Architecture", q:"REST stands for:", o:["Representational State Transfer","Remote Execution Software Technology","Reactive Event Streaming Technology","Resource Endpoint Syntax Transfer"], a:0},
+  {topic:"API Architecture", q:"Most public web services use REST APIs with:", o:["XML","SOAP","JSON","HTML"], a:2},
+  {topic:"API Architecture", q:"JSON stands for:", o:["JavaScript Object Notation","Java Simple Object Network","JavaScript Online Node","Java Standard Object Notation"], a:0},
+  {topic:"API Architecture", q:"XML stands for:", o:["Extensible Markup Language","External Module Link","Executable Machine Language","Extended Method Logic"], a:0},
+  {topic:"API Architecture", q:"In Fleet Management IoT APIs are used for:", o:["Environmental sensing","Activating devices, billing, and reporting","Data storage","Encryption"], a:1},
+  {topic:"API Architecture", q:"APIs help with cyber security by allowing developers to gain control over:", o:["Physical devices","Access requests","Cloud storage","Network bandwidth"], a:1},
+
+  // ── IoT COMMUNICATION ──
+  {topic:"IoT Communication", q:"There are mainly two types of IoT protocols:", o:["Wired and Wireless","Network and Data","Send and Receive","TCP and UDP"], a:1},
+  {topic:"IoT Communication", q:"MQTT stands for:", o:["Message Queue Telemetry Transport","Multi-Query Transmission Technology","Managed Queue Transfer Type","Modular Query Telemetry Transfer"], a:0},
+  {topic:"IoT Communication", q:"MQTT is designed to be lightweight to work in:", o:["High bandwidth networks only","Very low bandwidth networks","Only wired networks","Only 5G networks"], a:1},
+  {topic:"IoT Communication", q:"MQTT uses which architecture?", o:["Request/Response","Client/Server","Publish/Subscribe","Peer-to-Peer"], a:2},
+  {topic:"IoT Communication", q:"HTTP is unidirectional — made for one ___ to send one message to another ___.", o:["Gateway/Sensor","Client/Server","Publisher/Subscriber","Node/Hub"], a:1},
+  {topic:"IoT Communication", q:"HTTP relies on which protocol that requires a lot of computing resources?", o:["UDP","MQTT","TCP","CoAP"], a:2},
+  {topic:"IoT Communication", q:"CoAP stands for:", o:["Constrained Application Protocol","Connected Application Procedure","Cloud API Protocol","Constrained Access Policy"], a:0},
+  {topic:"IoT Communication", q:"CoAP is built similarly to HTTP and supports which model?", o:["Publish/Subscribe","Peer-to-Peer","REST","Client-Broker-Client"], a:2},
+  {topic:"IoT Communication", q:"CoAP communication links are based on:", o:["TCP","UDP","HTTP","WebSocket"], a:1},
+  {topic:"IoT Communication", q:"DDS stands for:", o:["Data Distribution Service","Device Discovery System","Distributed Data Standard","Dynamic Data Service"], a:0},
+  {topic:"IoT Communication", q:"The main difference between DDS and MQTT is that DDS has no:", o:["Publishers","Subscribers","Brokers","Nodes"], a:2},
+  {topic:"IoT Communication", q:"In DDS, the network connecting all publishers and subscribers is known as:", o:["Global Data Space","Common Message Bus","Universal Node Network","Distributed Mesh Grid"], a:0},
+  {topic:"IoT Communication", q:"WebSocket establishes a ___ connection between a browser and a server.", o:["UDP","TCP","HTTP","MQTT"], a:1},
+  {topic:"IoT Communication", q:"AMQP was originally created for which environment?", o:["Healthcare","Military","Banking","Retail"], a:2},
+  {topic:"IoT Communication", q:"How many Quality of Service levels does AMQP offer compared to MQTT?", o:["1","2","3","4"], a:1},
+  {topic:"IoT Communication", q:"XMPP is based on which language?", o:["JSON","HTML","XML","YAML"], a:2},
+  {topic:"IoT Communication", q:"XMPP uses a Jabber ID with the format:", o:["id.domain.com","jabberID@domain.com","user#domain.com","node/domain.com"], a:1},
+  {topic:"IoT Communication", q:"OPC UA is designed to guarantee interoperability between manufacturers, operating systems, and:", o:["Countries","Programming languages","Physical devices","Wireless standards"], a:2},
+  {topic:"IoT Communication", q:"OPC stands for:", o:["Open Platform Communications","Optional Protocol Controller","Operational Process Channel","Outer Perimeter Connector"], a:0},
+  {topic:"IoT Communication", q:"Bluetooth uses which frequency band?", o:["5 GHz","900 MHz","2.4 GHz ISM","13.56 MHz"], a:2},
+  {topic:"IoT Communication", q:"More than one third of IoT devices contain:", o:["Zigbee","Bluetooth connectivity","NFC","Z-Wave"], a:1},
+  {topic:"IoT Communication", q:"Zigbee works on IEEE ___ physical radio standards.", o:["802.11","802.15.4","802.3","802.16"], a:1},
+  {topic:"IoT Communication", q:"Zigbee is primarily used in machine-to-machine (M2M) communication because it sends small amounts of data using:", o:["High power","Very less power","Cellular networks","Broadband"], a:1},
+  {topic:"IoT Communication", q:"BLE stands for:", o:["Broad Link Ethernet","Bluetooth Low Energy","Basic LAN Extension","Broadcast Latency Estimator"], a:1},
+  {topic:"IoT Communication", q:"BLE is used in smartwatches, medical devices, fitness trackers, beacons, and:", o:["Industrial routers","Home automation devices","Satellite systems","High-power servers"], a:1},
+  {topic:"IoT Communication", q:"Wi-Fi operates at frequencies of:", o:["900 MHz and 2.4 GHz","2.4 GHz and 5 GHz","5 GHz and 13.56 MHz","868 MHz and 915 MHz"], a:1},
+  {topic:"IoT Communication", q:"Z-Wave operates on which frequency bands?", o:["2.4 GHz and 5 GHz","865 MHz to 926 MHz","13.56 MHz","125-135 KHz"], a:1},
+  {topic:"IoT Communication", q:"Z-Wave offers two-way communication with mesh networking and:", o:["High bandwidth","Message received acknowledgment","Satellite backup","NFC integration"], a:1},
+  {topic:"IoT Communication", q:"RFID stands for:", o:["Radio Frequency Identification","Remote File Integration Device","Rapid Frequency Interface Device","Radio-based Fiber Interface Descriptor"], a:0},
+  {topic:"IoT Communication", q:"RFID Low Frequency (LF) operates at:", o:["13.56 MHz","868-930 MHz","125-135 KHz","2.4 GHz"], a:2},
+  {topic:"IoT Communication", q:"Cellular IoT subtypes LTE-M and NB-IoT offer:", o:["Higher speed but more power","More data capacity and less power consumption","Wireless mesh networking","Short range connectivity only"], a:1},
+  {topic:"IoT Communication", q:"Sigfox introduced which technology in IoT?", o:["High-bandwidth WAN","Low-Power WAN (LPWAN)","Zigbee mesh network","RFID tracking"], a:1},
+  {topic:"IoT Communication", q:"NFC stands for:", o:["Near Field Communication","Network Frequency Controller","Node Feedback Channel","Networked File Communication"], a:0},
+  {topic:"IoT Communication", q:"NFC is limited to which frequency band?", o:["2.4 GHz","868 MHz","13.56 MHz","900 MHz"], a:2},
+  {topic:"IoT Communication", q:"NFC effective working distance is:", o:["Up to 100 meters","Up to 10 meters","Less than 10 cm","Up to 1 km"], a:2},
+  {topic:"IoT Communication", q:"LPWAN stands for:", o:["Low Power Wide Area Network","Long Protocol Wireless Access Network","Local Protocol WAN","Light Power Wireless Array Network"], a:0},
+  {topic:"IoT Communication", q:"LPWAN allows communication across a minimum of:", o:["100 meters","500 meters","1 km","10 km"], a:1},
+  {topic:"IoT Communication", q:"LoRaWAN stands for:", o:["Long Range Wide Area Network","Low Range Wide Area Network","Local Radio WAN","Lightweight Remote WAN"], a:1},
+  {topic:"IoT Communication", q:"Ethernet creates a common environment known as:", o:["WAN","PAN","LAN","MAN"], a:2},
+
+  // ── CLOUD COMPUTING ──
+  {topic:"Cloud Computing", q:"Cloud computing stores and accesses data and programs on:", o:["Local hard drives","Remote servers hosted on the internet","USB drives","Physical server rooms nearby"], a:1},
+  {topic:"Cloud Computing", q:"Cloud computing is also referred to as:", o:["Grid computing","Internet-based computing","Peer computing","Edge computing"], a:1},
+  {topic:"Cloud Computing", q:"The front end of cloud computing architecture consists of:", o:["Servers and storage","Thin clients and Fat clients","Gateways and sensors","Routers and switches"], a:1},
+  {topic:"Cloud Computing", q:"Microsoft Office Word and Excel running locally are examples of:", o:["Thin clients","Fog nodes","Fat client applications","SaaS applications"], a:2},
+  {topic:"Cloud Computing", q:"IaaS is also known as:", o:["Platform as a Service","Software as a Service","Hardware as a Service","Function as a Service"], a:2},
+  {topic:"Cloud Computing", q:"PaaS provides a platform and environment to allow developers to build applications. It is accessed via:", o:["Local installation","Web browser","Command line only","Physical media"], a:1},
+  {topic:"Cloud Computing", q:"Dropbox, Salesforce.com, and Microsoft Office 365 are examples of:", o:["IaaS","PaaS","SaaS","FaaS"], a:2},
+  {topic:"Cloud Computing", q:"FaaS allows users to develop, run, and deploy code as ___ without worrying about infrastructure.", o:["Modules","Services","Functions","Containers"], a:2},
+  {topic:"Cloud Computing", q:"Which cloud characteristic allows easily growing and shrinking server size based on need?", o:["Reliability","Physical Security","Scalability","Save Money"], a:2},
+  {topic:"Cloud Computing", q:"Cloud computing reduces hardware costs, leaving hardware needs to the:", o:["User","Government","Vendor","IT department"], a:2},
+  {topic:"Cloud Computing", q:"Which cloud characteristic ensures that if one physical server goes offline, availability is not affected?", o:["Scalability","Save Money","Physical Security","Reliability"], a:3},
+  {topic:"Cloud Computing", q:"The Internet, Intranet, and Intercloud are part of which cloud architecture component?", o:["Front End","Back-End Platforms","Cloud-Based Delivery and Network","Application Layer"], a:2},
+  {topic:"Cloud Computing", q:"Which cloud service type is deployed for networking equipment, devices, databases, and web servers?", o:["SaaS","PaaS","IaaS","FaaS"], a:2},
+
+  // ── BIG DATA ──
+  {topic:"Big Data", q:"Big data includes structured, unstructured, and:", o:["Compressed data","Raw data","Semi-structured data","Encrypted data"], a:2},
+  {topic:"Big Data", q:"Big data has how many V's as characteristics?", o:["3","4","5","6"], a:2},
+  {topic:"Big Data", q:"Which 'V' of big data refers to the speed of data generation?", o:["Volume","Variety","Veracity","Velocity"], a:3},
+  {topic:"Big Data", q:"Which 'V' of big data refers to inconsistency shown by data at times?", o:["Velocity","Value","Variability","Variety"], a:2},
+  {topic:"Big Data", q:"Structured data can be managed using:", o:["NoSQL","XML","SQL","JSON"], a:2},
+  {topic:"Big Data", q:"XML files and JSON documents are examples of which type of big data?", o:["Structured","Unstructured","Semi-Structured","Compressed"], a:2},
+  {topic:"Big Data", q:"What percentage of data generated by organizations is unstructured?", o:["20%","50%","60%","80%"], a:3},
+  {topic:"Big Data", q:"The New York Stock Exchange produces approximately ___ of new trade data every day.", o:["1 petabyte","1 terabyte","1 gigabyte","500 MB"], a:1},
+  {topic:"Big Data", q:"A single jet engine generates more than 10 terabytes of data in just:", o:["24 hours","1 hour","30 minutes flight","1 week"], a:2},
+  {topic:"Big Data", q:"Facebook stores and analyzes more than ___ of data generated by users each day.", o:["1 terabyte","10 terabytes","30 Petabytes","500 GB"], a:2},
+  {topic:"Big Data", q:"In which sector does big data help detect fraud and manage risks?", o:["Agriculture","Media and Entertainment","Advertising","Bank and Finance"], a:3},
+
+  // ── IoT THREATS ──
+  {topic:"IoT Threats", q:"There are three broad categories of IoT threats. Which of the following is NOT one of them?", o:["Capture","Disrupt","Manipulate","Encrypt"], a:3},
+  {topic:"IoT Threats", q:"Masquerading in IoT means:", o:["Encrypting data","An entity pretending to be a different entity","Rerouting network traffic","Monitoring transmissions passively"], a:1},
+  {topic:"IoT Threats", q:"A Man-in-the-middle attack involves:", o:["Physical theft of a device","Attacker secretly relaying and possibly altering communication between two entities","Overloading a server","Creating fake identities"], a:1},
+  {topic:"IoT Threats", q:"Replay attacks involve:", o:["Creating duplicate IoT devices","Sending old (authentic) messages to a receiver","Monitoring radio transmissions","Blocking network services"], a:1},
+  {topic:"IoT Threats", q:"DoS stands for:", o:["Data on Service","Denial of Service","Distributed Object System","Device of Sensors"], a:1},
+  {topic:"IoT Threats", q:"The simplest type of passive threat in IoT is:", o:["Masquerading","Replay attacks","Eavesdropping or monitoring of transmissions","DoS attacks"], a:2},
+  {topic:"IoT Threats", q:"Capture attacks are designed to:", o:["Overload servers","Gain control of physical or logical systems or access information","Modify network routes","Block device updates"], a:1},
+
+  // ── VULNERABILITIES ──
+  {topic:"IoT Vulnerabilities", q:"Which is the easiest way for attackers to compromise IoT devices and launch botnets?", o:["Exploiting firmware bugs","Weak, default, and hardcoded passwords","Breaking encryption","Jamming radio signals"], a:1},
+  {topic:"IoT Vulnerabilities", q:"A botnet is defined as:", o:["A network of secure IoT devices","A network of private computers infected with malicious software controlled without owners' knowledge","A type of firewall","A blockchain network"], a:1},
+  {topic:"IoT Vulnerabilities", q:"Anti-rollback mechanisms prevent:", o:["Unauthorized physical access","Execution of previous versions of firmware that might have security flaws","Data theft","Wireless jamming"], a:1},
+  {topic:"IoT Vulnerabilities", q:"Insecure ecosystem interfaces include issues with lack of authentication, weak encryption, and:", o:["High power consumption","Lack of input and output filtering","Slow data transfer","Outdated hardware"], a:1},
+  {topic:"IoT Vulnerabilities", q:"Insufficient privacy protection refers to:", o:["Weak network protocols","User personal information stored insecurely or without permission","Lack of firmware updates","Poor encryption standards"], a:1},
+  {topic:"IoT Vulnerabilities", q:"Insecure default settings means devices lack ability to:", o:["Connect to cloud","Restrict operators from modifying configurations","Perform encryption","Update firmware"], a:1},
+  {topic:"IoT Vulnerabilities", q:"How many vulnerability categories are listed in the PPT for IoT systems?", o:["6","8","10","12"], a:2},
+
+  // ── ROUTING ATTACKS ──
+  {topic:"Routing Attacks", q:"A Sinkhole Attack involves an impacted node trying to attract network traffic by propagating:", o:["Legitimate routing updates","Bogus routing updates","Encrypted data packets","Firewall rules"], a:1},
+  {topic:"Routing Attacks", q:"Selective Forwarding Attack involves an attacker:", o:["Creating fake network identities","Selectively forwarding or dropping packets to disrupt communication","Establishing wormhole connections","Physically stealing devices"], a:1},
+  {topic:"Routing Attacks", q:"A Sybil Attack involves:", o:["Packet sniffing","Creating multiple fake identities or nodes to gain control","Injecting bogus routing updates","Establishing wormholes"], a:1},
+  {topic:"Routing Attacks", q:"A Blackhole Attack involves the attacker pretending to have the ___ path to the destination.", o:["Longest","Most secure","Shortest","Encrypted"], a:2},
+  {topic:"Routing Attacks", q:"A Wormhole is an out-of-band connection between two nodes using:", o:["Satellite links","Cellular networks","Wired or wireless links","Bluetooth only"], a:2},
+  {topic:"Routing Attacks", q:"RPL stands for:", o:["Remote Protocol Layer","Routing Protocol for Low-Power and Lossy Networks","Reliable Packet Listener","Radio Packet Link"], a:1},
+  {topic:"Routing Attacks", q:"Which technique is used for detecting routing attacks?", o:["Firewall blocking","Intrusion Detection Systems (IDS)","Packet encryption","Device rebooting"], a:1},
+
+  // ── IoT GATEWAYS ──
+  {topic:"IoT Gateways", q:"An IoT Gateway acts as a medium between the cloud and:", o:["Only sensors","Controllers, sensors, and smart devices","Only applications","Only processors"], a:1},
+  {topic:"IoT Gateways", q:"With IoT gateways, it is possible to establish:", o:["Only cloud-to-cloud communication","Device-to-device or device-to-cloud communication","Only user-to-cloud communication","Only device-to-sensor communication"], a:1},
+  {topic:"IoT Gateways", q:"Early IoT gateways only sent traffic from IoT device to cloud. Modern gateways handle:", o:["Only outbound traffic","Only inbound traffic","Both inbound and outbound traffic","Only encrypted traffic"], a:2},
+  {topic:"IoT Gateways", q:"Some IoT gateways preprocess data locally at the ___ before sending to cloud.", o:["Core network","Cloud","Edge","Data center"], a:2},
+  {topic:"IoT Gateways", q:"Which is NOT listed as a key functionality of an IoT Gateway?", o:["Data aggregation","Verifying protocols","Device diagnostics","Managing user passwords"], a:3},
+  {topic:"IoT Gateways", q:"IoT gateways should have integrated security functions such as tamper detection, encryption, and:", o:["NFC communication","Hardware random number generation","Zigbee support","Satellite backup"], a:1},
+  {topic:"IoT Gateways", q:"To improve IoT gateway security, organizations should use a ___ network for IoT gateways and devices.", o:["Public","Shared","Separate","Wireless-only"], a:2},
+
+  // ── AUTHORIZATION ──
+  {topic:"Authorization", q:"OAuth stands for:", o:["Open Application Token Handler","Open Authorization","Object Authentication Framework","Operational Access Token"], a:1},
+  {topic:"Authorization", q:"OAuth 2.0 allows a third party to access a resource WITHOUT giving:", o:["Access tokens","Public keys","Unencrypted credentials","Refresh tokens"], a:2},
+  {topic:"Authorization", q:"In OAuth 2.0, the Resource Owner is:", o:["The server hosting protected resources","The app making requests","The entity capable of granting access to a protected resource","The authorization server"], a:2},
+  {topic:"Authorization", q:"In OAuth 2.0, the Resource Server is:", o:["The authorization server","The server hosting protected resources","The client application","The resource owner"], a:1},
+  {topic:"Authorization", q:"In OAuth 2.0, the Client is:", o:["The resource owner","The authorization server","The application making protected resource requests on behalf of resource owner","The service registry"], a:2},
+  {topic:"Authorization", q:"In the healthcare-Facebook OAuth example, the Authorization Server would be:", o:["The healthcare sensor","The user's smartphone","The Facebook authorization server","The Facebook data center"], a:2},
+
+  // ── LIGHTWEIGHT CRYPTOGRAPHY ──
+  {topic:"Lightweight Cryptography", q:"Why are conventional cryptographic algorithms unsuitable for IoT?", o:["They are too expensive to license","They cannot run efficiently on resource-constrained devices","They don't support wireless protocols","They require internet access"], a:1},
+  {topic:"Lightweight Cryptography", q:"Algorithms using the same key for encryption and decryption are called:", o:["Asymmetric algorithms","Hash functions","Symmetric algorithms","Public key algorithms"], a:2},
+  {topic:"Lightweight Cryptography", q:"Algorithms using different keys (private and public) are called:", o:["Symmetric algorithms","Stream ciphers","Hash functions","Asymmetric algorithms"], a:3},
+  {topic:"Lightweight Cryptography", q:"Any LWC algorithm must satisfy four conditions. Which of these is NOT one of them?", o:["Confidentiality","Scalability","Integrity","Non-repudiation"], a:1},
+  {topic:"Lightweight Cryptography", q:"The downside of symmetric algorithms is:", o:["Usage of large keys","Key distribution","Slow decryption","Lack of confidentiality"], a:1},
+  {topic:"Lightweight Cryptography", q:"A block cipher processes plaintext as:", o:["Individual bits","Fixed-size blocks","Variable length streams","Random bytes"], a:1},
+  {topic:"Lightweight Cryptography", q:"A stream cipher takes plaintext as bits and performs operations on bits. It uses only:", o:["Diffusion operations","Both confusion and diffusion","Confusion operations","Permutation tables"], a:2},
+  {topic:"Lightweight Cryptography", q:"A hash function generates a fixed size output and is a ___ function.", o:["Two-way","Reversible","One-way","Symmetric"], a:2},
+  {topic:"Lightweight Cryptography", q:"The confusion operation in block ciphers removes dependencies between the ___ and ciphertext.", o:["Plaintext","Key","Block size","Algorithm"], a:1},
+  {topic:"Lightweight Cryptography", q:"SPN stands for:", o:["Secure Protocol Network","Substitution-Permutation Network","Stream Processing Node","Standard Permutation Notation"], a:1},
+  {topic:"Lightweight Cryptography", q:"ARX structure uses which three operations?", o:["Addition, Rotation, XOR","Authentication, Routing, XOR","Addition, RSA, XOR","AES, Rotation, XOR"], a:0},
+  {topic:"Lightweight Cryptography", q:"TEA stands for:", o:["Transport Encryption Algorithm","Tiny Encryption Algorithm","Token Exchange Algorithm","Transfer Encoding Architecture"], a:1},
+  {topic:"Lightweight Cryptography", q:"TEA uses a ___ bit key.", o:["64","128","256","512"], a:1},
+  {topic:"Lightweight Cryptography", q:"TEA uses very simple operations making it ideal for:", o:["High-performance servers","Small objects and wireless sensors","Cloud computing","Mainframe systems"], a:1},
+  {topic:"Lightweight Cryptography", q:"SEA requires ___ bytes of ROM.", o:["1350","2800","4096","512"], a:1},
+  {topic:"Lightweight Cryptography", q:"PRESENT is based on which structure?", o:["Feistel Network","ARX","SPN (Substitution-Permutation Network)","NLFSR"], a:2},
+  {topic:"Lightweight Cryptography", q:"PRESENT operates on ___ bit blocks.", o:["32","64","128","256"], a:1},
+  {topic:"Lightweight Cryptography", q:"PRESENT supports key sizes of:", o:["64 or 128 bits","80 or 128 bits","128 or 256 bits","32 or 64 bits"], a:1},
+  {topic:"Lightweight Cryptography", q:"HIGHT stands for:", o:["High Integrity Generalized Hash Technology","HIGh security and lightweigHT","Hardware Integrated Gateway Hash Tool","High-speed Intelligent Gateway Hash Transfer"], a:1},
+  {topic:"Lightweight Cryptography", q:"HIGHT uses a block size of ___ bits and 128-bit keys.", o:["32","64","128","256"], a:1},
+  {topic:"Lightweight Cryptography", q:"RSA asymmetric cryptography requires keys of at least:", o:["256 bits","512 bits","1024 bits","2048 bits"], a:2},
+  {topic:"Lightweight Cryptography", q:"ECC stands for:", o:["Efficient Computation Circuit","Elliptic Curve Cryptography","Embedded Communication Control","Event-based Cipher Construction"], a:1},
+  {topic:"Lightweight Cryptography", q:"ECC can reach the same security level as RSA with:", o:["Longer keys","Same size keys","Much shorter keys","Double the keys"], a:2},
+  {topic:"Lightweight Cryptography", q:"IPSec uses the concept of a Security Association (SA) which is the set of algorithms used to encrypt and authenticate in:", o:["Both directions","One direction","Random direction","Only decryption"], a:1},
+  {topic:"Lightweight Cryptography", q:"IKE uses asymmetric cryptography which is computationally heavy for:", o:["High-performance servers","Resource-constrained devices","Cloud platforms","Mainframes"], a:1},
+  {topic:"Lightweight Cryptography", q:"CoAP proposes to use ___ protocol to provide end-to-end security.", o:["TLS","IPSec","DTLS","AES"], a:2},
+  {topic:"Lightweight Cryptography", q:"DTLS provides security on top of:", o:["TCP","HTTP","UDP","MQTT"], a:2},
+  {topic:"Lightweight Cryptography", q:"6LoWPAN provides ___ mechanisms to reduce the size of upper layer headers.", o:["Encryption","Header compression","Routing","Fragmentation"], a:1},
+];
+
+let mode = 'learn';
+let questions = [];
+let currentIndex = 0;
+let answers = {}; // index -> chosen option index
+let correctSet = new Set();
+let wrongSet = new Set();
+let answered = {}; // for current session, index -> bool (answered correctly?)
+let rapidStopped = false;
+
+document.getElementById('totalQCount').textContent = ALL_QUESTIONS.length;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startMode(m) {
+  mode = m;
+  questions = shuffle(ALL_QUESTIONS);
+  currentIndex = 0;
+  answers = {};
+  correctSet = new Set();
+  wrongSet = new Set();
+  answered = {};
+  rapidStopped = false;
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentIndex];
+  const total = questions.length;
+
+  // header
+  document.getElementById('modeBadge').textContent = mode === 'learn' ? '📖 Learning Mode' : '⚡ Rapid Fire';
+  document.getElementById('modeBadge').className = 'quiz-mode-badge ' + (mode === 'learn' ? 'badge-learn' : 'badge-rapid');
+  document.getElementById('qCounter').textContent = `${currentIndex + 1} / ${total}`;
+  document.getElementById('progressFill').style.width = ((currentIndex + 1) / total * 100) + '%';
+  document.getElementById('progressFill').className = 'progress-bar-fill ' + (mode === 'learn' ? 'fill-learn' : 'fill-rapid');
+
+  // rapid dots (show last 20)
+  const rdiv = document.getElementById('rapidStatus');
+  if (mode === 'rapid') {
+    const start = Math.max(0, currentIndex - 19);
+    let html = '';
+    for (let i = start; i <= currentIndex; i++) {
+      let cls = 'dot';
+      if (correctSet.has(i)) cls += ' correct';
+      else if (wrongSet.has(i)) cls += ' wrong';
+      html += `<div class="${cls}"></div>`;
+    }
+    rdiv.innerHTML = html;
+    rdiv.style.display = 'flex';
+  } else {
+    rdiv.style.display = 'none';
+  }
+
+  // stop msg
+  const stopMsg = document.getElementById('rapidStopMsg');
+  stopMsg.className = 'rapid-stop-msg' + (rapidStopped ? ' show' : '');
+
+  // topic & number
+  document.getElementById('qTopic').textContent = q.topic;
+  document.getElementById('qNum').textContent = `Q${currentIndex + 1}`;
+  document.getElementById('qText').textContent = q.q;
+
+  // options
+  const grid = document.getElementById('optionsGrid');
+  const labels = ['A','B','C','D'];
+  const userAns = answers[currentIndex];
+  const hasAnswered = userAns !== undefined;
+
+  grid.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    let labelClass = '';
+    if (hasAnswered) {
+      if (i === q.a) { btn.classList.add('correct'); }
+      else if (i === userAns && i !== q.a) { btn.classList.add('wrong'); }
+      else { btn.classList.add('disabled'); }
+      btn.disabled = true;
+    }
+    btn.innerHTML = `<span class="option-label">${labels[i]}</span><span>${opt}</span>`;
+    if (!hasAnswered) {
+      btn.addEventListener('click', () => selectAnswer(i));
+    }
+    grid.appendChild(btn);
+  });
+
+  // feedback
+  const fb = document.getElementById('feedbackBox');
+  if (hasAnswered) {
+    const isCorrect = userAns === q.a;
+    fb.className = 'feedback-box show ' + (isCorrect ? 'correct' : 'wrong');
+    if (isCorrect) {
+      fb.innerHTML = `<div class="feedback-icon">✅</div><strong>Correct!</strong> The answer is: <strong>${q.o[q.a]}</strong>`;
+    } else {
+      fb.innerHTML = `<div class="feedback-icon">❌</div><strong>Incorrect.</strong> The correct answer is: <strong>${q.o[q.a]}</strong>`;
+    }
+  } else {
+    fb.className = 'feedback-box';
+    fb.innerHTML = '';
+  }
+
+  // nav buttons
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  // Always show prev in rapid; only if not first
+  if (mode === 'rapid') {
+    btnPrev.style.display = currentIndex > 0 ? 'inline-block' : 'none';
+  } else {
+    btnPrev.style.display = 'none'; // learn mode: no prev
+  }
+
+  // Next button
+  if (currentIndex === total - 1 && hasAnswered) {
+    btnNext.textContent = 'Finish 🏁';
+  } else {
+    btnNext.textContent = 'Next →';
+  }
+  btnNext.className = 'btn-nav ' + (mode === 'learn' ? 'btn-next-learn' : 'btn-next-rapid');
+
+  // In learn mode, next is disabled until answered
+  if (mode === 'learn') {
+    btnNext.disabled = !hasAnswered;
+    btnNext.style.opacity = hasAnswered ? '1' : '0.4';
+    btnNext.style.cursor = hasAnswered ? 'pointer' : 'not-allowed';
+  } else {
+    btnNext.disabled = false;
+    btnNext.style.opacity = '1';
+    btnNext.style.cursor = 'pointer';
+  }
+}
+
+function selectAnswer(optionIndex) {
+  const q = questions[currentIndex];
+  answers[currentIndex] = optionIndex;
+  const isCorrect = optionIndex === q.a;
+
+  if (isCorrect) {
+    correctSet.add(currentIndex);
+    wrongSet.delete(currentIndex);
+    rapidStopped = false;
+  } else {
+    wrongSet.add(currentIndex);
+    correctSet.delete(currentIndex);
+    if (mode === 'rapid') { rapidStopped = true; }
+  }
+
+  renderQuestion();
+
+  // rapid fire auto-advance on correct
+  if (mode === 'rapid' && isCorrect) {
+    setTimeout(() => {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        rapidStopped = false;
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }, 700);
+  }
+}
+
+function navigate(dir) {
+  const total = questions.length;
+  if (dir === 1) {
+    // next
+    if (mode === 'learn') {
+      // only if answered
+      if (answers[currentIndex] === undefined) return;
+    }
+    if (currentIndex < total - 1) {
+      currentIndex++;
+      rapidStopped = false;
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  } else {
+    // prev (rapid only)
+    if (currentIndex > 0) {
+      currentIndex--;
+      rapidStopped = false;
+      renderQuestion();
+    }
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  const total = questions.length;
+  const correct = correctSet.size;
+  const wrong = wrongSet.size;
+  const pct = Math.round(correct / total * 100);
+
+  document.getElementById('scorePct').textContent = pct + '%';
+  document.getElementById('scoreRing').style.setProperty('--pct', (pct * 3.6) + 'deg');
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('wrongCount').textContent = wrong;
+  document.getElementById('totalDone').textContent = total;
+
+  const badge = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : pct >= 40 ? '📚' : '💪';
+  const title = pct >= 80 ? 'Excellent Work!' : pct >= 60 ? 'Good Job!' : pct >= 40 ? 'Keep Studying!' : 'Keep Practising!';
+  const sub = `You scored ${correct} out of ${total} questions in ${mode === 'learn' ? 'Learning' : 'Rapid Fire'} mode.`;
+
+  document.getElementById('resultBadge').textContent = badge;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+
+  const btnRetake = document.getElementById('btnRetakeWrong');
+  btnRetake.disabled = wrongSet.size === 0;
+
+  // wrong answers list
+  const wl = document.getElementById('wrongList');
+  if (wrongSet.size > 0) {
+    let html = '<div class="wrong-list-title">❌ Questions You Missed</div>';
+    [...wrongSet].forEach(i => {
+      const q = questions[i];
+      html += `<div class="wrong-item"><div class="wrong-q">Q${i+1}: ${q.q}</div><div class="wrong-ans">✓ Correct Answer: ${q.o[q.a]}</div></div>`;
+    });
+    wl.innerHTML = html;
+  } else {
+    wl.innerHTML = '<div style="color:var(--green);font-weight:600;margin-top:20px;">🎉 Perfect score! No wrong answers!</div>';
+  }
+}
+
+function retakeWrong() {
+  const wrongIndices = [...wrongSet];
+  questions = wrongIndices.map(i => questions[i]);
+  questions = shuffle(questions);
+  currentIndex = 0;
+  answers = {};
+  correctSet = new Set();
+  wrongSet = new Set();
+  answered = {};
+  rapidStopped = false;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function restart() {
+  startMode(mode);
+}
+
+function goHome() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+}
+</script>
+</body>
+</html>
