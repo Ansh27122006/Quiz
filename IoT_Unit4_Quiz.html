@@ -1,0 +1,2764 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Arduino & Programming – Unit 4 Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0d1117;
+        --card: #161b22;
+        --card2: #1c2333;
+        --accent: #f97316;
+        --accent2: #3b82f6;
+        --green: #22c55e;
+        --red: #ef4444;
+        --yellow: #eab308;
+        --text: #e6edf3;
+        --muted: #7d8590;
+        --border: #21262d;
+        --border2: #30363d;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Outfit", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            ellipse at 10% 10%,
+            rgba(249, 115, 22, 0.07) 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at 90% 90%,
+            rgba(59, 130, 246, 0.07) 0%,
+            transparent 55%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── GRID NOISE TEXTURE ── */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+          );
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ====== HOME ====== */
+      #home {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+      }
+      .chip {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        border: 1px solid rgba(249, 115, 22, 0.35);
+        padding: 7px 18px;
+        border-radius: 4px;
+        margin-bottom: 32px;
+        display: inline-block;
+        background: rgba(249, 115, 22, 0.05);
+      }
+      h1.hero {
+        font-size: clamp(36px, 7vw, 76px);
+        font-weight: 800;
+        line-height: 1.05;
+        margin-bottom: 18px;
+      }
+      .hero span.o {
+        color: var(--accent);
+      }
+      .hero span.b {
+        color: var(--accent2);
+      }
+      .hero-sub {
+        font-size: 16px;
+        color: var(--muted);
+        max-width: 500px;
+        line-height: 1.75;
+        margin-bottom: 48px;
+        font-weight: 300;
+      }
+      .stats-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 56px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .stat-pill {
+        background: var(--card);
+        border: 1px solid var(--border2);
+        padding: 14px 26px;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 30px;
+        font-weight: 800;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .stat-num.o {
+        color: var(--accent);
+      }
+      .stat-num.b {
+        color: var(--accent2);
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 3px;
+      }
+
+      .mode-cards {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 720px;
+      }
+      .mode-card {
+        background: var(--card);
+        border: 2px solid var(--border2);
+        border-radius: 16px;
+        padding: 36px 30px;
+        flex: 1;
+        min-width: 270px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 0 0 14px 14px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .mode-card.learn::after {
+        background: var(--accent);
+      }
+      .mode-card.rapid::after {
+        background: var(--accent2);
+      }
+      .mode-card:hover {
+        transform: translateY(-5px);
+      }
+      .mode-card.learn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 20px 60px rgba(249, 115, 22, 0.12);
+      }
+      .mode-card.learn:hover::after {
+        opacity: 1;
+      }
+      .mode-card.rapid:hover {
+        border-color: var(--accent2);
+        box-shadow: 0 20px 60px rgba(59, 130, 246, 0.12);
+      }
+      .mode-card.rapid:hover::after {
+        opacity: 1;
+      }
+      .mode-icon {
+        font-size: 36px;
+        margin-bottom: 18px;
+      }
+      .mode-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .mode-card.learn .mode-title {
+        color: var(--accent);
+      }
+      .mode-card.rapid .mode-title {
+        color: var(--accent2);
+      }
+      .mode-desc {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+      .mode-features {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .feat {
+        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        padding: 4px 10px;
+        border-radius: 4px;
+        display: inline-block;
+        width: fit-content;
+      }
+      .feat.o {
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--accent);
+      }
+      .feat.b {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent2);
+      }
+
+      /* ====== QUIZ ====== */
+      #quiz {
+        display: none;
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .quiz-header {
+        max-width: 820px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .qh-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .mode-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+      }
+      .pill-learn {
+        background: rgba(249, 115, 22, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(249, 115, 22, 0.3);
+      }
+      .pill-rapid {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--accent2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .q-counter-text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .btn-home {
+        background: none;
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.2s;
+      }
+      .btn-home:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .prog-wrap {
+        max-width: 820px;
+        margin: 0 auto 24px;
+      }
+      .prog-bg {
+        background: var(--border);
+        height: 3px;
+        border-radius: 2px;
+      }
+      .prog-fill {
+        height: 3px;
+        border-radius: 2px;
+        transition: width 0.5s ease;
+      }
+      .pf-learn {
+        background: linear-gradient(90deg, var(--accent), #fb923c);
+      }
+      .pf-rapid {
+        background: linear-gradient(90deg, var(--accent2), #60a5fa);
+      }
+
+      /* rapid dots */
+      .rapid-dots {
+        max-width: 820px;
+        margin: 0 auto 14px;
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--border2);
+        transition: all 0.3s;
+      }
+      .dot.c {
+        background: var(--green);
+        box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+      }
+      .dot.w {
+        background: var(--red);
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+      }
+      .dot.cur {
+        background: var(--accent);
+        box-shadow: 0 0 8px rgba(249, 115, 22, 0.6);
+      }
+
+      .stop-banner {
+        max-width: 820px;
+        margin: 0 auto 14px;
+        padding: 12px 18px;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        color: #fca5a5;
+        font-size: 13px;
+        display: none;
+      }
+      .stop-banner.show {
+        display: block;
+      }
+
+      .q-card {
+        max-width: 820px;
+        margin: 0 auto;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-radius: 16px;
+        padding: 38px;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+      .q-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+      }
+      .q-card.learn-card::before {
+        background: linear-gradient(90deg, var(--accent), transparent);
+      }
+      .q-card.rapid-card::before {
+        background: linear-gradient(90deg, var(--accent2), transparent);
+      }
+
+      .q-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .topic-badge {
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: rgba(249, 115, 22, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(249, 115, 22, 0.2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .topic-badge.b {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent2);
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+      .q-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .q-text {
+        font-size: clamp(16px, 2.3vw, 20px);
+        font-weight: 600;
+        line-height: 1.65;
+        margin-bottom: 28px;
+        color: #fff;
+      }
+      .q-text code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85em;
+        background: var(--card2);
+        padding: 2px 7px;
+        border-radius: 4px;
+        color: var(--accent);
+        border: 1px solid var(--border2);
+      }
+
+      .opts {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .opt-btn {
+        background: var(--card2);
+        border: 1.5px solid var(--border2);
+        border-radius: 10px;
+        padding: 15px 18px;
+        cursor: pointer;
+        text-align: left;
+        font-family: "Outfit", sans-serif;
+        font-size: 15px;
+        color: var(--text);
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: #1f2937;
+        transform: translateX(5px);
+      }
+      .opt-lbl {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        flex-shrink: 0;
+        transition: all 0.2s;
+        border: 1px solid var(--border2);
+      }
+      .opt-btn.correct {
+        border-color: var(--green);
+        background: rgba(34, 197, 94, 0.07);
+      }
+      .opt-btn.correct .opt-lbl {
+        background: var(--green);
+        color: #000;
+        border-color: var(--green);
+      }
+      .opt-btn.wrong {
+        border-color: var(--red);
+        background: rgba(239, 68, 68, 0.07);
+      }
+      .opt-btn.wrong .opt-lbl {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+      }
+      .opt-btn.dim {
+        opacity: 0.45;
+        cursor: default;
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+
+      .feedback {
+        margin-top: 18px;
+        padding: 16px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.7;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.c {
+        background: rgba(34, 197, 94, 0.09);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #86efac;
+      }
+      .feedback.w {
+        background: rgba(239, 68, 68, 0.09);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+      }
+      .feedback-ico {
+        font-size: 18px;
+        margin-bottom: 6px;
+      }
+
+      .action-row {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 28px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn-nav {
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.2s;
+        border: none;
+      }
+      .btn-prev {
+        background: var(--card2);
+        border: 1px solid var(--border2);
+        color: var(--muted);
+      }
+      .btn-prev:hover {
+        border-color: var(--muted);
+        color: var(--text);
+      }
+      .btn-next-l {
+        background: var(--accent);
+        color: #000;
+        font-weight: 700;
+      }
+      .btn-next-r {
+        background: var(--accent2);
+        color: #fff;
+        font-weight: 700;
+      }
+      .btn-nav:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .btn-nav:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* ====== RESULTS ====== */
+      #results {
+        display: none;
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+      .res-inner {
+        max-width: 680px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .res-badge {
+        font-size: 80px;
+        margin-bottom: 24px;
+      }
+      .res-title {
+        font-size: clamp(28px, 5vw, 52px);
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .res-sub {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 44px;
+        font-weight: 300;
+      }
+
+      .ring-wrap {
+        margin: 0 auto 44px;
+        width: 170px;
+        height: 170px;
+        position: relative;
+      }
+      .ring-svg {
+        transform: rotate(-90deg);
+      }
+      .ring-bg {
+        fill: none;
+        stroke: var(--border2);
+        stroke-width: 12;
+      }
+      .ring-fill {
+        fill: none;
+        stroke-width: 12;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.2s ease;
+      }
+      .ring-learn {
+        stroke: var(--accent);
+      }
+      .ring-rapid {
+        stroke: var(--accent2);
+      }
+      .ring-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .ring-pct {
+        font-size: 38px;
+        font-weight: 800;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .ring-pct.o {
+        color: var(--accent);
+      }
+      .ring-pct.b {
+        color: var(--accent2);
+      }
+      .ring-tag {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .res-stats {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .rs {
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 20px 24px;
+      }
+      .rs-num {
+        font-size: 34px;
+        font-weight: 800;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .rs.g .rs-num {
+        color: var(--green);
+      }
+      .rs.r .rs-num {
+        color: var(--red);
+      }
+      .rs.y .rs-num {
+        color: var(--yellow);
+      }
+      .rs-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 3px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .res-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+      .btn-res {
+        padding: 13px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Outfit", sans-serif;
+        transition: all 0.2s;
+        border: none;
+      }
+      .btn-res:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      }
+      .btn-res:disabled {
+        opacity: 0.4;
+        cursor: default;
+        transform: none;
+      }
+      .btn-retake {
+        background: var(--red);
+        color: #fff;
+      }
+      .btn-restart-l {
+        background: var(--accent);
+        color: #000;
+      }
+      .btn-restart-r {
+        background: var(--accent2);
+        color: #fff;
+      }
+      .btn-home2 {
+        background: var(--card);
+        border: 1px solid var(--border2);
+        color: var(--text);
+      }
+
+      .wrong-section {
+        text-align: left;
+      }
+      .ws-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--red);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+      }
+      .wi {
+        background: var(--card);
+        border: 1px solid rgba(239, 68, 68, 0.18);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 8px;
+      }
+      .wi-q {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .wi-a {
+        font-size: 12px;
+        color: var(--green);
+      }
+      .wi-topic {
+        font-size: 10px;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        margin-bottom: 4px;
+      }
+
+      @media (max-width: 600px) {
+        .q-card {
+          padding: 22px 16px;
+        }
+        .mode-card {
+          min-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ====== HOME ====== -->
+    <div id="home">
+      <div class="chip">⚡ Arduino &amp; Programming — Unit 4</div>
+      <h1 class="hero">
+        Master<br /><span class="o">Arduino</span> &amp;<br /><span class="b"
+          >Programming</span
+        >
+      </h1>
+      <p class="hero-sub">
+        Full PPT coverage — from board architecture to sensors, motors, relays
+        &amp; real projects.
+      </p>
+      <div class="stats-row">
+        <div class="stat-pill">
+          <div
+            class="stat-num o"
+            id="totalQCount">
+            0
+          </div>
+          <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num b">10</div>
+          <div class="stat-label">Topics</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num o">4</div>
+          <div class="stat-label">Options each</div>
+        </div>
+      </div>
+      <div class="mode-cards">
+        <div
+          class="mode-card learn"
+          onclick="startMode('learn')">
+          <div class="mode-icon">📖</div>
+          <div class="mode-title">Learning Mode</div>
+          <p class="mode-desc">
+            Pick an answer and get instant feedback. Move at your own pace using
+            the Next button.
+          </p>
+          <div class="mode-features">
+            <span class="feat o">✓ Instant feedback</span>
+            <span class="feat o">✓ Self-paced</span>
+            <span class="feat o">✓ Retake wrong answers</span>
+          </div>
+        </div>
+        <div
+          class="mode-card rapid"
+          onclick="startMode('rapid')">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-title">Rapid Fire Mode</div>
+          <p class="mode-desc">
+            Auto-advance on correct. Stop on wrong — fix it manually then
+            continue. Prev/Next available.
+          </p>
+          <div class="mode-features">
+            <span class="feat b">✓ Auto-advance on correct</span>
+            <span class="feat b">✓ Prev &amp; Next buttons</span>
+            <span class="feat b">✓ Retake wrong answers</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== QUIZ ====== -->
+    <div id="quiz">
+      <div class="quiz-header">
+        <div class="qh-left">
+          <span
+            class="mode-pill"
+            id="modePill"></span>
+          <span
+            class="q-counter-text"
+            id="qCounterTxt"></span>
+        </div>
+        <button
+          class="btn-home"
+          onclick="goHome()">
+          ⌂ Home
+        </button>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-bg">
+          <div
+            class="prog-fill"
+            id="progFill"
+            style="width: 0%"></div>
+        </div>
+      </div>
+      <div
+        class="rapid-dots"
+        id="rapidDots"></div>
+      <div
+        class="stop-banner"
+        id="stopBanner">
+        ❌ Wrong answer! Review the correct answer, then click
+        <strong>Next</strong> to continue.
+      </div>
+      <div
+        class="q-card"
+        id="qCard">
+        <div class="q-meta">
+          <span
+            class="topic-badge"
+            id="qTopic"></span>
+          <span
+            class="q-num"
+            id="qNum"></span>
+        </div>
+        <div
+          class="q-text"
+          id="qText"></div>
+        <div
+          class="opts"
+          id="optsGrid"></div>
+        <div
+          class="feedback"
+          id="feedbackBox"></div>
+        <div class="action-row">
+          <button
+            class="btn-nav btn-prev"
+            id="btnPrev"
+            onclick="nav(-1)"
+            style="display: none">
+            ← Prev
+          </button>
+          <button
+            class="btn-nav"
+            id="btnNext"
+            onclick="nav(1)">
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== RESULTS ====== -->
+    <div id="results">
+      <div class="res-inner">
+        <div
+          class="res-badge"
+          id="resBadge">
+          🎉
+        </div>
+        <h2
+          class="res-title"
+          id="resTitle">
+          Quiz Complete!
+        </h2>
+        <p
+          class="res-sub"
+          id="resSub"></p>
+        <div class="ring-wrap">
+          <svg
+            class="ring-svg"
+            width="170"
+            height="170"
+            viewBox="0 0 170 170">
+            <circle
+              class="ring-bg"
+              cx="85"
+              cy="85"
+              r="72" />
+            <circle
+              class="ring-fill"
+              id="ringFill"
+              cx="85"
+              cy="85"
+              r="72"
+              stroke-dasharray="452.4"
+              stroke-dashoffset="452.4" />
+          </svg>
+          <div class="ring-label">
+            <span
+              class="ring-pct"
+              id="ringPct"
+              >0%</span
+            >
+            <span class="ring-tag">Score</span>
+          </div>
+        </div>
+        <div class="res-stats">
+          <div class="rs g">
+            <div
+              class="rs-num"
+              id="cCount">
+              0
+            </div>
+            <div class="rs-lbl">Correct</div>
+          </div>
+          <div class="rs r">
+            <div
+              class="rs-num"
+              id="wCount">
+              0
+            </div>
+            <div class="rs-lbl">Wrong</div>
+          </div>
+          <div class="rs y">
+            <div
+              class="rs-num"
+              id="tCount">
+              0
+            </div>
+            <div class="rs-lbl">Total</div>
+          </div>
+        </div>
+        <div class="res-actions">
+          <button
+            class="btn-res btn-retake"
+            id="btnRetake"
+            onclick="retakeWrong()">
+            Retake Wrong Only
+          </button>
+          <button
+            class="btn-res"
+            id="btnRestart"
+            onclick="restart()">
+            Restart All
+          </button>
+          <button
+            class="btn-res btn-home2"
+            onclick="goHome()">
+            Home
+          </button>
+        </div>
+        <div
+          class="wrong-section"
+          id="wrongSection"></div>
+      </div>
+    </div>
+
+    <script>
+      const ALL_Q = [
+        // ═══════════════════════════════════════════════
+        // 1. INTRODUCTION TO ARDUINO
+        // ═══════════════════════════════════════════════
+        {
+          t: "Introduction to Arduino",
+          q: "What is Arduino?",
+          o: [
+            "A type of programming language",
+            "A microcontroller board with on-board power supply, USB port, and microcontroller chip",
+            "A cloud computing platform",
+            "A wireless sensor network",
+          ],
+          a: 1,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "Arduino simplifies the process of creating control systems by providing a standard board that can be programmed WITHOUT the need for:",
+          o: [
+            "A computer",
+            "Sophisticated PCB design and implementation",
+            "A USB cable",
+            "Software installation",
+          ],
+          a: 1,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "In 2013, how many official Arduino boards were sold?",
+          o: ["70,000", "700,000", "7,000,000", "7,000"],
+          a: 1,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "By 2016, how many versions of the Arduino board had been commercially produced?",
+          o: ["7", "12", "17", "20"],
+          a: 2,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "Physical Computing involves the design of interactive objects that communicate with humans using sensors and actuators controlled by a behaviour implemented as:",
+          o: [
+            "Python scripts",
+            "Hardware circuits",
+            "Software running inside a microcontroller",
+            "Cloud-based APIs",
+          ],
+          a: 2,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "Arduino programs are written in a language derived from which base language?",
+          o: ["Python", "Java", "C/C++", "Assembly"],
+          a: 2,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "In Arduino programming, what are programs called?",
+          o: ["Projects", "Scripts", "Sketches", "Modules"],
+          a: 2,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "The Arduino programming language offers simple access to:",
+          o: ["Cloud services", "I/O devices", "Databases", "Network sockets"],
+          a: 1,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "Which statement about the Arduino language is TRUE?",
+          o: [
+            "It is a proprietary closed-source language",
+            "It is an open source computer programming language derived from C/C++",
+            "It only supports integer data types",
+            "It requires a special compiler not available publicly",
+          ],
+          a: 1,
+        },
+        {
+          t: "Introduction to Arduino",
+          q: "Arduino communication devices include which of the following?",
+          o: [
+            "Only Bluetooth and Wi-Fi",
+            "WiFi, Infrared, Bluetooth, Ethernet, and Zig-Bee",
+            "Only wired Ethernet",
+            "Only cellular modems",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 2. TYPES OF ARDUINO BOARDS
+        // ═══════════════════════════════════════════════
+        {
+          t: "Types of Arduino",
+          q: "Which Arduino board is the current official reference board and most used/documented?",
+          o: ["Arduino Mega", "Arduino Nano", "Arduino UNO", "Arduino LilyPad"],
+          a: 2,
+        },
+        {
+          t: "Types of Arduino",
+          q: "The Arduino Mega is designed for more complex projects and uses which microcontroller?",
+          o: ["ATmega328", "ATmega2560", "ATmega32U4", "ATmega168"],
+          a: 1,
+        },
+        {
+          t: "Types of Arduino",
+          q: "How many digital I/O pins and analog inputs does the Arduino Mega have?",
+          o: [
+            "14 digital, 6 analog",
+            "32 digital, 8 analog",
+            "54 digital I/O pins, 16 analog inputs",
+            "40 digital, 12 analog",
+          ],
+          a: 2,
+        },
+        {
+          t: "Types of Arduino",
+          q: "The Arduino LilyPad is designed for which specific application?",
+          o: [
+            "Industrial automation",
+            "E-textiles and wearables projects",
+            "Smart city systems",
+            "High-speed data acquisition",
+          ],
+          a: 1,
+        },
+        {
+          t: "Types of Arduino",
+          q: "Which feature makes the Arduino LilyPad unique compared to other boards?",
+          o: [
+            "It has more RAM",
+            "It can be sewn to fabric and to power supplies",
+            "It has built-in Wi-Fi",
+            "It has the fastest processor",
+          ],
+          a: 1,
+        },
+        {
+          t: "Types of Arduino",
+          q: "The Arduino Nano is best described as:",
+          o: [
+            "The most powerful Arduino board",
+            "Designed for industrial use only",
+            "A compact board similar to the UNO",
+            "A board designed for textiles",
+          ],
+          a: 2,
+        },
+        {
+          t: "Types of Arduino",
+          q: "Which Arduino board was used in the Glucose Monitoring Device project example?",
+          o: ["Arduino Mega", "Arduino UNO", "Arduino Nano", "Arduino LilyPad"],
+          a: 2,
+        },
+        {
+          t: "Types of Arduino",
+          q: "Which Arduino board was used in the Smart Fitness Tracker project?",
+          o: [
+            "Arduino Mega",
+            "Arduino UNO",
+            "Arduino Nano",
+            "Arduino Pro Mini",
+          ],
+          a: 3,
+        },
+        {
+          t: "Types of Arduino",
+          q: "For the Smart Waste Management project, which Arduino board was used to process data?",
+          o: ["Arduino Nano", "Arduino Mega", "Arduino UNO", "Arduino Mini"],
+          a: 1,
+        },
+        {
+          t: "Types of Arduino",
+          q: "Which of these Arduino boards is specifically described as being low-power?",
+          o: [
+            "Arduino Mega",
+            "Arduino UNO",
+            "Arduino Pro Mini",
+            "Arduino LilyPad",
+          ],
+          a: 2,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 3. ARDUINO UNO ARCHITECTURE & PIN DIAGRAM
+        // ═══════════════════════════════════════════════
+        {
+          t: "Arduino UNO Architecture",
+          q: "The Arduino UNO uses which microcontroller chip?",
+          o: ["ATmega2560", "ATmega32U4", "ATmega328", "ATmega168"],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "How many digital I/O pins does the Arduino UNO have?",
+          o: ["6", "10", "12", "14"],
+          a: 3,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "Which pins on the Arduino UNO are PWM-capable?",
+          o: [
+            "Pins 1, 2, 3, 4, 5, 6",
+            "Pins 3, 5, 6, 9, 10, and 11",
+            "Pins 2, 4, 6, 8, 10, 12",
+            "Pins 0, 1, 2, 3, 4, 5",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "How many analog input pins does the Arduino UNO have?",
+          o: ["4", "6", "8", "10"],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The analog pins on the Arduino UNO are labelled:",
+          o: ["D0–D5", "P0–P5", "A0–A5", "M0–M5"],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "What does AREF stand for on the Arduino board?",
+          o: [
+            "Alternate Register File",
+            "Analog Reference",
+            "Automatic Reset Function",
+            "Array Register Format",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "What is the function of the AREF pin?",
+          o: [
+            "To reset the board",
+            "To supply 3.3V power",
+            "To set an external reference voltage for analog input",
+            "To transmit serial data",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "What does TX/RX refer to on the Arduino board?",
+          o: [
+            "True/False signal",
+            "Transfer/Receive memory",
+            "Transmit and Receive data indication LEDs",
+            "Timer/Reset controls",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The ATmega Microcontroller is described as the 'brains' of the Arduino because:",
+          o: [
+            "It generates power",
+            "It is the largest component",
+            "Programs are stored and executed here",
+            "It converts analog to digital signals",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "What is the function of the Voltage Regulator on the Arduino board?",
+          o: [
+            "Converts digital signals to analog",
+            "Controls the amount of voltage going into the Arduino board",
+            "Stores program data",
+            "Provides USB communication",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The DC Power Barrel Jack is used for:",
+          o: [
+            "Uploading sketches",
+            "Connecting analog sensors",
+            "Powering the Arduino with a power supply",
+            "Serial communication",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The 3.3V pin on the Arduino supplies:",
+          o: ["5 volts", "3.3 volts", "12 volts", "Variable voltage"],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "Analog Pins on the Arduino can read the signal from an analog sensor and:",
+          o: [
+            "Output PWM signals",
+            "Convert it to digital",
+            "Store it in flash memory",
+            "Send it via Bluetooth",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "Pins marked with the (~) symbol on the Arduino can:",
+          o: [
+            "Only read digital values",
+            "Simulate analog output (PWM)",
+            "Connect to external power supplies",
+            "Only be used as inputs",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The maximum current a digital pin on the Arduino UNO can drive is less than:",
+          o: ["100mA", "200mA", "40mA", "500mA"],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The Arduino UNO's clock speed is:",
+          o: ["8 MHz", "12.5 MHz", "16 MHz", "32 MHz"],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The Arduino UNO has how much Flash program memory?",
+          o: ["16 KBytes", "32 KBytes", "64 KBytes", "128 KBytes"],
+          a: 1,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "How much SRAM does the Arduino UNO (ATmega328) have?",
+          o: ["512 Bytes", "1 KByte", "2 KBytes", "4 KBytes"],
+          a: 2,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "How much of the Arduino UNO's Flash memory is used by the bootloader?",
+          o: ["0.5 KBytes", "1 KByte", "2 KBytes", "4 KBytes"],
+          a: 0,
+        },
+        {
+          t: "Arduino UNO Architecture",
+          q: "The main components of Arduino's general architecture include:",
+          o: [
+            "CPU, GPU, RAM, ROM",
+            "AVR Microcontroller, analog/digital I/O pins, Flash memory, USB port",
+            "Processor, Display, Battery, Antenna",
+            "Router, Switch, Hub, Modem",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 4. PROGRAMMING STRUCTURE
+        // ═══════════════════════════════════════════════
+        {
+          t: "Programming Structure",
+          q: "The Arduino program execution order after power ON is:",
+          o: [
+            "loop() → setup() → Global Variables",
+            "Global Variables → loop() → setup()",
+            "Global Variables → setup() → loop()",
+            "setup() → Global Variables → loop()",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "What happens in the Global Variables section of an Arduino program?",
+          o: [
+            "Pins are configured",
+            "The main program runs",
+            "Variables are declared and initialized",
+            "Serial communication is started",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "The setup() function runs:",
+          o: [
+            "Repeatedly in a loop",
+            "Only once after each power-up or reset",
+            "Every second",
+            "When a button is pressed",
+          ],
+          a: 1,
+        },
+        {
+          t: "Programming Structure",
+          q: "What is the primary purpose of the setup() function?",
+          o: [
+            "To run the main program logic",
+            "To initialize variables, pin modes, and start using libraries",
+            "To read sensor values continuously",
+            "To display output on serial monitor",
+          ],
+          a: 1,
+        },
+        {
+          t: "Programming Structure",
+          q: "The loop() function:",
+          o: [
+            "Runs once and stops",
+            "Only runs when there is input",
+            "Loops consecutively, allowing the program to change and respond as it runs",
+            "Runs 10 times then stops",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "Code in the loop() section is used to:",
+          o: [
+            "Initialize the board",
+            "Store programs permanently",
+            "Actively control the Arduino board",
+            "Set up serial communication only",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "When is the setup() function called?",
+          o: [
+            "Every 1 second",
+            "Every time the loop() ends",
+            "When a sketch starts",
+            "Only when the reset button is pressed",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "What are the TWO mandatory basic functions in every Arduino sketch?",
+          o: [
+            "read() and write()",
+            "begin() and end()",
+            "setup() and loop()",
+            "init() and run()",
+          ],
+          a: 2,
+        },
+        {
+          t: "Programming Structure",
+          q: "Pressing the reset button on the Arduino will:",
+          o: [
+            "Erase the program from memory",
+            "Restart the code from Global Variables and setup()",
+            "Only restart the loop()",
+            "Disconnect the USB connection",
+          ],
+          a: 1,
+        },
+        {
+          t: "Programming Structure",
+          q: "The bare minimum Arduino sketch consists of:",
+          o: [
+            "Only the loop() function",
+            "Only the setup() function",
+            "Both void setup() and void loop() functions",
+            "Global variable declarations only",
+          ],
+          a: 2,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 5. ARDUINO IDE
+        // ═══════════════════════════════════════════════
+        {
+          t: "Arduino IDE",
+          q: "Which component of the Arduino IDE provides syntax highlighting and automatic indentation?",
+          o: ["Compiler", "Serial Monitor", "Text editor", "Toolbar"],
+          a: 2,
+        },
+        {
+          t: "Arduino IDE",
+          q: "The Serial Monitor in the Arduino IDE allows you to read data that Arduino communicates through:",
+          o: ["Bluetooth", "The COM serial port", "Wi-Fi", "The I2C bus"],
+          a: 1,
+        },
+        {
+          t: "Arduino IDE",
+          q: "What is the Serial Monitor primarily useful for?",
+          o: [
+            "Designing circuit diagrams",
+            "Debugging, monitoring data, and sending commands to Arduino",
+            "Writing HTML pages",
+            "Compiling code faster",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino IDE",
+          q: "Common baud rates for the Serial Monitor include:",
+          o: [
+            "100, 200, 400",
+            "9600, 115200",
+            "1000, 2000, 4000",
+            "50, 75, 110",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino IDE",
+          q: "How do you send data from the computer to Arduino using the Serial Monitor?",
+          o: [
+            "By modifying the sketch directly",
+            "By clicking the power button",
+            "By typing text in the input field and clicking 'Send' or pressing Enter",
+            "By uploading a new sketch",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino IDE",
+          q: "Which Serial command initializes serial communication at a specified baud rate?",
+          o: [
+            "Serial.read()",
+            "Serial.print()",
+            "Serial.begin(baudRate)",
+            "Serial.available()",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino IDE",
+          q: "What does Serial.println(data) do differently from Serial.print(data)?",
+          o: [
+            "It sends data faster",
+            "It sends data followed by a newline character",
+            "It encrypts the data",
+            "It stores data in EEPROM",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino IDE",
+          q: "Which Serial command reads incoming data from the serial buffer?",
+          o: [
+            "Serial.available()",
+            "Serial.begin()",
+            "Serial.print()",
+            "Serial.read()",
+          ],
+          a: 3,
+        },
+        {
+          t: "Arduino IDE",
+          q: "Serial.available() checks:",
+          o: [
+            "Whether the serial port is open",
+            "The current baud rate",
+            "How many bytes are available to read from the serial buffer",
+            "If the Arduino is connected to a computer",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino IDE",
+          q: "In the example code shown in the PPT, analogRead(A0) reads from an analog sensor and the value is printed using:",
+          o: [
+            "Serial.write()",
+            "Serial.print() followed by Serial.println()",
+            "Serial.send()",
+            "Serial.output()",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 6. ARDUINO FUNCTIONS
+        // ═══════════════════════════════════════════════
+        {
+          t: "Arduino Functions",
+          q: "The function pinMode(pin, INPUT|OUTPUT) is used to:",
+          o: [
+            "Read the value of a pin",
+            "Set a digital pin as input or output",
+            "Write a PWM value to a pin",
+            "Initialize serial communication",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino Functions",
+          q: "Which function sets a digital pin HIGH or LOW?",
+          o: [
+            "analogWrite()",
+            "pinMode()",
+            "digitalWrite(pin, HIGH|LOW)",
+            "digitalRead()",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino Functions",
+          q: "digitalRead(pin) is used to:",
+          o: [
+            "Set a pin high",
+            "Read an analog pin's value",
+            "Read a digital pin's state",
+            "Write to an analog pin",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino Functions",
+          q: "analogRead(pin) is used to:",
+          o: [
+            "Write an analog value to a pin",
+            "Read an analog pin's value",
+            "Set a pin as input",
+            "Initialize the ADC",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino Functions",
+          q: "analogWrite(pin, intValue) is used to:",
+          o: [
+            "Read an analog sensor",
+            "Write a digital HIGH/LOW",
+            "Write an 'analog' PWM value to a PWM-capable pin",
+            "Reset the Arduino",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino Functions",
+          q: "delay(milliseconds) is used to:",
+          o: [
+            "Read time from an RTC",
+            "Wait an amount of time",
+            "Count elapsed time",
+            "Speed up the loop",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino Functions",
+          q: "Serial.begin(9600) in setup() tells the Arduino to communicate at:",
+          o: [
+            "9600 bytes per second",
+            "9600 bits per second (baud rate)",
+            "9600 MHz",
+            "9600 Hz",
+          ],
+          a: 1,
+        },
+        {
+          t: "Arduino Functions",
+          q: 'Serial.print("...") writes text to:',
+          o: [
+            "The LCD screen",
+            "The OLED display",
+            "The Serial Monitor",
+            "The EEPROM",
+          ],
+          a: 2,
+        },
+        {
+          t: "Arduino Functions",
+          q: "Which function is placed in setup() to configure a pin?",
+          o: ["analogRead()", "delay()", "pinMode()", "digitalRead()"],
+          a: 2,
+        },
+        {
+          t: "Arduino Functions",
+          q: "Some valid baud rate values for Serial.begin() include:",
+          o: [
+            "1, 2, 3, 4, 5",
+            "300, 600, 1200, 2400, 4800, 9600, 14400, 19200",
+            "100, 500, 1000, 5000",
+            "8, 16, 32, 64",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 7. VARIABLES & DATA TYPES
+        // ═══════════════════════════════════════════════
+        {
+          t: "Variables & Data Types",
+          q: "The 'int' data type in Arduino stores:",
+          o: [
+            "Decimal numbers",
+            "Single characters",
+            "Whole numbers (e.g., -32,768 to 32,767)",
+            "Boolean values",
+          ],
+          a: 2,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The range of the 'long' data type in Arduino is:",
+          o: [
+            "-32,768 to 32,767",
+            "0 to 255",
+            "-2,147,483,648 to 2,147,483,647",
+            "0 to 65,535",
+          ],
+          a: 2,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'byte' data type stores an 8-bit unsigned integer with a range of:",
+          o: ["-128 to 127", "0 to 255", "-32,768 to 32,767", "0 to 1023"],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'float' data type provides decimal numbers with approximately:",
+          o: [
+            "2-3 decimal places",
+            "6-7 decimal places",
+            "10-11 decimal places",
+            "15 decimal places",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'double' data type provides decimal numbers with approximately:",
+          o: [
+            "6-7 decimal places",
+            "10 decimal places",
+            "15 decimal places",
+            "3 decimal places",
+          ],
+          a: 2,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'char' data type stores:",
+          o: [
+            "A string of characters",
+            "A single character and uses 1 byte of memory",
+            "A boolean value",
+            "A floating-point number",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'bool' data type represents:",
+          o: [
+            "A number from 0 to 255",
+            "A decimal number",
+            "A truth value: either true or false",
+            "A character from the ASCII table",
+          ],
+          a: 2,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'String' type in Arduino:",
+          o: [
+            "Stores a single integer",
+            "Is a class that allows manipulation of text strings and dynamically allocates memory",
+            "Stores binary data only",
+            "Is the same as the char type",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "Arrays in Arduino allow you to store:",
+          o: [
+            "Different types of data in one variable",
+            "Multiple values of the same type in a single variable",
+            "Only string data",
+            "Only boolean values",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "What does `int numbers[5];` create in Arduino?",
+          o: [
+            "A string of 5 characters",
+            "A boolean array of 5 elements",
+            "An array of five integers",
+            "A float array of 5 elements",
+          ],
+          a: 2,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "User-defined data types in Arduino can be created using:",
+          o: [
+            "#define and #include",
+            "struct or class",
+            "typedef only",
+            "enum only",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "Looking at the variable example: `bool isActive = true;` — what type is isActive?",
+          o: ["int", "char", "float", "bool"],
+          a: 3,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "Which declaration correctly creates a float variable for temperature?",
+          o: [
+            "int temperature;",
+            "float temperature;",
+            "char temperature;",
+            "bool temperature;",
+          ],
+          a: 1,
+        },
+        {
+          t: "Variables & Data Types",
+          q: "The 'short' data type in Arduino has a range of:",
+          o: [
+            "0 to 255",
+            "-32,768 to 32,767",
+            "-2,147,483,648 to 2,147,483,647",
+            "0 to 65,535",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 8. SENSORS
+        // ═══════════════════════════════════════════════
+        {
+          t: "Sensors",
+          q: "Which sensors measure BOTH temperature AND humidity?",
+          o: [
+            "LM35 and BMP180",
+            "DHT11/DHT22",
+            "PIR and ADXL345",
+            "MQ-2 and CCS811",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "The LM35 is an analog temperature sensor that provides:",
+          o: [
+            "A digital serial output",
+            "A voltage output proportional to the temperature",
+            "A frequency output",
+            "A resistance change proportional to temperature",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "What is a Photoresistor (LDR) used for?",
+          o: [
+            "Measuring temperature",
+            "Detecting sound levels",
+            "Changing resistance based on light levels",
+            "Measuring magnetic fields",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The TSL2561 is a digital light sensor that provides:",
+          o: [
+            "Temperature and humidity readings",
+            "Precise readings of light intensity",
+            "Distance measurements",
+            "Magnetic field strength",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "The HC-SR04 ultrasonic sensor measures distance using:",
+          o: [
+            "Infrared light",
+            "Laser beams",
+            "Ultrasonic waves",
+            "Radio waves",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The HC-SR04 sensor is useful for:",
+          o: [
+            "Measuring temperature",
+            "Obstacle detection and range finding",
+            "Detecting gas leaks",
+            "Measuring humidity",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "Infrared (IR) sensors measure distance and are commonly used in:",
+          o: [
+            "Weather stations",
+            "Altitude detection",
+            "Robotics",
+            "Air quality monitoring",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "A PIR sensor detects motion based on changes in:",
+          o: [
+            "Light intensity",
+            "Sound levels",
+            "Infrared radiation",
+            "Magnetic field",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The PIR sensor is commonly used in:",
+          o: [
+            "Weather stations",
+            "Security systems",
+            "Irrigation systems",
+            "Distance measurement",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "The ADXL345 is an accelerometer that measures:",
+          o: [
+            "Temperature and humidity",
+            "Gas concentrations",
+            "Acceleration and tilt",
+            "Distance and proximity",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The BMP180/BMP280 sensor measures:",
+          o: [
+            "Blood glucose levels",
+            "Atmospheric pressure and temperature",
+            "Soil moisture",
+            "Gas concentrations",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "The BMP series sensors are useful for:",
+          o: [
+            "Motion detection",
+            "Air quality monitoring",
+            "Altitude detection and weather applications",
+            "Soil irrigation",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The MQ Series sensors (e.g., MQ-2, MQ-7) detect:",
+          o: [
+            "Temperature and humidity",
+            "Various gases like smoke and CO",
+            "Distance and proximity",
+            "Light intensity",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "The CCS811 sensor measures:",
+          o: [
+            "Blood pressure and oxygen level",
+            "CO2 and total volatile organic compounds (TVOCs)",
+            "Distance using ultrasonic waves",
+            "Atmospheric pressure",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "A soil moisture sensor is commonly used in:",
+          o: [
+            "Security systems",
+            "Automated irrigation systems",
+            "Weather monitoring",
+            "Heart rate tracking",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "In the Smart Traffic Management project, which sensors are used to measure number of vehicles?",
+          o: [
+            "PIR sensors",
+            "Soil moisture sensors",
+            "Ultrasonic sensors",
+            "Gas sensors",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "In the Heart Rate Monitoring System, which sensor is used?",
+          o: ["DHT22", "LDR", "Accelerometer", "Pulse sensor"],
+          a: 3,
+        },
+        {
+          t: "Sensors",
+          q: "In the Posture Monitoring Device, which sensor tracks body orientation?",
+          o: [
+            "Accelerometer",
+            "Ultrasonic sensor",
+            "Gyroscope sensor",
+            "PIR sensor",
+          ],
+          a: 2,
+        },
+        {
+          t: "Sensors",
+          q: "The LDR is most commonly used in projects like:",
+          o: [
+            "Water pH monitoring",
+            "Automatic lighting",
+            "Traffic management",
+            "Heart rate monitoring",
+          ],
+          a: 1,
+        },
+        {
+          t: "Sensors",
+          q: "Smart Fitness Tracker uses which two sensors?",
+          o: [
+            "DHT11 and BMP280",
+            "PIR sensor and ultrasonic sensor",
+            "Accelerometer and pulse sensor",
+            "Gas sensor and LDR",
+          ],
+          a: 2,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 9. MOTORS
+        // ═══════════════════════════════════════════════
+        {
+          t: "Motors & Actuators",
+          q: "How many types of motors are discussed in the PPT?",
+          o: ["2", "3", "4", "5"],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "A DC motor normally has how many leads?",
+          o: ["1", "2", "3", "4"],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "How do you reverse the direction of a DC motor?",
+          o: [
+            "Increase the voltage",
+            "Decrease the current",
+            "Switch the leads (positive and negative)",
+            "Add more power supply",
+          ],
+          a: 2,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "An H-Bridge is used to:",
+          o: [
+            "Step up voltage for high-power devices",
+            "Convert analog to digital signals",
+            "Control the direction of DC motor spin without interchanging leads",
+            "Measure current flowing through the motor",
+          ],
+          a: 2,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "Why is the H-Bridge circuit called an 'H-Bridge'?",
+          o: [
+            "Because it was invented by a person named H",
+            "Because it uses four transistors whose schematic diagram looks like an 'H'",
+            "Because it operates at high frequencies",
+            "Because it uses hexagonal circuit topology",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "The L298 H-Bridge IC can control the speed and direction of DC and stepper motors and can control how many motors simultaneously?",
+          o: ["1", "2", "3", "4"],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "The current rating of the L298 H-Bridge IC for each motor is:",
+          o: ["500mA", "1A", "2A", "5A"],
+          a: 2,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "A Servo Motor positions its output shaft to specific angular positions by:",
+          o: [
+            "Changing the supply voltage",
+            "Sending a coded signal on the input line",
+            "Varying the motor speed continuously",
+            "Reversing polarity",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "Servo motors are used in radio-controlled airplanes to position control surfaces such as:",
+          o: [
+            "Wheels and propellers",
+            "Elevators and rudders",
+            "Landing gear and brakes",
+            "Fuel pumps and carburetors",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "A Stepper Motor divides a full rotation into:",
+          o: [
+            "Continuous smooth rotation",
+            "A number of discrete steps",
+            "Exactly 90-degree steps only",
+            "Variable steps based on voltage",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "Unlike a brushless DC motor, a stepper motor rotates in:",
+          o: [
+            "Continuous rotation when voltage applied",
+            "Discrete step angles",
+            "Random directions",
+            "Only one direction",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "Stepper motors are manufactured with steps per revolution of:",
+          o: [
+            "10, 20, 50, 100",
+            "12, 24, 72, 144, 180, and 200",
+            "5, 10, 15, 20",
+            "50, 100, 200, 400",
+          ],
+          a: 1,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "A stepper motor with 200 steps per revolution has a stepping angle of:",
+          o: ["5 degrees", "2.5 degrees", "1.8 degrees", "0.9 degrees"],
+          a: 2,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "The stepper motor can be controlled:",
+          o: [
+            "Only with feedback",
+            "Only without feedback",
+            "With or without feedback",
+            "Only via PWM signals",
+          ],
+          a: 2,
+        },
+        {
+          t: "Motors & Actuators",
+          q: "Which motor type is described as a 'brushless, synchronous motor'?",
+          o: ["DC motor", "Servo motor", "Stepper motor", "BLDC motor"],
+          a: 2,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 10. RELAYS & DISPLAYS
+        // ═══════════════════════════════════════════════
+        {
+          t: "Relays & Displays",
+          q: "Why does Arduino UNO need a relay to drive home appliances?",
+          o: [
+            "Arduino is too fast for appliances",
+            "Arduino works on 5V and its digital pin can drive less than 40mA — too little for home appliances",
+            "Arduino does not support AC power",
+            "Home appliances need Bluetooth connectivity",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "A relay is generally:",
+          o: [
+            "A type of microcontroller",
+            "An electrically operated switch using an electromagnet",
+            "A type of sensor",
+            "A wireless communication module",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "The principle used by relays is:",
+          o: [
+            "Piezoelectric effect",
+            "Capacitive coupling",
+            "An electromagnet to mechanically operate the switch",
+            "Photovoltaic effect",
+          ],
+          a: 2,
+        },
+        {
+          t: "Relays & Displays",
+          q: "A relay needs only a low operating voltage such as:",
+          o: [
+            "50V, 100V, or 220V",
+            "120V or 240V",
+            "5V, 12V, or 24V",
+            "1V or 2V",
+          ],
+          a: 2,
+        },
+        {
+          t: "Relays & Displays",
+          q: "Types of relays available in the market include:",
+          o: [
+            "AND, OR, NOT, XOR",
+            "SPDT, DPDT, SPST",
+            "NPN, PNP, FET",
+            "RS232, RS485, TTL",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "In the Smart Lighting System project, relays are used to:",
+          o: [
+            "Detect motion",
+            "Switch high-voltage devices like light bulbs",
+            "Measure ambient light",
+            "Send Wi-Fi signals",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "LCD stands for:",
+          o: [
+            "Light Control Display",
+            "Liquid Crystal Display",
+            "Linear Current Device",
+            "Logic Control Display",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "LCDs are used in embedded system applications for:",
+          o: [
+            "Wireless communication",
+            "Storing data permanently",
+            "Displaying various parameters and status of the system",
+            "Generating PWM signals",
+          ],
+          a: 2,
+        },
+        {
+          t: "Relays & Displays",
+          q: "An LCD 16x2 is a device with:",
+          o: [
+            "16 rows and 2 columns",
+            "1 row that accommodates 16 characters",
+            "2 rows that can each accommodate 16 characters",
+            "16 pins and 2 data lines",
+          ],
+          a: 2,
+        },
+        {
+          t: "Relays & Displays",
+          q: "How many pins does an LCD 16x2 have?",
+          o: ["8", "12", "14", "16"],
+          a: 3,
+        },
+        {
+          t: "Relays & Displays",
+          q: "The LCD 16x2 can be used in which modes?",
+          o: [
+            "1-bit or 2-bit mode",
+            "4-bit mode or 8-bit mode",
+            "6-bit mode or 10-bit mode",
+            "I2C or SPI mode only",
+          ],
+          a: 1,
+        },
+        {
+          t: "Relays & Displays",
+          q: "The LCD 16x2 has how many data lines and control lines respectively?",
+          o: [
+            "4 data lines, 4 control lines",
+            "6 data lines, 2 control lines",
+            "8 data lines and 3 control lines",
+            "10 data lines and 1 control line",
+          ],
+          a: 2,
+        },
+        {
+          t: "Relays & Displays",
+          q: "Is it possible to create custom characters on the LCD 16x2?",
+          o: [
+            "No, only fixed ASCII characters",
+            "Yes, it is possible",
+            "Only on 8-bit mode",
+            "Only with special hardware",
+          ],
+          a: 1,
+        },
+
+        // ═══════════════════════════════════════════════
+        // 11. CASE STUDIES
+        // ═══════════════════════════════════════════════
+        {
+          t: "Case Studies",
+          q: "In the Smart Home Security System project, when motion is detected, what two things happen?",
+          o: [
+            "Lights turn on and a log is saved",
+            "The buzzer activates and images are captured via camera module",
+            "An email is sent and the door locks",
+            "A siren sounds and GPS tracks location",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Smart Traffic Management project, what adjusts dynamically based on sensor data?",
+          o: [
+            "Number of vehicles on road",
+            "Traffic light timings",
+            "Speed limits",
+            "Road closures",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Smart Waste Management project, the GSM module is used to:",
+          o: [
+            "Track the location of waste trucks",
+            "Control the bins remotely",
+            "Send alerts to waste management services when bins are full",
+            "Monitor air quality near bins",
+          ],
+          a: 2,
+        },
+        {
+          t: "Case Studies",
+          q: "Arduino-based healthcare devices are valuable for communities with limited access to expensive equipment because they are:",
+          o: [
+            "More accurate than commercial devices",
+            "More affordable alternatives",
+            "Faster to process data",
+            "Automatically connected to the internet",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Glucose Monitoring Device, what triggers an alert?",
+          o: [
+            "When temperature exceeds 38°C",
+            "When blood glucose readings are outside the normal range",
+            "When battery is low",
+            "When Bluetooth disconnects",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Heart Rate Monitor, which module allows wireless transmission to a smartphone?",
+          o: ["Wi-Fi module", "RF module", "Bluetooth module", "GSM module"],
+          a: 2,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Posture Monitoring Device, what provides physical feedback to the user when poor posture is detected?",
+          o: [
+            "An LED light",
+            "A buzzer",
+            "A vibration motor",
+            "An OLED display",
+          ],
+          a: 2,
+        },
+        {
+          t: "Case Studies",
+          q: "Smart cities integrate which technologies into infrastructure?",
+          o: [
+            "Only GPS and 4G",
+            "IoT, sensors, and data analysis",
+            "Blockchain and AR/VR",
+            "Only cloud computing",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "The goal of a smart city is to make urban living:",
+          o: [
+            "More expensive and exclusive",
+            "More sustainable, efficient, and responsive to inhabitants' needs",
+            "Fully automated without human involvement",
+            "Dependent on a single technology vendor",
+          ],
+          a: 1,
+        },
+        {
+          t: "Case Studies",
+          q: "In the Smart Fitness Tracker, how does the device provide feedback to the user?",
+          o: [
+            "Via a built-in alarm",
+            "Via a smartphone or a small display",
+            "Via email notifications",
+            "Via printed reports",
+          ],
+          a: 1,
+        },
+      ];
+
+      document.getElementById("totalQCount").textContent = ALL_Q.length;
+
+      // ── Topic badge colour toggle
+      function badgeClass(topic) {
+        const blueTopics = [
+          "Arduino IDE",
+          "Variables & Data Types",
+          "Relays & Displays",
+          "Case Studies",
+        ];
+        return blueTopics.includes(topic) ? "topic-badge b" : "topic-badge";
+      }
+
+      let mode = "learn";
+      let questions = [];
+      let curIdx = 0;
+      let answers = {}; // idx → chosen option
+      let correctSet = new Set();
+      let wrongSet = new Set();
+      let rapidStopped = false;
+
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function startMode(m) {
+        mode = m;
+        questions = shuffle(ALL_Q);
+        curIdx = 0;
+        answers = {};
+        correctSet = new Set();
+        wrongSet = new Set();
+        rapidStopped = false;
+        document.getElementById("home").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("quiz").style.display = "block";
+        renderQ();
+      }
+
+      function renderQ() {
+        const q = questions[curIdx];
+        const total = questions.length;
+
+        // header
+        const pill = document.getElementById("modePill");
+        pill.textContent = mode === "learn" ? "📖 Learning" : "⚡ Rapid Fire";
+        pill.className =
+          "mode-pill " + (mode === "learn" ? "pill-learn" : "pill-rapid");
+        document.getElementById("qCounterTxt").textContent = `${
+          curIdx + 1
+        } / ${total}`;
+
+        // progress
+        const pf = document.getElementById("progFill");
+        pf.style.width = ((curIdx + 1) / total) * 100 + "%";
+        pf.className =
+          "prog-fill " + (mode === "learn" ? "pf-learn" : "pf-rapid");
+
+        // card accent
+        document.getElementById("qCard").className =
+          "q-card " + (mode === "learn" ? "learn-card" : "rapid-card");
+
+        // rapid dots
+        const dd = document.getElementById("rapidDots");
+        if (mode === "rapid") {
+          const start = Math.max(0, curIdx - 29);
+          let h = "";
+          for (let i = start; i <= curIdx; i++) {
+            let cls = "dot";
+            if (i === curIdx) cls += " cur";
+            else if (correctSet.has(i)) cls += " c";
+            else if (wrongSet.has(i)) cls += " w";
+            h += `<div class="${cls}"></div>`;
+          }
+          dd.innerHTML = h;
+          dd.style.display = "flex";
+        } else {
+          dd.style.display = "none";
+        }
+
+        // stop banner
+        const sb = document.getElementById("stopBanner");
+        sb.className = "stop-banner" + (rapidStopped ? " show" : "");
+
+        // topic & num
+        document.getElementById("qTopic").className = badgeClass(q.t);
+        document.getElementById("qTopic").textContent = q.t;
+        document.getElementById("qNum").textContent = `Q${curIdx + 1}`;
+
+        // question text with code highlighting
+        const qEl = document.getElementById("qText");
+        qEl.innerHTML = q.q.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+        // options
+        const grid = document.getElementById("optsGrid");
+        const labels = ["A", "B", "C", "D"];
+        const ua = answers[curIdx];
+        const hasAnswered = ua !== undefined;
+        grid.innerHTML = "";
+
+        q.o.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          if (hasAnswered) {
+            if (i === q.a) btn.classList.add("correct");
+            else if (i === ua && i !== q.a) btn.classList.add("wrong");
+            else btn.classList.add("dim");
+            btn.disabled = true;
+          }
+          btn.innerHTML = `<span class="opt-lbl">${
+            labels[i]
+          }</span><span>${opt.replace(/`([^`]+)`/g, "<code>$1</code>")}</span>`;
+          if (!hasAnswered)
+            btn.addEventListener("click", () => selectAnswer(i));
+          grid.appendChild(btn);
+        });
+
+        // feedback
+        const fb = document.getElementById("feedbackBox");
+        if (hasAnswered) {
+          const ok = ua === q.a;
+          fb.className = "feedback show " + (ok ? "c" : "w");
+          fb.innerHTML = ok
+            ? `<div class="feedback-ico">✅</div><strong>Correct!</strong> The answer is: <strong>${
+                q.o[q.a]
+              }</strong>`
+            : `<div class="feedback-ico">❌</div><strong>Incorrect.</strong> The correct answer is: <strong>${
+                q.o[q.a]
+              }</strong>`;
+        } else {
+          fb.className = "feedback";
+          fb.innerHTML = "";
+        }
+
+        // buttons
+        const btnPrev = document.getElementById("btnPrev");
+        const btnNext = document.getElementById("btnNext");
+        btnPrev.style.display =
+          mode === "rapid" && curIdx > 0 ? "inline-block" : "none";
+
+        if (curIdx === total - 1 && hasAnswered)
+          btnNext.textContent = "Finish 🏁";
+        else btnNext.textContent = "Next →";
+
+        btnNext.className =
+          "btn-nav " + (mode === "learn" ? "btn-next-l" : "btn-next-r");
+
+        if (mode === "learn") {
+          btnNext.disabled = !hasAnswered;
+        } else {
+          btnNext.disabled = false;
+        }
+      }
+
+      function selectAnswer(optIdx) {
+        const q = questions[curIdx];
+        answers[curIdx] = optIdx;
+        const ok = optIdx === q.a;
+        if (ok) {
+          correctSet.add(curIdx);
+          wrongSet.delete(curIdx);
+          rapidStopped = false;
+        } else {
+          wrongSet.add(curIdx);
+          correctSet.delete(curIdx);
+          if (mode === "rapid") rapidStopped = true;
+        }
+        renderQ();
+        if (mode === "rapid" && ok) {
+          setTimeout(() => {
+            if (curIdx < questions.length - 1) {
+              curIdx++;
+              rapidStopped = false;
+              renderQ();
+            } else showResults();
+          }, 650);
+        }
+      }
+
+      function nav(dir) {
+        const total = questions.length;
+        if (dir === 1) {
+          if (mode === "learn" && answers[curIdx] === undefined) return;
+          if (curIdx < total - 1) {
+            curIdx++;
+            rapidStopped = false;
+            renderQ();
+          } else showResults();
+        } else {
+          if (curIdx > 0) {
+            curIdx--;
+            rapidStopped = false;
+            renderQ();
+          }
+        }
+      }
+
+      function showResults() {
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("results").style.display = "block";
+        const total = questions.length;
+        const correct = correctSet.size;
+        const wrong = wrongSet.size;
+        const pct = Math.round((correct / total) * 100);
+
+        document.getElementById("ringPct").textContent = pct + "%";
+        document.getElementById("ringPct").className =
+          "ring-pct " + (mode === "learn" ? "o" : "b");
+        const rf = document.getElementById("ringFill");
+        rf.className =
+          "ring-fill " + (mode === "learn" ? "ring-learn" : "ring-rapid");
+        const circumference = 2 * Math.PI * 72;
+        setTimeout(() => {
+          rf.style.strokeDashoffset = circumference * (1 - pct / 100);
+        }, 100);
+
+        document.getElementById("cCount").textContent = correct;
+        document.getElementById("wCount").textContent = wrong;
+        document.getElementById("tCount").textContent = total;
+
+        const badge =
+          pct >= 90 ? "🏆" : pct >= 70 ? "🎯" : pct >= 50 ? "📚" : "💪";
+        const title =
+          pct >= 90
+            ? "Outstanding!"
+            : pct >= 70
+            ? "Great Job!"
+            : pct >= 50
+            ? "Keep Going!"
+            : "Keep Practising!";
+        document.getElementById("resBadge").textContent = badge;
+        document.getElementById("resTitle").textContent = title;
+        document.getElementById(
+          "resSub"
+        ).textContent = `You scored ${correct} out of ${total} in ${
+          mode === "learn" ? "Learning" : "Rapid Fire"
+        } mode.`;
+
+        const br = document.getElementById("btnRestart");
+        br.className =
+          "btn-res " + (mode === "learn" ? "btn-restart-l" : "btn-restart-r");
+        br.textContent = "Restart All";
+
+        document.getElementById("btnRetake").disabled = wrongSet.size === 0;
+
+        // wrong list
+        const ws = document.getElementById("wrongSection");
+        if (wrongSet.size > 0) {
+          let h = `<div class="ws-title">// Wrong Answers (${wrongSet.size})</div>`;
+          [...wrongSet].forEach((i) => {
+            const q = questions[i];
+            h += `<div class="wi"><div class="wi-topic">${
+              q.t
+            }</div><div class="wi-q">Q${i + 1}: ${
+              q.q
+            }</div><div class="wi-a">✓ ${q.o[q.a]}</div></div>`;
+          });
+          ws.innerHTML = h;
+        } else {
+          ws.innerHTML =
+            '<div style="color:var(--green);font-weight:700;text-align:center;font-size:18px;margin-top:10px;">🎉 Perfect score! All correct!</div>';
+        }
+      }
+
+      function retakeWrong() {
+        const wIdx = [...wrongSet];
+        questions = shuffle(wIdx.map((i) => questions[i]));
+        curIdx = 0;
+        answers = {};
+        correctSet = new Set();
+        wrongSet = new Set();
+        rapidStopped = false;
+        document.getElementById("results").style.display = "none";
+        document.getElementById("quiz").style.display = "block";
+        renderQ();
+      }
+
+      function restart() {
+        startMode(mode);
+      }
+      function goHome() {
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("home").style.display = "flex";
+      }
+    </script>
+  </body>
+</html>
