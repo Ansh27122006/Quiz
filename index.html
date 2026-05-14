@@ -29,11 +29,8 @@
         --border: rgba(0, 200, 255, 0.15);
         --border-bright: rgba(0, 200, 255, 0.45);
         --cyan: #00c8ff;
-        --cyan-dim: rgba(0, 200, 255, 0.6);
         --green: #00ff9d;
-        --green-dim: rgba(0, 255, 157, 0.6);
         --purple: #b06cff;
-        --purple-dim: rgba(176, 108, 255, 0.6);
         --amber: #ffb830;
         --red: #ff4d6d;
         --text: #e8f4ff;
@@ -56,7 +53,6 @@
         min-height: 100vh;
         overflow-x: hidden;
       }
-
       #stars {
         position: fixed;
         inset: 0;
@@ -71,18 +67,12 @@
             ellipse at 80% 80%,
             rgba(176, 108, 255, 0.06) 0%,
             transparent 60%
-          ),
-          radial-gradient(
-            ellipse at 50% 50%,
-            rgba(0, 255, 157, 0.03) 0%,
-            transparent 70%
           );
       }
       #stars canvas {
         position: absolute;
         inset: 0;
       }
-
       body::after {
         content: "";
         position: fixed;
@@ -97,7 +87,6 @@
           rgba(0, 0, 0, 0.03) 4px
         );
       }
-
       .grid-bg {
         position: fixed;
         inset: 0;
@@ -110,7 +99,6 @@
           linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px);
         background-size: 60px 60px;
       }
-
       .wrapper {
         position: relative;
         z-index: 2;
@@ -119,13 +107,12 @@
         padding: 0 24px 80px;
       }
 
+      /* HEADER */
       header {
         text-align: center;
         padding: 70px 0 50px;
-        position: relative;
         animation: fadeUp 0.8s ease both;
       }
-
       .header-badge {
         display: inline-flex;
         align-items: center;
@@ -148,7 +135,6 @@
         background: var(--cyan);
         animation: pulse 2s ease-in-out infinite;
       }
-
       h1 {
         font-family: "Orbitron", monospace;
         font-size: clamp(2.2rem, 5vw, 3.8rem);
@@ -166,12 +152,10 @@
         background-clip: text;
         margin-bottom: 18px;
       }
-
       .subtitle {
         font-size: 16px;
         color: var(--text-muted);
         font-weight: 300;
-        letter-spacing: 0.03em;
         max-width: 480px;
         margin: 0 auto 16px;
         line-height: 1.6;
@@ -188,6 +172,7 @@
         margin: 28px auto 0;
       }
 
+      /* STATS */
       .stats-bar {
         display: flex;
         justify-content: center;
@@ -218,6 +203,7 @@
         align-self: stretch;
       }
 
+      /* SECTION HEAD */
       .section-head {
         display: flex;
         align-items: center;
@@ -238,6 +224,7 @@
         background: var(--border);
       }
 
+      /* GRID */
       .quiz-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -245,21 +232,19 @@
         margin-bottom: 56px;
       }
 
+      /* CARD */
       .quiz-card {
         position: relative;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 16px;
-        padding: 28px 28px 24px;
-        cursor: pointer;
-        text-decoration: none;
+        padding: 28px 28px 20px;
         color: inherit;
         display: flex;
         flex-direction: column;
         overflow: hidden;
         transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
         backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
         animation: fadeUp 0.6s ease both;
       }
       .quiz-card:nth-child(2) {
@@ -278,6 +263,7 @@
         border-radius: 16px;
         opacity: 0;
         transition: opacity 0.3s;
+        pointer-events: none;
       }
       .quiz-card:hover {
         transform: translateY(-4px);
@@ -285,7 +271,6 @@
       .quiz-card:hover::before {
         opacity: 1;
       }
-
       .card-cyan:hover {
         border-color: var(--border-bright);
         box-shadow: var(--glow-cyan);
@@ -330,7 +315,6 @@
           transparent
         );
       }
-
       .quiz-card::after {
         content: "";
         position: absolute;
@@ -431,123 +415,90 @@
         flex: 1;
         position: relative;
         z-index: 1;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
       }
-      .card-meta {
+
+      /* CARD FOOTER */
+      .card-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        z-index: 1;
+        margin-top: auto;
+      }
+
+      .card-quiz-btn {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        position: relative;
-        z-index: 1;
-      }
-      .card-chips {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-      }
-      .chip {
-        font-size: 11px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 14px;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text-muted);
         font-family: "Space Mono", monospace;
-        color: var(--text-muted);
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: 3px 8px;
-      }
-
-      .card-arrow {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        color: var(--text-muted);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
         transition: all 0.2s;
-        flex-shrink: 0;
       }
-      .quiz-card:hover .card-arrow {
-        background: rgba(255, 255, 255, 0.06);
+      .card-quiz-btn:hover {
         border-color: var(--border-bright);
         color: var(--cyan);
+        background: rgba(0, 200, 255, 0.05);
+      }
+      .card-quiz-btn .arrow {
+        font-size: 14px;
+        transition: transform 0.2s;
+      }
+      .card-quiz-btn:hover .arrow {
         transform: translate(2px, -2px);
       }
 
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
-        margin-bottom: 56px;
-      }
-      .info-card {
-        background: var(--surface);
+      /* REFS BUTTON */
+      .card-refs-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-        backdrop-filter: blur(8px);
-      }
-      .info-card-icon {
-        font-size: 20px;
-        margin-bottom: 12px;
-      }
-      .info-card-title {
-        font-family: "Orbitron", monospace;
-        font-size: 13px;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      .info-card-text {
-        font-size: 12px;
+        border-radius: 10px;
+        padding: 9px 12px;
+        cursor: pointer;
         color: var(--text-muted);
-        line-height: 1.6;
-      }
-
-      footer {
-        text-align: center;
-        padding-top: 32px;
-        border-top: 1px solid var(--border);
         font-family: "Space Mono", monospace;
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 0.1em;
-        color: var(--text-muted);
+        text-transform: uppercase;
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
-      footer span {
-        color: var(--cyan);
+      .card-refs-btn:hover {
+        border-color: rgba(176, 108, 255, 0.45);
+        color: var(--purple);
+        background: rgba(176, 108, 255, 0.06);
+        box-shadow: 0 0 14px rgba(176, 108, 255, 0.15);
       }
-
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(24px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.5;
-          transform: scale(0.8);
-        }
-      }
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-8px);
-        }
+      .refs-count {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(176, 108, 255, 0.15);
+        border: 1px solid rgba(176, 108, 255, 0.3);
+        color: var(--purple);
+        font-size: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
       }
 
+      /* TOOLBAR */
       .toolbar {
         display: flex;
         gap: 12px;
@@ -588,7 +539,6 @@
       .search-box input::placeholder {
         color: var(--text-muted);
       }
-
       .filter-btn {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -610,16 +560,284 @@
         color: var(--cyan);
         background: rgba(0, 200, 255, 0.06);
       }
-
       .quiz-card.hidden {
         display: none;
       }
 
-      /* ═══════════════════════════════════════════════
-         FEEDBACK SYSTEM
-      ═══════════════════════════════════════════════ */
+      footer {
+        text-align: center;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+      }
+      footer span {
+        color: var(--cyan);
+      }
 
-      /* Floating trigger button */
+      /* ══════════════════════════════════════
+         REFERENCES MODAL
+      ══════════════════════════════════════ */
+      .ref-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(2, 6, 15, 0.82);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+      }
+      .ref-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .ref-modal {
+        width: 100%;
+        max-width: 480px;
+        background: #080f1c;
+        border: 1px solid rgba(176, 108, 255, 0.25);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 60px rgba(176, 108, 255, 0.1),
+          0 30px 80px rgba(0, 0, 0, 0.7);
+        transform: translateY(20px) scale(0.97);
+        transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+      }
+      .ref-overlay.open .ref-modal {
+        transform: translateY(0) scale(1);
+      }
+      .ref-modal::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        border-top: 1px solid rgba(176, 108, 255, 0.35);
+        border-right: 1px solid rgba(176, 108, 255, 0.35);
+        border-radius: 0 20px 0 0;
+        pointer-events: none;
+      }
+
+      .ref-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 28px 28px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .ref-pre-title {
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--purple);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ref-pre-title::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 1px;
+        background: var(--purple);
+      }
+      .ref-modal-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.3;
+      }
+      .ref-modal-sub {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        font-family: "Space Mono", monospace;
+      }
+      .ref-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .ref-close:hover {
+        border-color: rgba(176, 108, 255, 0.4);
+        color: var(--text);
+        background: rgba(176, 108, 255, 0.06);
+      }
+
+      .ref-list {
+        padding: 16px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      .ref-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .ref-list::-webkit-scrollbar-thumb {
+        background: rgba(176, 108, 255, 0.3);
+        border-radius: 4px;
+      }
+
+      .ref-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .ref-item:hover {
+        border-color: rgba(176, 108, 255, 0.35);
+        background: rgba(176, 108, 255, 0.04);
+      }
+
+      .ref-type-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .ref-type-pdf {
+        background: rgba(255, 77, 109, 0.12);
+        border: 1px solid rgba(255, 77, 109, 0.2);
+      }
+      .ref-type-ppt {
+        background: rgba(255, 140, 50, 0.12);
+        border: 1px solid rgba(255, 140, 50, 0.2);
+      }
+      .ref-type-doc {
+        background: rgba(0, 150, 255, 0.12);
+        border: 1px solid rgba(0, 150, 255, 0.2);
+      }
+      .ref-type-link {
+        background: rgba(0, 200, 255, 0.1);
+        border: 1px solid rgba(0, 200, 255, 0.2);
+      }
+      .ref-type-other {
+        background: rgba(176, 108, 255, 0.1);
+        border: 1px solid rgba(176, 108, 255, 0.2);
+      }
+
+      .ref-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .ref-name {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+      }
+      .ref-badge {
+        display: inline-block;
+        font-family: "Space Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 100px;
+      }
+      .badge-pdf {
+        color: #ff4d6d;
+        background: rgba(255, 77, 109, 0.1);
+        border: 1px solid rgba(255, 77, 109, 0.25);
+      }
+      .badge-ppt {
+        color: #ff8c32;
+        background: rgba(255, 140, 50, 0.1);
+        border: 1px solid rgba(255, 140, 50, 0.25);
+      }
+      .badge-doc {
+        color: #3399ff;
+        background: rgba(0, 150, 255, 0.1);
+        border: 1px solid rgba(0, 150, 255, 0.25);
+      }
+      .badge-link {
+        color: var(--cyan);
+        background: rgba(0, 200, 255, 0.1);
+        border: 1px solid rgba(0, 200, 255, 0.25);
+      }
+      .badge-other {
+        color: var(--purple);
+        background: rgba(176, 108, 255, 0.1);
+        border: 1px solid rgba(176, 108, 255, 0.25);
+      }
+
+      .ref-open-btn {
+        background: rgba(176, 108, 255, 0.08);
+        border: 1px solid rgba(176, 108, 255, 0.25);
+        border-radius: 8px;
+        color: var(--purple);
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 7px 12px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ref-open-btn:hover {
+        background: rgba(176, 108, 255, 0.15);
+        border-color: rgba(176, 108, 255, 0.5);
+        box-shadow: 0 0 14px rgba(176, 108, 255, 0.2);
+      }
+
+      .ref-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-family: "Space Mono", monospace;
+      }
+      .ref-empty-icon {
+        font-size: 32px;
+        display: block;
+        margin-bottom: 12px;
+        opacity: 0.4;
+      }
+
+      /* ══════════════════════════════════════
+         FEEDBACK SYSTEM
+      ══════════════════════════════════════ */
       .feedback-fab {
         position: fixed;
         bottom: 32px;
@@ -643,15 +861,12 @@
         text-transform: uppercase;
         color: var(--cyan);
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
         box-shadow: var(--glow-cyan), 0 8px 32px rgba(0, 0, 0, 0.5);
         transition: transform 0.2s, box-shadow 0.2s;
         animation: fadeUp 0.8s ease 0.5s both;
       }
       .feedback-fab:hover {
         transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 0 30px rgba(0, 200, 255, 0.4),
-          0 12px 40px rgba(0, 0, 0, 0.6);
       }
       .feedback-fab .fab-dot {
         width: 7px;
@@ -661,15 +876,12 @@
         animation: pulse 2s ease-in-out infinite;
         flex-shrink: 0;
       }
-
-      /* Overlay */
       .fb-overlay {
         position: fixed;
         inset: 0;
         z-index: 200;
         background: rgba(2, 6, 15, 0.82);
         backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -682,8 +894,6 @@
         opacity: 1;
         pointer-events: all;
       }
-
-      /* Modal */
       .fb-modal {
         width: 100%;
         max-width: 520px;
@@ -700,8 +910,6 @@
       .fb-overlay.open .fb-modal {
         transform: translateY(0) scale(1);
       }
-
-      /* Corner accent on modal */
       .fb-modal::before {
         content: "";
         position: absolute;
@@ -714,8 +922,6 @@
         border-radius: 0 20px 0 0;
         pointer-events: none;
       }
-
-      /* Modal header */
       .fb-header {
         display: flex;
         align-items: flex-start;
@@ -748,7 +954,6 @@
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--text);
-        line-height: 1.2;
       }
       .fb-close {
         width: 36px;
@@ -769,10 +974,7 @@
       .fb-close:hover {
         border-color: var(--border-bright);
         color: var(--text);
-        background: rgba(255, 255, 255, 0.05);
       }
-
-      /* Type selector */
       .fb-type-row {
         display: flex;
         gap: 10px;
@@ -788,10 +990,6 @@
         text-align: center;
         transition: all 0.2s;
         color: var(--text-muted);
-      }
-      .fb-type-btn:hover {
-        border-color: rgba(0, 200, 255, 0.3);
-        color: var(--text);
       }
       .fb-type-btn.active {
         border-color: var(--border-bright);
@@ -818,26 +1016,20 @@
         text-transform: uppercase;
         display: block;
       }
-
-      /* Divider */
       .fb-divider {
         height: 1px;
         background: var(--border);
         margin: 20px 28px 0;
       }
-
-      /* Form body */
       .fb-body {
         padding: 20px 28px 28px;
       }
-
       .fb-panel {
         display: none;
       }
       .fb-panel.active {
         display: block;
       }
-
       .fb-field {
         margin-bottom: 16px;
       }
@@ -862,14 +1054,13 @@
         font-size: 13.5px;
         padding: 11px 14px;
         outline: none;
-        transition: border-color 0.2s, background 0.2s;
+        transition: border-color 0.2s;
         -webkit-appearance: none;
       }
       .fb-input:focus,
       .fb-textarea:focus,
       .fb-select:focus {
         border-color: var(--border-bright);
-        background: rgba(0, 200, 255, 0.03);
       }
       .fb-input::placeholder,
       .fb-textarea::placeholder {
@@ -887,8 +1078,6 @@
       .fb-select option {
         background: #0d1829;
       }
-
-      /* Star rating */
       .star-row {
         display: flex;
         gap: 6px;
@@ -897,20 +1086,17 @@
         font-size: 24px;
         cursor: pointer;
         color: var(--text-muted);
-        transition: color 0.15s, transform 0.15s;
-        line-height: 1;
+        transition: all 0.15s;
         filter: grayscale(1);
         opacity: 0.5;
+        line-height: 1;
       }
-      .star-row span:hover,
       .star-row span.lit {
         color: var(--amber);
         filter: none;
         opacity: 1;
         transform: scale(1.15);
       }
-
-      /* Submit button */
       .fb-submit {
         width: 100%;
         margin-top: 8px;
@@ -932,11 +1118,6 @@
         transition: all 0.2s;
       }
       .fb-submit:hover {
-        background: linear-gradient(
-          135deg,
-          rgba(0, 200, 255, 0.22),
-          rgba(0, 200, 255, 0.12)
-        );
         box-shadow: var(--glow-cyan);
       }
       .fb-submit:disabled {
@@ -944,13 +1125,10 @@
         cursor: not-allowed;
         box-shadow: none;
       }
-
-      /* Success state */
       .fb-success {
         display: none;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         padding: 50px 28px 44px;
         text-align: center;
         gap: 16px;
@@ -974,19 +1152,14 @@
         line-height: 1.6;
         max-width: 320px;
       }
-
-      /* Error toast */
       .fb-error-msg {
         font-family: "Space Mono", monospace;
         font-size: 10px;
-        letter-spacing: 0.1em;
         color: var(--red);
         margin-top: 10px;
         display: none;
         text-align: center;
       }
-
-      /* Spinner */
       @keyframes spin {
         to {
           transform: rotate(360deg);
@@ -1003,6 +1176,37 @@
         vertical-align: middle;
         margin-right: 8px;
       }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.8);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -1012,8 +1216,7 @@
     <div class="wrapper">
       <header>
         <div class="header-badge">
-          <span class="dot"></span>
-          CSE Quiz Hub · Active
+          <span class="dot"></span>CSE Quiz Hub · Active
         </div>
         <h1>QUIZ<br />TERMINAL</h1>
         <p class="subtitle">
@@ -1025,11 +1228,7 @@
 
       <div class="stats-bar">
         <div class="stat">
-          <div
-            class="stat-num"
-            id="total-count">
-            3
-          </div>
+          <div class="stat-num">3</div>
           <div class="stat-label">Quizzes Active</div>
         </div>
         <div class="stat-divider"></div>
@@ -1055,17 +1254,17 @@
         </div>
         <button
           class="filter-btn active"
-          onclick="setFilter('all', this)">
+          onclick="setFilter('all',this)">
           All
         </button>
         <button
           class="filter-btn"
-          onclick="setFilter('networks', this)">
+          onclick="setFilter('networks',this)">
           Linux
         </button>
         <button
           class="filter-btn"
-          onclick="setFilter('iot', this)">
+          onclick="setFilter('iot',this)">
           IoT
         </button>
       </div>
@@ -1075,31 +1274,51 @@
       <div
         class="quiz-grid"
         id="quizGrid">
-        <a
+        <!-- ══════════════════════════════════════════════════
+          HOW TO ADD REFERENCES TO A CARD:
+          1. Add  data-refs='[...]'  to the .quiz-card div
+          2. Each object: {"title":"Name","type":"pdf","url":"https://..."}
+          3. Types: pdf | ppt | doc | link  (controls icon & color)
+          4. Update the number inside .refs-count to match
+          5. Paste your Google Drive share link as the url
+        ═══════════════════════════════════════════════════ -->
+
+        <!-- CARD 1 — Linux Fundamentals -->
+        <div
           class="quiz-card card-cyan"
-          href="linux_admin_quiz.html"
           data-tags="networks computer"
-          onclick="openLink(this, event)">
+          data-refs='[
+            {"title":"Linux Complete guide","type":"pdf","url":"https://drive.google.com/file/d/1m4i_MY7Gfz4S1_RMW-6LD5elzImCcvzz/view?usp=sharing"}
+          ]'>
           <div class="card-icon">🌐</div>
           <span class="card-tag">Linux</span>
-          <div class="card-title">Linux fundamentals Quiz</div>
+          <div class="card-title">Linux Fundamentals Quiz</div>
           <p class="card-desc">
             Test your knowledge on Linux commands, file system, permissions, and
             core concepts.
           </p>
-          <div class="card-meta">
-            <div class="card-chips">
-              <span class="chip">Linux</span><span class="chip">CSE</span>
-            </div>
-            <div class="card-arrow">↗</div>
+          <div class="card-footer">
+            <a
+              class="card-quiz-btn"
+              href="linux_admin_quiz.html"
+              onclick="openQuiz(this,event)">
+              Start Quiz <span class="arrow">↗</span>
+            </a>
+            <button
+              class="card-refs-btn"
+              onclick="openRefs(this)">
+              📎 Refs <span class="refs-count">1</span>
+            </button>
           </div>
-        </a>
+        </div>
 
-        <a
+        <!-- CARD 2 — Intro to IoT -->
+        <div
           class="quiz-card card-green"
-          href="IoT_Unit3_Quiz.html"
           data-tags="iot embedded sensors"
-          onclick="openLink(this, event)">
+          data-refs='[
+            {"title":"Introduction to IoT","type":"ppt","url":"https://drive.google.com/file/d/14le2Lp50c9AKJmOhR1D5Pg-wa51oAICg/view?usp=sharing"}
+          ]'>
           <div class="card-icon">📡</div>
           <span class="card-tag">ES &amp; IoT</span>
           <div class="card-title">Intro to IoT Quiz</div>
@@ -1107,19 +1326,28 @@
             Covers the fundamentals of the Internet of Things — architecture,
             sensors, protocols, and smart systems.
           </p>
-          <div class="card-meta">
-            <div class="card-chips">
-              <span class="chip">IoT</span><span class="chip">CSE</span>
-            </div>
-            <div class="card-arrow">↗</div>
+          <div class="card-footer">
+            <a
+              class="card-quiz-btn"
+              href="IoT_Unit3_Quiz.html"
+              onclick="openQuiz(this,event)">
+              Start Quiz <span class="arrow">↗</span>
+            </a>
+            <button
+              class="card-refs-btn"
+              onclick="openRefs(this)">
+              📎 Refs <span class="refs-count">1</span>
+            </button>
           </div>
-        </a>
+        </div>
 
-        <a
+        <!-- CARD 3 — Arduino Basics -->
+        <div
           class="quiz-card card-green"
-          href="IoT_Unit4_Quiz.html"
           data-tags="iot embedded sensors"
-          onclick="openLink(this, event)">
+          data-refs='[
+            {"title":"Introduction to Arduino","type":"pdf","url":"https://drive.google.com/file/d/1SYWPKt03GADl3O_wVY5kr2Ecku82Gjt0/view?usp=sharing"}
+          ]'>
           <div class="card-icon">📡</div>
           <span class="card-tag">ES &amp; IoT</span>
           <div class="card-title">Arduino Basics Quiz</div>
@@ -1127,13 +1355,22 @@
             Covers the fundamentals of Arduino programming, including syntax,
             functions, and hardware interfacing.
           </p>
-          <div class="card-meta">
-            <div class="card-chips">
-              <span class="chip">IoT</span><span class="chip">CSE</span>
-            </div>
-            <div class="card-arrow">↗</div>
+          <div class="card-footer">
+            <a
+              class="card-quiz-btn"
+              href="IoT_Unit4_Quiz.html"
+              onclick="openQuiz(this,event)">
+              Start Quiz <span class="arrow">↗</span>
+            </a>
+            <button
+              class="card-refs-btn"
+              onclick="openRefs(this)">
+              📎 Refs <span class="refs-count">1</span>
+            </button>
           </div>
-        </a>
+        </div>
+
+        <!-- ADD NEW CARDS HERE -->
       </div>
 
       <footer>
@@ -1143,27 +1380,51 @@
       </footer>
     </div>
 
-    <!-- ═══════════════════════════════════════════════
-         FEEDBACK BUTTON
-    ═══════════════════════════════════════════════ -->
+    <!-- REFERENCES MODAL -->
+    <div
+      class="ref-overlay"
+      id="refOverlay"
+      onclick="refOverlayClose(event)">
+      <div class="ref-modal">
+        <div class="ref-header">
+          <div>
+            <div class="ref-pre-title">Reference Materials</div>
+            <div
+              class="ref-modal-title"
+              id="refModalTitle">
+              Quiz References
+            </div>
+            <div
+              class="ref-modal-sub"
+              id="refModalSub">
+              0 files
+            </div>
+          </div>
+          <button
+            class="ref-close"
+            onclick="closeRefs()">
+            ✕
+          </button>
+        </div>
+        <div
+          class="ref-list"
+          id="refList"></div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK BUTTON -->
     <button
       class="feedback-fab"
       onclick="openFeedback()">
-      <span class="fab-dot"></span>
-      Send Feedback
+      <span class="fab-dot"></span>Send Feedback
     </button>
 
-    <!-- ═══════════════════════════════════════════════
-         FEEDBACK MODAL
-    ═══════════════════════════════════════════════ -->
+    <!-- FEEDBACK MODAL -->
     <div
       class="fb-overlay"
       id="fbOverlay"
-      onclick="overlayClose(event)">
-      <div
-        class="fb-modal"
-        id="fbModal">
-        <!-- SUCCESS STATE (hidden by default) -->
+      onclick="fbOverlayClose(event)">
+      <div class="fb-modal">
         <div
           class="fb-success"
           id="fbSuccess">
@@ -1180,8 +1441,6 @@
             Close Terminal
           </button>
         </div>
-
-        <!-- FORM STATE -->
         <div id="fbForm">
           <div class="fb-header">
             <div class="fb-header-left">
@@ -1194,36 +1453,31 @@
               ✕
             </button>
           </div>
-
-          <!-- TYPE SELECTOR -->
           <div class="fb-type-row">
             <button
               class="fb-type-btn active"
               id="btn-review"
               onclick="switchType('review')">
-              <span class="fb-type-icon">💬</span>
-              <span class="fb-type-label">Review</span>
+              <span class="fb-type-icon">💬</span
+              ><span class="fb-type-label">Review</span>
             </button>
             <button
               class="fb-type-btn type-bug"
               id="btn-bug"
               onclick="switchType('bug')">
-              <span class="fb-type-icon">🐛</span>
-              <span class="fb-type-label">Bug Report</span>
+              <span class="fb-type-icon">🐛</span
+              ><span class="fb-type-label">Bug Report</span>
             </button>
             <button
               class="fb-type-btn type-suggest"
               id="btn-suggest"
               onclick="switchType('suggest')">
-              <span class="fb-type-icon">💡</span>
-              <span class="fb-type-label">Suggestion</span>
+              <span class="fb-type-icon">💡</span
+              ><span class="fb-type-label">Suggestion</span>
             </button>
           </div>
-
           <div class="fb-divider"></div>
-
           <div class="fb-body">
-            <!-- PANEL: REVIEW -->
             <div
               class="fb-panel active"
               id="panel-review">
@@ -1232,24 +1486,24 @@
                 <div
                   class="star-row"
                   id="starRow">
-                  <span onclick="setRating(1)">★</span>
-                  <span onclick="setRating(2)">★</span>
-                  <span onclick="setRating(3)">★</span>
-                  <span onclick="setRating(4)">★</span>
-                  <span onclick="setRating(5)">★</span>
+                  <span onclick="setRating(1)">★</span
+                  ><span onclick="setRating(2)">★</span
+                  ><span onclick="setRating(3)">★</span
+                  ><span onclick="setRating(4)">★</span
+                  ><span onclick="setRating(5)">★</span>
                 </div>
               </div>
               <div class="fb-field">
-                <label class="fb-label">Name (optional)</label>
-                <input
+                <label class="fb-label">Name (optional)</label
+                ><input
                   class="fb-input"
                   id="r-name"
                   type="text"
                   placeholder="e.g. Ansh" />
               </div>
               <div class="fb-field">
-                <label class="fb-label">Which quiz did you take?</label>
-                <select
+                <label class="fb-label">Which quiz?</label
+                ><select
                   class="fb-select"
                   id="r-quiz">
                   <option value="">— Select a quiz —</option>
@@ -1260,21 +1514,19 @@
                 </select>
               </div>
               <div class="fb-field">
-                <label class="fb-label">Your Thoughts</label>
-                <textarea
+                <label class="fb-label">Your Thoughts</label
+                ><textarea
                   class="fb-textarea"
                   id="r-msg"
                   placeholder="What did you like? What could be better?"></textarea>
               </div>
             </div>
-
-            <!-- PANEL: BUG REPORT -->
             <div
               class="fb-panel"
               id="panel-bug">
               <div class="fb-field">
-                <label class="fb-label">Which quiz / page?</label>
-                <select
+                <label class="fb-label">Which quiz / page?</label
+                ><select
                   class="fb-select"
                   id="b-quiz">
                   <option value="">— Select a page —</option>
@@ -1286,8 +1538,8 @@
                 </select>
               </div>
               <div class="fb-field">
-                <label class="fb-label">Bug Type</label>
-                <select
+                <label class="fb-label">Bug Type</label
+                ><select
                   class="fb-select"
                   id="b-type">
                   <option value="">— Select type —</option>
@@ -1299,29 +1551,27 @@
                 </select>
               </div>
               <div class="fb-field">
-                <label class="fb-label">Describe the Bug</label>
-                <textarea
+                <label class="fb-label">Describe the Bug</label
+                ><textarea
                   class="fb-textarea"
                   id="b-msg"
-                  placeholder="Steps to reproduce, what happened vs. what you expected..."></textarea>
+                  placeholder="What happened vs. what you expected..."></textarea>
               </div>
             </div>
-
-            <!-- PANEL: SUGGESTION -->
             <div
               class="fb-panel"
               id="panel-suggest">
               <div class="fb-field">
-                <label class="fb-label">Suggested Quiz Topic</label>
-                <input
+                <label class="fb-label">Suggested Quiz Topic</label
+                ><input
                   class="fb-input"
                   id="s-topic"
                   type="text"
-                  placeholder="e.g. Data Structures, DBMS, OS concepts..." />
+                  placeholder="e.g. Data Structures, DBMS..." />
               </div>
               <div class="fb-field">
-                <label class="fb-label">Subject / Category</label>
-                <select
+                <label class="fb-label">Subject / Category</label
+                ><select
                   class="fb-select"
                   id="s-subject">
                   <option value="">— Select category —</option>
@@ -1334,14 +1584,13 @@
                 </select>
               </div>
               <div class="fb-field">
-                <label class="fb-label">Additional Details</label>
-                <textarea
+                <label class="fb-label">Additional Details</label
+                ><textarea
                   class="fb-textarea"
                   id="s-msg"
-                  placeholder="Any specific topics, syllabus reference, or source material you'd like included?"></textarea>
+                  placeholder="Any specific topics or syllabus reference?"></textarea>
               </div>
             </div>
-
             <button
               class="fb-submit"
               id="fbSubmitBtn"
@@ -1350,9 +1599,7 @@
             </button>
             <div
               class="fb-error-msg"
-              id="fbError">
-              ⚠ Transmission failed. Please try again.
-            </div>
+              id="fbError"></div>
           </div>
         </div>
       </div>
@@ -1363,14 +1610,13 @@
       const canvas = document.getElementById("starCanvas");
       const ctx = canvas.getContext("2d");
       let stars = [];
-
       function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       }
       function initStars() {
         stars = [];
-        for (let i = 0; i < 160; i++) {
+        for (let i = 0; i < 160; i++)
           stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
@@ -1379,7 +1625,6 @@
             speed: Math.random() * 0.3 + 0.05,
             drift: (Math.random() - 0.5) * 0.1,
           });
-        }
       }
       function drawStars() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1389,10 +1634,10 @@
           s.x += s.drift;
           if (s.x < 0) s.x = canvas.width;
           if (s.x > canvas.width) s.x = 0;
-          const alpha = Math.abs(Math.sin(s.a * Math.PI));
+          const a = Math.abs(Math.sin(s.a * Math.PI));
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(180,220,255,${alpha * 0.7})`;
+          ctx.fillStyle = `rgba(180,220,255,${a * 0.7})`;
           ctx.fill();
         });
         requestAnimationFrame(drawStars);
@@ -1405,9 +1650,10 @@
       initStars();
       drawStars();
 
-      // ── LINK OPENER ──
-      function openLink(el, e) {
+      // ── QUIZ LINK ──
+      function openQuiz(el, e) {
         e.preventDefault();
+        e.stopPropagation();
         const url = el.getAttribute("href");
         if (url && url != "#") window.open(url, "_blank");
         else alert("⚠ Link not set yet.");
@@ -1425,63 +1671,140 @@
       }
       function filterCards() {
         const q = document.getElementById("searchInput").value.toLowerCase();
-        document
-          .querySelectorAll(".quiz-card:not(.add-card)")
-          .forEach((card) => {
-            const tags = (card.dataset.tags || "").toLowerCase();
-            const title =
-              card.querySelector(".card-title")?.textContent.toLowerCase() ||
-              "";
-            const matchSearch = !q || title.includes(q) || tags.includes(q);
-            const matchFilter =
-              activeFilter === "all" || tags.includes(activeFilter);
-            card.classList.toggle("hidden", !(matchSearch && matchFilter));
-          });
+        document.querySelectorAll(".quiz-card").forEach((card) => {
+          const tags = (card.dataset.tags || "").toLowerCase();
+          const title =
+            card.querySelector(".card-title")?.textContent.toLowerCase() || "";
+          const ms = !q || title.includes(q) || tags.includes(q);
+          const mf = activeFilter === "all" || tags.includes(activeFilter);
+          card.classList.toggle("hidden", !(ms && mf));
+        });
       }
 
-      // ═══════════════════════════════════════════════
-      // FEEDBACK SYSTEM
-      // ═══════════════════════════════════════════════
+      // ══════════════════════════════════════
+      // REFERENCES MODAL
+      // ══════════════════════════════════════
+      const TYPE_META = {
+        pdf: {
+          icon: "📄",
+          badge: "badge-pdf",
+          cls: "ref-type-pdf",
+          label: "PDF",
+        },
+        ppt: {
+          icon: "📊",
+          badge: "badge-ppt",
+          cls: "ref-type-ppt",
+          label: "PPT",
+        },
+        doc: {
+          icon: "📝",
+          badge: "badge-doc",
+          cls: "ref-type-doc",
+          label: "DOC",
+        },
+        link: {
+          icon: "🔗",
+          badge: "badge-link",
+          cls: "ref-type-link",
+          label: "Link",
+        },
+      };
+      function getMeta(type) {
+        return (
+          TYPE_META[type?.toLowerCase()] || {
+            icon: "📁",
+            badge: "badge-other",
+            cls: "ref-type-other",
+            label: (type || "File").toUpperCase(),
+          }
+        );
+      }
 
+      function openRefs(btn) {
+        const card = btn.closest(".quiz-card");
+        const title = card.querySelector(".card-title").textContent;
+        let refs = [];
+        try {
+          refs = JSON.parse(card.dataset.refs || "[]");
+        } catch (e) {}
+
+        document.getElementById("refModalTitle").textContent = title;
+        document.getElementById("refModalSub").textContent =
+          refs.length + (refs.length === 1 ? " file" : " files");
+
+        const list = document.getElementById("refList");
+        list.innerHTML = "";
+
+        if (!refs.length) {
+          list.innerHTML = `<div class="ref-empty"><span class="ref-empty-icon">📂</span>No references added yet.</div>`;
+        } else {
+          refs.forEach((ref) => {
+            const m = getMeta(ref.type);
+            const el = document.createElement("div");
+            el.className = "ref-item";
+            el.innerHTML = `
+              <div class="ref-type-icon ${m.cls}">${m.icon}</div>
+              <div class="ref-info">
+                <div class="ref-name">${ref.title || "Untitled"}</div>
+                <span class="ref-badge ${m.badge}">${m.label}</span>
+              </div>
+              <a class="ref-open-btn" href="${
+                ref.url
+              }" target="_blank" rel="noopener">Open ↗</a>`;
+            list.appendChild(el);
+          });
+        }
+        document.getElementById("refOverlay").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeRefs() {
+        document.getElementById("refOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+      }
+      function refOverlayClose(e) {
+        if (e.target === document.getElementById("refOverlay")) closeRefs();
+      }
+
+      // ══════════════════════════════════════
+      // FEEDBACK SYSTEM
+      // ══════════════════════════════════════
+
+      // ▶▶ PASTE YOUR GOOGLE APPS SCRIPT URL HERE ◀◀
       const APPS_SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbyNlf8_-no-UafUp4xr5zLYb8BNeyK4mc4qug0D7Ni48s8mj9bzoakJvHZaXZzN3T-d/exec";
 
-      let currentType = "review";
-      let currentRating = 0;
-
+      let currentType = "review",
+        currentRating = 0;
       function openFeedback() {
         document.getElementById("fbOverlay").classList.add("open");
         document.body.style.overflow = "hidden";
       }
-
       function closeFeedback() {
         document.getElementById("fbOverlay").classList.remove("open");
         document.body.style.overflow = "";
-        // reset after close animation
         setTimeout(resetForm, 300);
       }
-
-      function overlayClose(e) {
+      function fbOverlayClose(e) {
         if (e.target === document.getElementById("fbOverlay")) closeFeedback();
       }
-
-      function switchType(type) {
-        currentType = type;
-        ["review", "bug", "suggest"].forEach((t) => {
-          document.getElementById("panel-" + t).classList.remove("active");
-          document.getElementById("btn-" + t).classList.remove("active");
+      function switchType(t) {
+        currentType = t;
+        ["review", "bug", "suggest"].forEach((x) => {
+          document.getElementById("panel-" + x).classList.remove("active");
+          document.getElementById("btn-" + x).classList.remove("active");
         });
-        document.getElementById("panel-" + type).classList.add("active");
-        document.getElementById("btn-" + type).classList.add("active");
+        document.getElementById("panel-" + t).classList.add("active");
+        document.getElementById("btn-" + t).classList.add("active");
         document.getElementById("fbError").style.display = "none";
       }
-
       function setRating(n) {
         currentRating = n;
-        const stars = document.querySelectorAll("#starRow span");
-        stars.forEach((s, i) => s.classList.toggle("lit", i < n));
+        document
+          .querySelectorAll("#starRow span")
+          .forEach((s, i) => s.classList.toggle("lit", i < n));
       }
-
       function resetForm() {
         switchType("review");
         currentRating = 0;
@@ -1498,88 +1821,79 @@
         });
         document.getElementById("fbSuccess").classList.remove("show");
         document.getElementById("fbForm").style.display = "";
-        const btn = document.getElementById("fbSubmitBtn");
-        btn.disabled = false;
-        btn.innerHTML = "Transmit Feedback ↗";
+        const b = document.getElementById("fbSubmitBtn");
+        b.disabled = false;
+        b.innerHTML = "Transmit Feedback ↗";
         document.getElementById("fbError").style.display = "none";
       }
 
       async function submitFeedback() {
-        const btn = document.getElementById("fbSubmitBtn");
-        const errEl = document.getElementById("fbError");
+        const btn = document.getElementById("fbSubmitBtn"),
+          errEl = document.getElementById("fbError");
         errEl.style.display = "none";
-
-        // Build payload
-        let payload = {
+        let p = {
           type: currentType,
           timestamp: new Date().toLocaleString("en-IN", {
             timeZone: "Asia/Kolkata",
           }),
         };
-
         if (currentType === "review") {
-          payload.rating = currentRating || "No rating";
-          payload.name =
+          p.rating = currentRating || "No rating";
+          p.name =
             document.getElementById("r-name").value.trim() || "Anonymous";
-          payload.quiz =
-            document.getElementById("r-quiz").value || "Not specified";
-          payload.message = document.getElementById("r-msg").value.trim();
-          if (!payload.message) {
-            errEl.textContent = "⚠ Please write your thoughts before sending.";
+          p.quiz = document.getElementById("r-quiz").value || "Not specified";
+          p.message = document.getElementById("r-msg").value.trim();
+          if (!p.message) {
+            errEl.textContent = "⚠ Please write your thoughts.";
             errEl.style.display = "block";
             return;
           }
         } else if (currentType === "bug") {
-          payload.quiz =
-            document.getElementById("b-quiz").value || "Not specified";
-          payload.bugType =
+          p.quiz = document.getElementById("b-quiz").value || "Not specified";
+          p.bugType =
             document.getElementById("b-type").value || "Not specified";
-          payload.message = document.getElementById("b-msg").value.trim();
-          if (!payload.message) {
-            errEl.textContent = "⚠ Please describe the bug before sending.";
+          p.message = document.getElementById("b-msg").value.trim();
+          if (!p.message) {
+            errEl.textContent = "⚠ Please describe the bug.";
             errEl.style.display = "block";
             return;
           }
         } else {
-          payload.topic =
+          p.topic =
             document.getElementById("s-topic").value.trim() || "Not specified";
-          payload.subject =
+          p.subject =
             document.getElementById("s-subject").value || "Not specified";
-          payload.message =
-            document.getElementById("s-msg").value.trim() ||
-            "No additional details";
+          p.message =
+            document.getElementById("s-msg").value.trim() || "No details";
           if (!document.getElementById("s-topic").value.trim()) {
-            errEl.textContent = "⚠ Please enter a quiz topic.";
+            errEl.textContent = "⚠ Please enter a topic.";
             errEl.style.display = "block";
             return;
           }
         }
-
-        // Submit
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span>Transmitting...';
-
         try {
           await fetch(APPS_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
-            body: new URLSearchParams({ data: JSON.stringify(payload) }),
+            body: new URLSearchParams({ data: JSON.stringify(p) }),
           });
-          // no-cors means we can't read response, but if it didn't throw, treat as success
           document.getElementById("fbForm").style.display = "none";
           document.getElementById("fbSuccess").classList.add("show");
         } catch (err) {
           btn.disabled = false;
           btn.innerHTML = "Transmit Feedback ↗";
-          errEl.textContent =
-            "⚠ Network error. Check your connection and try again.";
+          errEl.textContent = "⚠ Network error. Try again.";
           errEl.style.display = "block";
         }
       }
 
-      // ESC key closes modal
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeFeedback();
+        if (e.key === "Escape") {
+          closeRefs();
+          closeFeedback();
+        }
       });
     </script>
   </body>
