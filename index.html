@@ -1055,6 +1055,7 @@
         padding: 11px 14px;
         outline: none;
         transition: border-color 0.2s;
+        appearance: none;
         -webkit-appearance: none;
       }
       .fb-input:focus,
@@ -1228,12 +1229,12 @@
 
       <div class="stats-bar">
         <div class="stat">
-          <div class="stat-num">3</div>
+          <div class="stat-num">4</div>
           <div class="stat-label">Quizzes Active</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <div class="stat-num">3</div>
+          <div class="stat-num">4</div>
           <div class="stat-label">Subjects</div>
         </div>
         <div class="stat-divider"></div>
@@ -1260,7 +1261,7 @@
         <button
           class="filter-btn"
           onclick="setFilter('networks',this)">
-          Linux
+          Networks
         </button>
         <button
           class="filter-btn"
@@ -1370,6 +1371,34 @@
           </div>
         </div>
 
+        <!-- CARD 4 — Computer Networks -->
+        <div
+          class="quiz-card card-green"
+          data-tags="computer networks communication protocols"
+          data-refs='[
+            {"title":"Computer Networks Topics","type":"doc","url":"https://docs.google.com/document/d/1MMh-SnTglQfJIaSh8rUYAQrBpSI8fIL4/edit?usp=sharing&ouid=109534110479583613780&rtpof=true&sd=true"}
+          ]'>
+          <div class="card-icon">📡</div>
+          <span class="card-tag">Computer Networks</span>
+          <div class="card-title">Computer Networks Quiz</div>
+          <p class="card-desc">
+            Covers the fundamentals of Computer Networks, including
+            architecture, protocols, and communication.
+          </p>
+          <div class="card-footer">
+            <a
+              class="card-quiz-btn"
+              href="computer_network_quiz.html"
+              onclick="openQuiz(this,event)">
+              Start Quiz <span class="arrow">↗</span>
+            </a>
+            <button
+              class="card-refs-btn"
+              onclick="openRefs(this)">
+              📎 Refs <span class="refs-count">1</span>
+            </button>
+          </div>
+        </div>
         <!-- ADD NEW CARDS HERE -->
       </div>
 
@@ -1510,6 +1539,7 @@
                   <option>Linux Fundamentals Quiz</option>
                   <option>Intro to IoT Quiz</option>
                   <option>Arduino Basics Quiz</option>
+                  <option>Computer Networks Quiz</option>
                   <option>General / All quizzes</option>
                 </select>
               </div>
@@ -1534,6 +1564,7 @@
                   <option>Linux Fundamentals Quiz</option>
                   <option>Intro to IoT Quiz</option>
                   <option>Arduino Basics Quiz</option>
+                  <option>Computer Networks Quiz</option>
                   <option>Other</option>
                 </select>
               </div>

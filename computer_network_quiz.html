@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Computer Networks MCQ Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0a0e1a;
+        --surface: #111827;
+        --surface2: #1a2235;
+        --accent: #00f5c4;
+        --accent2: #7c3aed;
+        --accent3: #f59e0b;
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --correct: #10b981;
+        --wrong: #ef4444;
+        --border: rgba(255, 255, 255, 0.07);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+            ellipse 80% 60% at 20% -10%,
+            rgba(124, 58, 237, 0.15) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 80% 110%,
+            rgba(0, 245, 196, 0.1) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── SCREENS ── */
+      .screen {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── HOME ── */
+      #home {
+        padding: 2rem;
+        text-align: center;
+        gap: 2rem;
+      }
+      .logo-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 0.75rem;
+        font-family: "Space Mono", monospace;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      h1 {
+        font-size: clamp(2rem, 6vw, 4rem);
+        font-weight: 800;
+        line-height: 1.05;
+        color: #fff;
+      }
+      h1 span {
+        color: var(--accent);
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 1rem;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .stat-row {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+      .stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        text-align: center;
+      }
+      .stat .num {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--accent);
+        font-family: "Space Mono", monospace;
+      }
+      .stat .lbl {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .mode-cards {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .mode-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem 2.5rem;
+        width: 280px;
+        cursor: pointer;
+        transition: all 0.25s;
+        position: relative;
+        overflow: hidden;
+        text-align: left;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .mode-card.learn::before {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 245, 196, 0.08),
+          transparent
+        );
+      }
+      .mode-card.rapid::before {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 158, 11, 0.1),
+          transparent
+        );
+      }
+      .mode-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+      .mode-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+      .mode-card.learn .mode-title {
+        color: var(--accent);
+      }
+      .mode-card.rapid .mode-title {
+        color: var(--accent3);
+      }
+      .mode-desc {
+        font-size: 0.85rem;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .topic-filter {
+        max-width: 700px;
+        width: 100%;
+      }
+      .topic-filter h3 {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      .topic-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+      .chip {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+      }
+      .chip.active {
+        background: var(--accent2);
+        border-color: var(--accent2);
+        color: #fff;
+      }
+      .chip-all {
+        background: var(--surface2);
+      }
+      .chip-all.active {
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        border-color: transparent;
+        color: #fff;
+      }
+
+      /* ── QUIZ ── */
+      #quiz {
+        padding: 1.5rem;
+        align-items: stretch;
+        justify-content: flex-start;
+      }
+      .quiz-inner {
+        max-width: 760px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        padding: 1rem 0 3rem;
+      }
+
+      .quiz-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .mode-badge {
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+      }
+      .mode-badge.learn {
+        background: rgba(0, 245, 196, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(0, 245, 196, 0.3);
+      }
+      .mode-badge.rapid {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--accent3);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .q-counter {
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .score-live {
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+      }
+      .score-live span {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .progress-bar {
+        height: 3px;
+        background: var(--surface2);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        border-radius: 999px;
+        transition: width 0.4s;
+      }
+
+      .topic-label {
+        font-family: "Space Mono", monospace;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--accent2);
+        margin-bottom: 0.25rem;
+      }
+      .question-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 1.75rem 2rem;
+      }
+      .question-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .option {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.9rem 1.2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      .option:hover:not(.disabled) {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: #1f2d44;
+        transform: translateX(3px);
+      }
+      .option.correct {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: var(--correct);
+        color: var(--correct);
+      }
+      .option.wrong {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--wrong);
+        color: var(--wrong);
+      }
+      .option.disabled {
+        cursor: default;
+      }
+      .opt-key {
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+        border: 1px solid var(--border);
+      }
+      .option.correct .opt-key {
+        background: var(--correct);
+        border-color: var(--correct);
+        color: #000;
+      }
+      .option.wrong .opt-key {
+        background: var(--wrong);
+        border-color: var(--wrong);
+        color: #fff;
+      }
+
+      .feedback-box {
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        display: none;
+        animation: fadeUp 0.3s ease;
+      }
+      .feedback-box.correct {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #6ee7b7;
+      }
+      .feedback-box.wrong {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+      }
+      .feedback-box.show {
+        display: block;
+      }
+      .feedback-box strong {
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+
+      .nav-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+      .btn-ghost {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--text);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+        border: none;
+      }
+      .btn-primary:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+      .btn-warn {
+        background: rgba(245, 158, 11, 0.15);
+        border-color: rgba(245, 158, 11, 0.4);
+        color: var(--accent3);
+      }
+      .btn-warn:hover {
+        background: rgba(245, 158, 11, 0.25);
+      }
+      .btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+        transform: none !important;
+      }
+
+      /* rapid fire stopped state */
+      .rapid-stop {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        animation: fadeUp 0.3s;
+      }
+      .rapid-stop h3 {
+        color: var(--wrong);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+      .rapid-stop p {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* ── RESULTS ── */
+      #results {
+        padding: 2rem;
+        gap: 1.5rem;
+        text-align: center;
+      }
+      .result-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        max-width: 560px;
+        width: 100%;
+      }
+      .big-score {
+        font-size: 5rem;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .score-label {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+      }
+      .result-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        margin: 2rem 0 1.5rem;
+      }
+      .rstat {
+        background: var(--surface2);
+        border-radius: 12px;
+        padding: 1rem 0.5rem;
+      }
+      .rstat .rv {
+        font-size: 1.5rem;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+      }
+      .rstat .rl {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .rstat.c .rv {
+        color: var(--correct);
+      }
+      .rstat.w .rv {
+        color: var(--wrong);
+      }
+      .rstat.s .rv {
+        color: var(--accent3);
+      }
+      .result-btns {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* wrong review list */
+      .wrong-list {
+        max-width: 760px;
+        width: 100%;
+        text-align: left;
+      }
+      .wrong-list h3 {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      .wrong-item {
+        background: var(--surface);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .wrong-item .wq {
+        font-size: 0.9rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+      .wrong-item .wa {
+        font-size: 0.8rem;
+      }
+      .wrong-item .wa span {
+        color: var(--correct);
+      }
+      .wrong-item .wyou {
+        color: var(--wrong);
+        font-size: 0.8rem;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .timer-pulse {
+        animation: pulse 1s infinite;
+      }
+
+      .rapid-timer {
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--accent3);
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HOME -->
+    <div
+      id="home"
+      class="screen active">
+      <div class="logo-badge">Computer Networks</div>
+      <h1>MCQ <span>Quiz</span><br />Master</h1>
+      <p class="subtitle">
+        Full syllabus coverage — Physical, Data Link, Network & Transport layers
+      </p>
+
+      <div class="stat-row">
+        <div class="stat">
+          <div
+            class="num"
+            id="totalQCount">
+            0
+          </div>
+          <div class="lbl">Questions</div>
+        </div>
+        <div class="stat">
+          <div class="num">5</div>
+          <div class="lbl">Topics</div>
+        </div>
+        <div class="stat">
+          <div class="num">4</div>
+          <div class="lbl">Layers</div>
+        </div>
+      </div>
+
+      <div class="topic-filter">
+        <h3>Filter by Topic</h3>
+        <div
+          class="topic-chips"
+          id="topicChips"></div>
+      </div>
+
+      <div class="mode-cards">
+        <div
+          class="mode-card learn"
+          onclick="startQuiz('learn')">
+          <div class="mode-icon">📖</div>
+          <div class="mode-title">Learning Mode</div>
+          <p class="mode-desc">
+            Pick an answer, see instant feedback with explanation. Navigate
+            freely with Prev / Next. Review wrong answers at the end.
+          </p>
+        </div>
+        <div
+          class="mode-card rapid"
+          onclick="startQuiz('rapid')">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-title">Rapid Fire</div>
+          <p class="mode-desc">
+            Correct = auto-advance. Wrong = stop! Manually move on. Race through
+            questions as fast as you can.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div
+      id="quiz"
+      class="screen">
+      <div class="quiz-inner">
+        <div class="quiz-header">
+          <span
+            class="mode-badge"
+            id="modeBadge"></span>
+          <span
+            class="q-counter"
+            id="qCounter"></span>
+          <span
+            class="score-live"
+            id="scoreLive"></span>
+        </div>
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            id="progressFill"></div>
+        </div>
+
+        <div>
+          <div
+            class="topic-label"
+            id="topicLabel"></div>
+          <div class="question-card">
+            <div
+              class="question-text"
+              id="questionText"></div>
+          </div>
+        </div>
+
+        <div
+          class="options"
+          id="optionsContainer"></div>
+        <div
+          class="feedback-box"
+          id="feedbackBox"></div>
+        <div
+          id="rapidStop"
+          style="display: none"></div>
+
+        <div class="nav-row">
+          <button
+            class="btn btn-ghost"
+            id="prevBtn"
+            onclick="navigate(-1)">
+            ← Prev
+          </button>
+          <button
+            class="btn btn-warn"
+            onclick="goHome()">
+            ✕ Exit
+          </button>
+          <button
+            class="btn btn-primary"
+            id="nextBtn"
+            onclick="navigate(1)"
+            disabled>
+            Next →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div
+      id="results"
+      class="screen">
+      <div class="result-card">
+        <div
+          class="big-score"
+          id="bigScore"></div>
+        <div
+          class="score-label"
+          id="scoreLabel"></div>
+        <div class="result-stats">
+          <div class="rstat c">
+            <div
+              class="rv"
+              id="rCorrect"></div>
+            <div class="rl">Correct</div>
+          </div>
+          <div class="rstat w">
+            <div
+              class="rv"
+              id="rWrong"></div>
+            <div class="rl">Wrong</div>
+          </div>
+          <div class="rstat s">
+            <div
+              class="rv"
+              id="rSkip"></div>
+            <div class="rl">Skipped</div>
+          </div>
+        </div>
+        <div class="result-btns">
+          <button
+            class="btn btn-ghost"
+            onclick="goHome()">
+            🏠 Home
+          </button>
+          <button
+            class="btn btn-primary"
+            onclick="retakeAll()">
+            ↺ Retake All
+          </button>
+          <button
+            class="btn btn-warn"
+            id="retakeWrongBtn"
+            onclick="retakeWrong()">
+            ⚠ Retake Wrong
+          </button>
+        </div>
+      </div>
+      <div
+        class="wrong-list"
+        id="wrongList"></div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════════════
+      //  QUESTION BANK
+      // ═══════════════════════════════════════════════════════
+      const ALL_QUESTIONS = [
+        // ── INTRODUCTION ──────────────────────────────────────
+        {
+          t: "Introduction",
+          q: "Which of the following is NOT a primary use of computer networks?",
+          o: [
+            "Resource sharing",
+            "Communication",
+            "Increasing CPU speed",
+            "Remote access",
+          ],
+          a: 2,
+          e: "Computer networks are used for resource sharing, communication, remote access, and distributed computing. Increasing CPU speed is a hardware concern, not a networking function.",
+        },
+        {
+          t: "Introduction",
+          q: "A collision domain is a network segment where:",
+          o: [
+            "Broadcasts are contained",
+            "Simultaneous transmissions cause data collisions",
+            "Data packets are routed",
+            "MAC addresses are assigned",
+          ],
+          a: 1,
+          e: "A collision domain is a segment where two or more devices can send data simultaneously and their signals collide, causing data corruption.",
+        },
+        {
+          t: "Introduction",
+          q: "A broadcast domain is a group of devices that:",
+          o: [
+            "Share the same IP address",
+            "Receive each other's broadcast frames",
+            "Are connected by a router",
+            "Use the same MAC address",
+          ],
+          a: 1,
+          e: "A broadcast domain includes all devices that receive a broadcast frame. Routers separate broadcast domains; switches/hubs do not.",
+        },
+        {
+          t: "Introduction",
+          q: "Which device creates separate collision domains but a single broadcast domain?",
+          o: ["Hub", "Switch", "Router", "Repeater"],
+          a: 1,
+          e: "A switch creates a separate collision domain per port but all ports remain in the same broadcast domain (unless VLANs are used). A router separates both.",
+        },
+        {
+          t: "Introduction",
+          q: "The OSI model has how many layers?",
+          o: ["4", "5", "7", "8"],
+          a: 2,
+          e: "The OSI (Open Systems Interconnection) model has 7 layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application.",
+        },
+        {
+          t: "Introduction",
+          q: "Which OSI layer is responsible for end-to-end communication and error recovery?",
+          o: ["Network", "Data Link", "Transport", "Session"],
+          a: 2,
+          e: "The Transport layer (Layer 4) provides end-to-end communication, error recovery, and flow control between hosts.",
+        },
+        {
+          t: "Introduction",
+          q: "PDU at the Data Link layer is called:",
+          o: ["Segment", "Packet", "Frame", "Bit"],
+          a: 2,
+          e: "PDU names by layer — Transport: Segment, Network: Packet, Data Link: Frame, Physical: Bit.",
+        },
+        {
+          t: "Introduction",
+          q: "The TCP/IP model has how many layers?",
+          o: ["3", "4", "5", "7"],
+          a: 1,
+          e: "The TCP/IP model has 4 layers: Network Access (Link), Internet, Transport, and Application.",
+        },
+        {
+          t: "Introduction",
+          q: "Which layer of the OSI model corresponds to the Internet layer of TCP/IP?",
+          o: ["Transport", "Session", "Network", "Data Link"],
+          a: 2,
+          e: "The OSI Network layer (Layer 3) maps to the Internet layer of the TCP/IP model. Both handle logical addressing and routing.",
+        },
+        {
+          t: "Introduction",
+          q: "Which of the following is a key difference between OSI and TCP/IP models?",
+          o: [
+            "TCP/IP has 7 layers",
+            "OSI has 4 layers",
+            "OSI separates Session and Presentation layers; TCP/IP combines them into Application",
+            "TCP/IP does not include a Transport layer",
+          ],
+          a: 2,
+          e: "TCP/IP combines OSI's Session, Presentation, and Application layers into a single Application layer. OSI is a reference model; TCP/IP is a practical implementation.",
+        },
+        {
+          t: "Introduction",
+          q: "Which topology connects every device to every other device directly?",
+          o: ["Bus", "Star", "Mesh", "Ring"],
+          a: 2,
+          e: "A full mesh topology connects every device to every other device, providing maximum redundancy but high cost.",
+        },
+        {
+          t: "Introduction",
+          q: "In a star topology, if the central hub/switch fails:",
+          o: [
+            "Only two devices lose connectivity",
+            "The entire network goes down",
+            "Other devices continue communicating",
+            "A ring forms automatically",
+          ],
+          a: 1,
+          e: "In a star topology, all devices connect to a central hub or switch. If that central device fails, all connectivity is lost.",
+        },
+        {
+          t: "Introduction",
+          q: "The Physical layer PDU is called:",
+          o: ["Frame", "Packet", "Segment", "Bit"],
+          a: 3,
+          e: "The Physical layer deals with raw bits transmitted over the physical medium — the PDU is simply a bit.",
+        },
+        {
+          t: "Introduction",
+          q: "Which OSI layer handles data encryption and compression?",
+          o: ["Application", "Session", "Presentation", "Transport"],
+          a: 2,
+          e: "The Presentation layer (Layer 6) handles data translation, encryption/decryption, and compression.",
+        },
+        {
+          t: "Introduction",
+          q: "A protocol is best defined as:",
+          o: [
+            "Physical cable specification",
+            "Set of rules governing communication between devices",
+            "Type of network topology",
+            "Hardware device for routing",
+          ],
+          a: 1,
+          e: "A protocol is a set of rules and conventions that define how data is formatted, transmitted, and received between communicating devices.",
+        },
+
+        // ── PHYSICAL LAYER ─────────────────────────────────────
+        {
+          t: "Physical Layer",
+          q: "Which cable medium provides the highest bandwidth and is immune to electromagnetic interference?",
+          o: ["UTP", "STP", "Coaxial", "Fiber Optic"],
+          a: 3,
+          e: "Fiber optic cables transmit data as light pulses, providing very high bandwidth and complete immunity to electromagnetic interference (EMI).",
+        },
+        {
+          t: "Physical Layer",
+          q: "Category 6 UTP cable supports speeds up to:",
+          o: ["10 Mbps", "100 Mbps", "1 Gbps", "10 Gbps (at short distances)"],
+          a: 3,
+          e: "Cat6 supports 10 Gbps at distances up to 55 meters and 1 Gbps at up to 100 meters.",
+        },
+        {
+          t: "Physical Layer",
+          q: "Which wireless technology uses geostationary satellites for communication?",
+          o: ["Cellular 4G", "Wi-Fi 6", "GEO Satellite", "Bluetooth"],
+          a: 2,
+          e: "Geostationary (GEO) satellites orbit at ~35,786 km altitude and appear stationary relative to Earth, used for TV broadcasting and internet in remote areas.",
+        },
+        {
+          t: "Physical Layer",
+          q: "A hub operates at which OSI layer?",
+          o: [
+            "Layer 1 – Physical",
+            "Layer 2 – Data Link",
+            "Layer 3 – Network",
+            "Layer 4 – Transport",
+          ],
+          a: 0,
+          e: "Hubs are Layer 1 devices that simply repeat electrical signals to all ports without any intelligence — they do not read MAC or IP addresses.",
+        },
+        {
+          t: "Physical Layer",
+          q: "A switch operates primarily at which OSI layer?",
+          o: ["Layer 1", "Layer 2", "Layer 3", "Layer 4"],
+          a: 1,
+          e: "Switches operate at Layer 2 (Data Link) and use MAC addresses to forward frames to the correct port, creating separate collision domains.",
+        },
+        {
+          t: "Physical Layer",
+          q: "A router operates at which OSI layer?",
+          o: ["Layer 1", "Layer 2", "Layer 3", "Layer 4"],
+          a: 2,
+          e: "Routers operate at Layer 3 (Network) and use IP addresses to route packets between different networks.",
+        },
+        {
+          t: "Physical Layer",
+          q: "What is the standard Ethernet frame's minimum size?",
+          o: ["32 bytes", "64 bytes", "128 bytes", "1518 bytes"],
+          a: 1,
+          e: "The minimum Ethernet frame size is 64 bytes (including the header and trailer). This minimum is needed for collision detection in CSMA/CD.",
+        },
+        {
+          t: "Physical Layer",
+          q: "The maximum Ethernet frame size (MTU) is:",
+          o: ["512 bytes", "1024 bytes", "1500 bytes", "9000 bytes"],
+          a: 2,
+          e: "Standard Ethernet has a Maximum Transmission Unit (MTU) of 1500 bytes for the data payload. The maximum frame size including header/trailer is 1518 bytes.",
+        },
+        {
+          t: "Physical Layer",
+          q: "Which field in an Ethernet frame identifies the protocol of the encapsulated data?",
+          o: ["Preamble", "Destination MAC", "EtherType/Length", "FCS"],
+          a: 2,
+          e: "The EtherType (or Length) field indicates the protocol of the upper-layer payload, e.g., 0x0800 for IPv4, 0x86DD for IPv6, 0x0806 for ARP.",
+        },
+        {
+          t: "Physical Layer",
+          q: "What is the size of a MAC address?",
+          o: ["32 bits", "48 bits", "64 bits", "128 bits"],
+          a: 1,
+          e: "MAC addresses are 48 bits (6 bytes) long, typically written as 6 hexadecimal pairs (e.g., AA:BB:CC:DD:EE:FF).",
+        },
+        {
+          t: "Physical Layer",
+          q: "Which MAC address ff:ff:ff:ff:ff:ff represents?",
+          o: ["Unicast", "Multicast", "Broadcast", "Anycast"],
+          a: 2,
+          e: "All-ones MAC address (ff:ff:ff:ff:ff:ff) is the Ethernet broadcast address, delivered to all devices on the local network segment.",
+        },
+        {
+          t: "Physical Layer",
+          q: "Multicast MAC addresses always begin with:",
+          o: [
+            "00:00:5E",
+            "01:00:5E (for IPv4 multicast)",
+            "FF:FF:FF",
+            "00:50:56",
+          ],
+          a: 1,
+          e: "IPv4 multicast MAC addresses use the prefix 01:00:5E, followed by 23 bits derived from the multicast IP address.",
+        },
+        {
+          t: "Physical Layer",
+          q: "A unicast MAC address is one that:",
+          o: [
+            "Is sent to all devices",
+            "Is sent to a group of devices",
+            "Identifies a single unique interface",
+            "Has all bits set to 1",
+          ],
+          a: 2,
+          e: "A unicast MAC address uniquely identifies a single network interface. Frames with a unicast destination are processed only by that specific device.",
+        },
+        {
+          t: "Physical Layer",
+          q: "The FCS field in an Ethernet frame is used for:",
+          o: [
+            "Frame synchronization",
+            "Error detection using CRC",
+            "Congestion control",
+            "MAC address lookup",
+          ],
+          a: 1,
+          e: "The Frame Check Sequence (FCS) contains a 4-byte CRC value that allows the receiver to detect bit errors introduced during transmission.",
+        },
+        {
+          t: "Physical Layer",
+          q: "Which generation of cellular technology first introduced mobile broadband internet?",
+          o: ["1G", "2G", "3G", "5G"],
+          a: 2,
+          e: "3G (Third Generation) mobile networks introduced mobile broadband data services, enabling internet browsing and video calls on mobile devices.",
+        },
+
+        // ── DATA LINK LAYER ────────────────────────────────────
+        {
+          t: "Data Link Layer",
+          q: "Which type of error affects multiple consecutive bits?",
+          o: [
+            "Single-bit error",
+            "Burst error",
+            "Checksum error",
+            "Parity error",
+          ],
+          a: 1,
+          e: "A burst error affects multiple consecutive bits. It's the most common type in real-world transmission systems due to noise bursts.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "CRC stands for:",
+          o: [
+            "Cyclic Redundancy Check",
+            "Cyclic Repeat Code",
+            "Carrier Relay Check",
+            "Circuit Relay Connection",
+          ],
+          a: 0,
+          e: "CRC (Cyclic Redundancy Check) is an error-detection technique that uses polynomial division to generate a check value appended to data.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Hamming code is used for:",
+          o: [
+            "Error detection only",
+            "Error correction (single-bit) and detection",
+            "Data compression",
+            "Encryption",
+          ],
+          a: 1,
+          e: "Hamming code can both detect and correct single-bit errors. It inserts parity bits at specific positions to identify and fix the erroneous bit.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "The Hamming distance between two codewords is:",
+          o: [
+            "The number of bits they share",
+            "The number of bit positions where they differ",
+            "The sum of all bits",
+            "The XOR of their values",
+          ],
+          a: 1,
+          e: "Hamming distance is the number of bit positions in which two equal-length codewords differ. A larger Hamming distance enables detection/correction of more errors.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "In Pure ALOHA, if a collision occurs, the station:",
+          o: [
+            "Retransmits immediately",
+            "Waits a random time then retransmits",
+            "Stops transmitting permanently",
+            "Sends a NAK",
+          ],
+          a: 1,
+          e: "In Pure ALOHA, after a collision, stations wait a random backoff time before retransmitting to reduce the chance of another collision.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Pure ALOHA has a maximum throughput of approximately:",
+          o: ["100%", "50%", "18.4%", "37%"],
+          a: 2,
+          e: "Pure ALOHA achieves a maximum throughput of 1/(2e) ≈ 18.4% due to high collision probability. Slotted ALOHA improves this to 1/e ≈ 36.8%.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "CSMA/CD is used in:",
+          o: [
+            "Wireless networks",
+            "Wired Ethernet networks",
+            "Token ring networks",
+            "Satellite networks",
+          ],
+          a: 1,
+          e: "CSMA/CD (Carrier Sense Multiple Access with Collision Detection) is used in wired Ethernet. Devices listen before transmitting and detect collisions.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "CSMA/CA is used instead of CSMA/CD in wireless networks because:",
+          o: [
+            "Wireless is faster",
+            "Collisions cannot be detected in wireless medium",
+            "Wireless uses token passing",
+            "Wireless has lower bandwidth",
+          ],
+          a: 1,
+          e: "In wireless networks, a transmitting station cannot simultaneously listen to collisions (hidden node problem and half-duplex radio). CSMA/CA avoids collisions proactively.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "FDMA divides the channel by:",
+          o: [
+            "Time slots",
+            "Frequency bands",
+            "Code sequences",
+            "Packet priority",
+          ],
+          a: 0,
+          e: "FDMA (Frequency Division Multiple Access) assigns each user a unique frequency band. Users transmit simultaneously but on different frequencies.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "TDMA divides the channel by:",
+          o: [
+            "Frequency bands",
+            "Time slots",
+            "Code sequences",
+            "Geographic area",
+          ],
+          a: 1,
+          e: "TDMA (Time Division Multiple Access) assigns each user a specific time slot. All users share the same frequency but transmit at different times.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "CDMA uses which technique to allow multiple users to share the same frequency simultaneously?",
+          o: [
+            "Spread spectrum with unique codes",
+            "Time division",
+            "Frequency division",
+            "Priority queuing",
+          ],
+          a: 0,
+          e: "CDMA (Code Division Multiple Access) assigns each user a unique spreading code. All users transmit simultaneously on the same frequency; receivers use their code to extract the signal.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "In Token Passing, a station can transmit only when:",
+          o: [
+            "The channel is idle",
+            "It holds the token",
+            "Its timer expires",
+            "It receives a broadcast",
+          ],
+          a: 1,
+          e: "Token Passing is a controlled-access protocol where a special frame called a token circulates the network. Only the station holding the token is allowed to transmit.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Piggybacking refers to:",
+          o: [
+            "Sending multiple frames at once",
+            "Attaching acknowledgment to outgoing data frames",
+            "Stealing bandwidth from other stations",
+            "Repeating lost frames",
+          ],
+          a: 1,
+          e: "Piggybacking is the technique of including an acknowledgment (ACK) for received data inside an outgoing data frame, improving efficiency.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "In Go-Back-N ARQ, if frame 5 is lost (window size 7), the sender must retransmit:",
+          o: [
+            "Only frame 5",
+            "Frames 5 through 11",
+            "Frames 5 and all subsequent sent frames",
+            "Only the frames with errors",
+          ],
+          a: 2,
+          e: "In Go-Back-N, when an error is detected, the receiver discards that frame and all subsequent frames. The sender must retransmit from the lost frame onward.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Selective Repeat ARQ is more efficient than Go-Back-N because:",
+          o: [
+            "It uses a larger window",
+            "It only retransmits the specific erroneous frame",
+            "It needs no acknowledgments",
+            "It uses CDMA",
+          ],
+          a: 1,
+          e: "Selective Repeat only retransmits the specific frame that had an error, while Go-Back-N retransmits from the error frame onwards. Selective Repeat requires more receiver buffer.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Stop-and-Wait protocol has an efficiency of approximately what on a high-latency link?",
+          o: [
+            "Near 100%",
+            "Near 50%",
+            "Very low, proportional to bandwidth-delay product",
+            "Exactly 18.4%",
+          ],
+          a: 2,
+          e: "Stop-and-Wait sends one frame and waits for an ACK before sending the next. On high-latency links, the sender is idle most of the time, making efficiency very low.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "The Reservation protocol is a type of:",
+          o: [
+            "Random access protocol",
+            "Channelization protocol",
+            "Controlled access protocol",
+            "Error correction protocol",
+          ],
+          a: 2,
+          e: "Reservation is a controlled access protocol where stations reserve time slots in advance before transmitting data.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "Polling is a controlled access method where:",
+          o: [
+            "Stations compete randomly",
+            "A central controller invites stations to transmit",
+            "All stations share a token",
+            "Frequency bands are divided",
+          ],
+          a: 1,
+          e: "In polling, a primary station (controller) polls secondary stations one by one, giving them permission to transmit. It eliminates collisions but creates overhead.",
+        },
+        {
+          t: "Data Link Layer",
+          q: "A checksum error detection works by:",
+          o: [
+            "Dividing data by a polynomial",
+            "Summing data values and sending the result",
+            "Using parity bits at power-of-2 positions",
+            "Spreading data with codes",
+          ],
+          a: 1,
+          e: "A checksum adds up all data segments (treating them as numbers). The sum is sent with the data. The receiver recalculates and compares to detect errors.",
+        },
+
+        // ── NETWORK LAYER ──────────────────────────────────────
+        {
+          t: "Network Layer",
+          q: "An IPv4 address is how many bits long?",
+          o: ["16 bits", "32 bits", "48 bits", "128 bits"],
+          a: 1,
+          e: "IPv4 addresses are 32 bits (4 bytes), typically written in dotted decimal notation (e.g., 192.168.1.1).",
+        },
+        {
+          t: "Network Layer",
+          q: "Which class of IPv4 address starts with bits '1110'?",
+          o: ["Class A", "Class B", "Class C", "Class D"],
+          a: 3,
+          e: "Class D addresses (224.0.0.0 – 239.255.255.255) start with '1110' and are reserved for multicast.",
+        },
+        {
+          t: "Network Layer",
+          q: "The default subnet mask for a Class B network is:",
+          o: ["255.0.0.0", "/8", "255.255.0.0", "255.255.255.0"],
+          a: 2,
+          e: "Class B networks (128.0.0.0 – 191.255.255.255) have a default subnet mask of 255.255.0.0 (/16), providing 65,534 host addresses.",
+        },
+        {
+          t: "Network Layer",
+          q: "What is the network address of 192.168.10.35/27?",
+          o: [
+            "192.168.10.0",
+            "192.168.10.32",
+            "192.168.10.16",
+            "192.168.10.64",
+          ],
+          a: 1,
+          e: "/27 means 27 network bits. Block size = 32. 35 falls in block starting at 32. Network address = 192.168.10.32.",
+        },
+        {
+          t: "Network Layer",
+          q: "ICMP is primarily used for:",
+          o: [
+            "Routing table updates",
+            "Error reporting and diagnostic messages",
+            "MAC address resolution",
+            "IP address assignment",
+          ],
+          a: 1,
+          e: "ICMP (Internet Control Message Protocol) is used for error reporting (Destination Unreachable, TTL Exceeded) and diagnostics (ping, traceroute).",
+        },
+        {
+          t: "Network Layer",
+          q: "ARP resolves:",
+          o: [
+            "IP address to MAC address",
+            "MAC address to IP address",
+            "Domain name to IP address",
+            "IP address to port number",
+          ],
+          a: 0,
+          e: "ARP (Address Resolution Protocol) maps a known IP address to its corresponding MAC address on a local network.",
+        },
+        {
+          t: "Network Layer",
+          q: "RARP resolves:",
+          o: [
+            "IP address to MAC address",
+            "MAC address to IP address",
+            "Domain name to IP address",
+            "Port to protocol",
+          ],
+          a: 1,
+          e: "RARP (Reverse ARP) was used by diskless workstations to find their IP address from their MAC address. It has been replaced by DHCP and BOOTP.",
+        },
+        {
+          t: "Network Layer",
+          q: "IGMP is used for:",
+          o: [
+            "Inter-gateway routing",
+            "IP multicast group management",
+            "Error message delivery",
+            "Gateway redundancy",
+          ],
+          a: 1,
+          e: "IGMP (Internet Group Management Protocol) allows hosts to join or leave multicast groups, informing routers about multicast group membership.",
+        },
+        {
+          t: "Network Layer",
+          q: "IPv6 addresses are how many bits long?",
+          o: ["32 bits", "64 bits", "128 bits", "256 bits"],
+          a: 2,
+          e: "IPv6 addresses are 128 bits long, written as 8 groups of 4 hexadecimal digits separated by colons (e.g., 2001:0db8::1).",
+        },
+        {
+          t: "Network Layer",
+          q: "Which IPv6 transition mechanism encapsulates IPv6 packets within IPv4 packets?",
+          o: ["Dual stack", "Tunneling", "NAT64", "Header translation"],
+          a: 1,
+          e: "Tunneling encapsulates IPv6 packets inside IPv4 packets to traverse IPv4 infrastructure. Dual stack runs both IPv4 and IPv6 simultaneously.",
+        },
+        {
+          t: "Network Layer",
+          q: "Distance Vector Routing uses which algorithm?",
+          o: [
+            "Dijkstra's algorithm",
+            "Bellman-Ford algorithm",
+            "Floyd-Warshall algorithm",
+            "Prim's algorithm",
+          ],
+          a: 1,
+          e: "Distance Vector Routing (used in RIP) uses the Bellman-Ford algorithm. Each router shares its routing table with directly connected neighbors.",
+        },
+        {
+          t: "Network Layer",
+          q: "Link State Routing uses which algorithm?",
+          o: [
+            "Bellman-Ford",
+            "Dijkstra's Shortest Path First",
+            "Floyd-Warshall",
+            "Spanning tree",
+          ],
+          a: 1,
+          e: "Link State Routing (used in OSPF) uses Dijkstra's Shortest Path First (SPF) algorithm. Each router has a complete map of the network topology.",
+        },
+        {
+          t: "Network Layer",
+          q: "RIP (Routing Information Protocol) uses which metric?",
+          o: ["Bandwidth", "Hop count", "Delay", "Cost"],
+          a: 1,
+          e: "RIP uses hop count as its routing metric, with a maximum of 15 hops (16 = unreachable). It's a simple distance-vector protocol.",
+        },
+        {
+          t: "Network Layer",
+          q: "OSPF (Open Shortest Path First) is what type of routing protocol?",
+          o: ["Distance Vector", "Link State", "Path Vector", "Hybrid"],
+          a: 1,
+          e: "OSPF is a Link State routing protocol. Routers flood Link State Advertisements (LSAs) to build a complete topology map, then run Dijkstra's algorithm.",
+        },
+        {
+          t: "Network Layer",
+          q: "EIGRP (Enhanced Interior Gateway Routing Protocol) is best described as:",
+          o: [
+            "Pure distance vector",
+            "Pure link state",
+            "Advanced distance vector (hybrid)",
+            "Path vector",
+          ],
+          a: 2,
+          e: "EIGRP is Cisco's proprietary advanced distance-vector (hybrid) protocol. It uses DUAL (Diffusing Update Algorithm) and combines features of distance vector and link state.",
+        },
+        {
+          t: "Network Layer",
+          q: "BGP (Border Gateway Protocol) is used for:",
+          o: [
+            "Routing within an AS",
+            "Routing between autonomous systems (inter-AS)",
+            "Local multicast routing",
+            "VLAN routing",
+          ],
+          a: 1,
+          e: "BGP is the path-vector protocol used for routing between autonomous systems (AS) on the internet. It is the protocol that makes internet-scale routing possible.",
+        },
+        {
+          t: "Network Layer",
+          q: "RIPv2 improved over RIPv1 by adding:",
+          o: [
+            "Link state capabilities",
+            "Classless routing support and authentication",
+            "Unlimited hop count",
+            "Faster convergence via DUAL",
+          ],
+          a: 1,
+          e: "RIPv2 added support for classless inter-domain routing (CIDR), subnet mask in updates, multicast updates (224.0.0.9), and authentication.",
+        },
+        {
+          t: "Network Layer",
+          q: "What does TTL in an IP packet represent?",
+          o: [
+            "Transmission Time Limit",
+            "Time-To-Live: hop count to prevent infinite loops",
+            "Total Transfer Length",
+            "Type of Transport Layer",
+          ],
+          a: 1,
+          e: "TTL (Time-To-Live) is decremented by 1 at each router. When it reaches 0, the packet is dropped and an ICMP Time Exceeded message is sent back.",
+        },
+        {
+          t: "Network Layer",
+          q: "Subnetting is performed to:",
+          o: [
+            "Increase IP address length",
+            "Divide a network into smaller subnetworks",
+            "Connect two different protocol networks",
+            "Assign MAC addresses automatically",
+          ],
+          a: 1,
+          e: "Subnetting divides a large network into smaller, more manageable subnetworks, improving security, performance, and IP address utilization.",
+        },
+        {
+          t: "Network Layer",
+          q: "Which field in an IPv4 header indicates the upper-layer protocol?",
+          o: ["Version", "TTL", "Protocol", "Flags"],
+          a: 2,
+          e: "The Protocol field (8 bits) identifies the upper-layer protocol: 6 = TCP, 17 = UDP, 1 = ICMP.",
+        },
+
+        // ── TRANSPORT LAYER ────────────────────────────────────
+        {
+          t: "Transport Layer",
+          q: "TCP provides which type of service?",
+          o: [
+            "Connectionless, unreliable",
+            "Connection-oriented, reliable",
+            "Connectionless, reliable",
+            "Connection-oriented, unreliable",
+          ],
+          a: 1,
+          e: "TCP (Transmission Control Protocol) is connection-oriented and provides reliable, ordered, error-checked delivery of data between applications.",
+        },
+        {
+          t: "Transport Layer",
+          q: "UDP provides which type of service?",
+          o: [
+            "Connection-oriented, reliable",
+            "Connectionless, unreliable",
+            "Connection-oriented, unreliable",
+            "Connectionless, reliable",
+          ],
+          a: 1,
+          e: "UDP (User Datagram Protocol) is connectionless and does not guarantee delivery, order, or error checking. It is faster and used for real-time applications.",
+        },
+        {
+          t: "Transport Layer",
+          q: "The TCP three-way handshake sequence is:",
+          o: [
+            "SYN → ACK → SYN-ACK",
+            "SYN → SYN-ACK → ACK",
+            "ACK → SYN → SYN-ACK",
+            "SYN-ACK → SYN → ACK",
+          ],
+          a: 1,
+          e: "TCP three-way handshake: (1) Client sends SYN, (2) Server responds with SYN-ACK, (3) Client sends ACK. Connection is then established.",
+        },
+        {
+          t: "Transport Layer",
+          q: "The TCP header contains a field for port numbers. The destination port for HTTP is typically:",
+          o: ["21", "22", "80", "443"],
+          a: 2,
+          e: "HTTP uses TCP port 80 by default. HTTPS uses port 443, FTP uses 21, SSH uses 22.",
+        },
+        {
+          t: "Transport Layer",
+          q: "Which TCP header field is used for flow control?",
+          o: [
+            "Sequence Number",
+            "Acknowledgment Number",
+            "Window Size",
+            "Checksum",
+          ],
+          a: 2,
+          e: "The Window Size field in the TCP header tells the sender how many bytes the receiver can accept, enabling flow control.",
+        },
+        {
+          t: "Transport Layer",
+          q: "The UDP header size is:",
+          o: ["20 bytes", "8 bytes", "4 bytes", "12 bytes"],
+          a: 1,
+          e: "The UDP header is only 8 bytes (Source Port 2B, Destination Port 2B, Length 2B, Checksum 2B), making UDP lightweight.",
+        },
+        {
+          t: "Transport Layer",
+          q: "The TCP header minimum size is:",
+          o: ["8 bytes", "12 bytes", "20 bytes", "32 bytes"],
+          a: 2,
+          e: "The minimum TCP header size is 20 bytes. It can be larger if TCP options are used (up to 60 bytes).",
+        },
+        {
+          t: "Transport Layer",
+          q: "Congestion control in TCP uses which algorithm to start slowly and increase the sending rate?",
+          o: ["Go-Back-N", "Slow Start", "Stop-and-Wait", "Token Bucket"],
+          a: 1,
+          e: "TCP Slow Start begins with a small congestion window (cwnd) and doubles it each RTT until a threshold is reached, then switches to congestion avoidance.",
+        },
+        {
+          t: "Transport Layer",
+          q: "Which of the following applications typically uses UDP?",
+          o: [
+            "FTP file transfer",
+            "Email (SMTP)",
+            "DNS queries",
+            "Web browsing (HTTP)",
+          ],
+          a: 2,
+          e: "DNS queries typically use UDP (port 53) because they are short request-response transactions where the overhead of TCP connection setup is unnecessary.",
+        },
+        {
+          t: "Transport Layer",
+          q: "TCP connection termination uses:",
+          o: [
+            "Two-way handshake",
+            "Three-way handshake",
+            "Four-way handshake (FIN-ACK-FIN-ACK)",
+            "One-way FIN",
+          ],
+          a: 2,
+          e: "TCP termination uses a 4-way handshake: FIN from one side → ACK → FIN from other side → ACK. Each direction closes independently.",
+        },
+        {
+          t: "Transport Layer",
+          q: "Quality of Service (QoS) in networks refers to:",
+          o: [
+            "Maximum bandwidth available",
+            "Ability to provide different priority to different network traffic",
+            "Number of connected devices",
+            "Type of cabling used",
+          ],
+          a: 1,
+          e: "QoS mechanisms prioritize certain types of traffic (e.g., voice, video) over others to guarantee performance metrics like latency, jitter, and bandwidth.",
+        },
+        {
+          t: "Transport Layer",
+          q: "The sequence number in TCP is used for:",
+          o: [
+            "Identifying the port",
+            "Ordering segments and tracking bytes sent",
+            "Detecting errors",
+            "Specifying the window size",
+          ],
+          a: 1,
+          e: "TCP sequence numbers track the order of bytes sent, allowing the receiver to reorder out-of-sequence segments and detect missing data.",
+        },
+        {
+          t: "Transport Layer",
+          q: "Which layer does the Transport layer communicate with directly below it?",
+          o: ["Data Link", "Physical", "Network", "Session"],
+          a: 2,
+          e: "The Transport layer (Layer 4) communicates directly with the Network layer (Layer 3) below it, which handles packet routing between hosts.",
+        },
+        {
+          t: "Transport Layer",
+          q: "Port numbers below 1024 are called:",
+          o: [
+            "Dynamic ports",
+            "Registered ports",
+            "Well-known ports",
+            "Ephemeral ports",
+          ],
+          a: 2,
+          e: "Ports 0–1023 are well-known (reserved) ports assigned to standard services. Ports 1024–49151 are registered ports, and 49152–65535 are dynamic/ephemeral.",
+        },
+        {
+          t: "Transport Layer",
+          q: "TCP's Nagle algorithm is used to:",
+          o: [
+            "Detect congestion",
+            "Reduce number of small packets by buffering",
+            "Increase window size",
+            "Authenticate connections",
+          ],
+          a: 1,
+          e: "The Nagle algorithm buffers small outgoing data segments and combines them into larger ones, reducing network overhead from many tiny TCP packets.",
+        },
+      ];
+
+      // ═══════════════════════════════════════════════════════
+      //  STATE
+      // ═══════════════════════════════════════════════════════
+      let mode = "learn";
+      let questions = [];
+      let currentIndex = 0;
+      let answers = {}; // index → chosen option index
+      let score = { correct: 0, wrong: 0 };
+      let wrongIndices = [];
+      let rapidStopped = false;
+      let selectedTopics = new Set(["ALL"]);
+      const TOPICS = [...new Set(ALL_QUESTIONS.map((q) => q.t))];
+
+      // ═══════════════════════════════════════════════════════
+      //  INIT
+      // ═══════════════════════════════════════════════════════
+      function init() {
+        document.getElementById("totalQCount").textContent =
+          ALL_QUESTIONS.length;
+        buildTopicChips();
+      }
+
+      function buildTopicChips() {
+        const container = document.getElementById("topicChips");
+        container.innerHTML = "";
+        const allChip = document.createElement("div");
+        allChip.className = "chip chip-all active";
+        allChip.textContent = "ALL TOPICS";
+        allChip.onclick = () => {
+          selectedTopics = new Set(["ALL"]);
+          updateChips();
+        };
+        container.appendChild(allChip);
+        TOPICS.forEach((t) => {
+          const c = document.createElement("div");
+          c.className = "chip";
+          c.textContent = t;
+          c.onclick = () => {
+            selectedTopics.delete("ALL");
+            if (selectedTopics.has(t)) selectedTopics.delete(t);
+            else selectedTopics.add(t);
+            if (selectedTopics.size === 0) selectedTopics.add("ALL");
+            updateChips();
+          };
+          container.appendChild(c);
+        });
+      }
+      function updateChips() {
+        document.querySelectorAll(".chip").forEach((c) => {
+          if (c.classList.contains("chip-all"))
+            c.classList.toggle("active", selectedTopics.has("ALL"));
+          else c.classList.toggle("active", selectedTopics.has(c.textContent));
+        });
+      }
+
+      function getFilteredQuestions() {
+        if (selectedTopics.has("ALL")) return shuffle([...ALL_QUESTIONS]);
+        return shuffle(ALL_QUESTIONS.filter((q) => selectedTopics.has(q.t)));
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  NAVIGATION
+      // ═══════════════════════════════════════════════════════
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      function goHome() {
+        showScreen("home");
+      }
+
+      function startQuiz(m, qs = null) {
+        mode = m;
+        questions = qs || getFilteredQuestions();
+        currentIndex = 0;
+        answers = {};
+        score = { correct: 0, wrong: 0 };
+        wrongIndices = [];
+        rapidStopped = false;
+        showScreen("quiz");
+        renderQuestion();
+      }
+
+      function retakeAll() {
+        startQuiz(mode);
+      }
+      function retakeWrong() {
+        const wq = wrongIndices.map((i) => questions[i]);
+        if (wq.length === 0) return;
+        startQuiz(mode, wq);
+      }
+
+      function navigate(dir) {
+        const newIdx = currentIndex + dir;
+        if (newIdx < 0 || newIdx >= questions.length) {
+          if (dir === 1) showResults();
+          return;
+        }
+        currentIndex = newIdx;
+        renderQuestion();
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  RENDER
+      // ═══════════════════════════════════════════════════════
+      function renderQuestion() {
+        rapidStopped = false;
+        document.getElementById("rapidStop").style.display = "none";
+        const q = questions[currentIndex];
+        const answered = answers.hasOwnProperty(currentIndex);
+
+        // header
+        const badge = document.getElementById("modeBadge");
+        badge.className = "mode-badge " + mode;
+        badge.textContent =
+          mode === "learn" ? "📖 Learning Mode" : "⚡ Rapid Fire";
+
+        document.getElementById("qCounter").textContent = `${
+          currentIndex + 1
+        } / ${questions.length}`;
+        document.getElementById("scoreLive").innerHTML = `Score: <span>${
+          score.correct
+        }</span>/${Object.keys(answers).length}`;
+        document.getElementById("progressFill").style.width = `${
+          ((currentIndex + 1) / questions.length) * 100
+        }%`;
+        document.getElementById("topicLabel").textContent = q.t;
+        document.getElementById("questionText").textContent = q.q;
+
+        // options
+        const container = document.getElementById("optionsContainer");
+        container.innerHTML = "";
+        const keys = ["A", "B", "C", "D"];
+        q.o.forEach((opt, i) => {
+          const div = document.createElement("div");
+          div.className = "option" + (answered ? " disabled" : "");
+          if (answered) {
+            if (i === q.a) div.classList.add("correct");
+            else if (i === answers[currentIndex]) div.classList.add("wrong");
+          }
+          div.innerHTML = `<span class="opt-key">${keys[i]}</span><span>${opt}</span>`;
+          if (!answered) div.onclick = () => selectAnswer(i);
+          container.appendChild(div);
+        });
+
+        // feedback
+        const fb = document.getElementById("feedbackBox");
+        if (answered) {
+          const correct = answers[currentIndex] === q.a;
+          fb.className = "feedback-box show " + (correct ? "correct" : "wrong");
+          fb.innerHTML = `<strong>${
+            correct ? "✓ Correct!" : "✗ Incorrect"
+          }</strong>${q.e}`;
+        } else {
+          fb.className = "feedback-box";
+        }
+
+        // nav buttons
+        document.getElementById("prevBtn").disabled = currentIndex === 0;
+        const nextBtn = document.getElementById("nextBtn");
+        nextBtn.disabled = !answered;
+        nextBtn.textContent =
+          currentIndex === questions.length - 1 ? "Finish ✓" : "Next →";
+      }
+
+      function selectAnswer(chosen) {
+        if (answers.hasOwnProperty(currentIndex)) return;
+        const q = questions[currentIndex];
+        answers[currentIndex] = chosen;
+        const correct = chosen === q.a;
+        if (correct) score.correct++;
+        else {
+          score.wrong++;
+          if (!wrongIndices.includes(currentIndex))
+            wrongIndices.push(currentIndex);
+        }
+
+        renderQuestion();
+
+        if (mode === "rapid") {
+          if (correct) {
+            setTimeout(() => {
+              if (currentIndex < questions.length - 1) navigate(1);
+              else showResults();
+            }, 600);
+          } else {
+            rapidStopped = true;
+            const stopDiv = document.getElementById("rapidStop");
+            stopDiv.style.display = "block";
+            stopDiv.innerHTML = `<div class="rapid-stop">
+        <h3>💥 Stopped!</h3>
+        <p>Wrong answer. Review the explanation above, then click <strong>Next →</strong> to continue.</p>
+      </div>`;
+          }
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  RESULTS
+      // ═══════════════════════════════════════════════════════
+      function showResults() {
+        const total = questions.length;
+        const answered = Object.keys(answers).length;
+        const skipped = total - answered;
+        const pct = Math.round((score.correct / total) * 100);
+
+        document.getElementById("bigScore").textContent = pct + "%";
+        document.getElementById(
+          "scoreLabel"
+        ).textContent = `${score.correct} correct out of ${total} questions`;
+        document.getElementById("rCorrect").textContent = score.correct;
+        document.getElementById("rWrong").textContent = score.wrong;
+        document.getElementById("rSkip").textContent = skipped;
+
+        const retakeWrongBtn = document.getElementById("retakeWrongBtn");
+        retakeWrongBtn.style.display =
+          wrongIndices.length > 0 ? "inline-block" : "none";
+        retakeWrongBtn.textContent = `⚠ Retake Wrong (${wrongIndices.length})`;
+
+        // Wrong review
+        const wl = document.getElementById("wrongList");
+        if (wrongIndices.length > 0) {
+          let html = `<h3>Questions You Got Wrong</h3>`;
+          wrongIndices.forEach((i) => {
+            const q = questions[i];
+            const yourAns = answers[i];
+            html += `<div class="wrong-item">
+        <div class="wq">${i + 1}. ${q.q}</div>
+        <div class="wa">Correct: <span>${q.o[q.a]}</span></div>
+        ${
+          yourAns !== undefined
+            ? `<div class="wyou">Your answer: ${q.o[yourAns]}</div>`
+            : ""
+        }
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:0.4rem">${
+          q.e
+        }</div>
+      </div>`;
+          });
+          wl.innerHTML = html;
+        } else {
+          wl.innerHTML = `<div style="text-align:center;color:var(--correct);font-size:1.1rem;font-weight:700;padding:1rem;">🎉 Perfect Score! No wrong answers!</div>`;
+        }
+
+        showScreen("results");
+      }
+
+      init();
+    </script>
+  </body>
+</html>
