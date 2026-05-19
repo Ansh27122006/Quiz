@@ -1,0 +1,3890 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>8051 Microcontroller Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0a0a0f;
+        --surface: #12121a;
+        --surface2: #1a1a26;
+        --border: #2a2a3d;
+        --accent: #00e5ff;
+        --accent2: #ff3d71;
+        --accent3: #a8ff78;
+        --text: #e8e8f0;
+        --text-dim: #7a7a9a;
+        --correct: #00e676;
+        --wrong: #ff3d71;
+        --yellow: #ffd740;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Syne", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            ellipse at 20% 20%,
+            rgba(0, 229, 255, 0.04) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 80%,
+            rgba(168, 255, 120, 0.03) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ─── HOME SCREEN ─── */
+      #home {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .home-badge {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        opacity: 0.8;
+      }
+      .home-title {
+        font-size: clamp(36px, 7vw, 72px);
+        font-weight: 800;
+        line-height: 1;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .home-title span {
+        color: var(--accent);
+      }
+      .home-sub {
+        font-size: clamp(14px, 2vw, 18px);
+        color: var(--text-dim);
+        margin-bottom: 50px;
+        text-align: center;
+        font-weight: 400;
+      }
+      .mode-cards {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
+      .mode-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 36px 40px;
+        width: 280px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+      .mode-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-card.rapid::before {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent2),
+          transparent
+        );
+      }
+      .mode-card.rapid:hover {
+        border-color: var(--accent2);
+      }
+      .mode-icon {
+        font-size: 40px;
+        margin-bottom: 16px;
+      }
+      .mode-name {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .mode-desc {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.6;
+        font-weight: 400;
+      }
+      .home-stats {
+        font-family: "Space Mono", monospace;
+        font-size: 12px;
+        color: var(--text-dim);
+        text-align: center;
+      }
+      .home-stats span {
+        color: var(--accent);
+      }
+
+      /* ─── QUIZ SCREEN ─── */
+      #quiz {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      .quiz-header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .quiz-mode-tag {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        text-transform: uppercase;
+      }
+      .tag-learning {
+        background: rgba(0, 229, 255, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+      }
+      .tag-rapid {
+        background: rgba(255, 61, 113, 0.15);
+        color: var(--accent2);
+        border: 1px solid rgba(255, 61, 113, 0.3);
+      }
+      .quiz-progress-info {
+        font-family: "Space Mono", monospace;
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+      .quiz-progress-info strong {
+        color: var(--text);
+      }
+      .score-display {
+        font-family: "Space Mono", monospace;
+        font-size: 12px;
+        display: flex;
+        gap: 16px;
+      }
+      .score-correct {
+        color: var(--correct);
+      }
+      .score-wrong {
+        color: var(--wrong);
+      }
+      .progress-bar-wrap {
+        width: 100%;
+        height: 3px;
+        background: var(--border);
+        position: relative;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent3));
+        transition: width 0.4s ease;
+      }
+
+      .quiz-body {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px 100px;
+      }
+      .question-number {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+      }
+      .topic-tag {
+        display: inline-block;
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: rgba(168, 255, 120, 0.1);
+        color: var(--accent3);
+        border: 1px solid rgba(168, 255, 120, 0.2);
+        margin-bottom: 20px;
+        text-transform: uppercase;
+      }
+      .question-text {
+        font-size: clamp(18px, 3vw, 24px);
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 36px;
+        color: var(--text);
+      }
+      .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .option-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 22px;
+        cursor: pointer;
+        text-align: left;
+        font-family: "Syne", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: rgba(0, 229, 255, 0.05);
+      }
+      .option-letter {
+        font-family: "Space Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-dim);
+        min-width: 22px;
+        padding-top: 1px;
+      }
+      .option-btn.correct {
+        border-color: var(--correct);
+        background: rgba(0, 230, 118, 0.08);
+      }
+      .option-btn.correct .option-letter {
+        color: var(--correct);
+      }
+      .option-btn.wrong {
+        border-color: var(--wrong);
+        background: rgba(255, 61, 113, 0.08);
+      }
+      .option-btn.wrong .option-letter {
+        color: var(--wrong);
+      }
+      .option-btn.show-correct {
+        border-color: var(--correct);
+        background: rgba(0, 230, 118, 0.05);
+      }
+      .option-btn:disabled {
+        cursor: not-allowed;
+      }
+      .option-icon {
+        margin-left: auto;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .feedback-box {
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        line-height: 1.6;
+        display: none;
+        font-weight: 600;
+      }
+      .feedback-box.correct-fb {
+        background: rgba(0, 230, 118, 0.1);
+        border: 1px solid rgba(0, 230, 118, 0.3);
+        color: var(--correct);
+      }
+      .feedback-box.wrong-fb {
+        background: rgba(255, 61, 113, 0.1);
+        border: 1px solid rgba(255, 61, 113, 0.3);
+        color: var(--accent2);
+      }
+      .feedback-box.show {
+        display: block;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        letter-spacing: 0.5px;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #000;
+      }
+      .btn-primary:hover {
+        background: #33eaff;
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+      .btn-secondary:hover {
+        border-color: var(--text-dim);
+      }
+      .btn-danger {
+        background: var(--accent2);
+        color: #fff;
+      }
+      .btn-danger:hover {
+        background: #ff5c85;
+      }
+      .btn-home {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: 13px;
+        padding: 10px 18px;
+      }
+      .btn-home:hover {
+        color: var(--text);
+        border-color: var(--text-dim);
+      }
+
+      /* ─── RESULTS SCREEN ─── */
+      #results {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      .results-body {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 60px 24px;
+        text-align: center;
+      }
+      .results-emoji {
+        font-size: 64px;
+        margin-bottom: 24px;
+      }
+      .results-title {
+        font-size: clamp(28px, 5vw, 48px);
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .results-subtitle {
+        color: var(--text-dim);
+        margin-bottom: 48px;
+        font-size: 16px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 16px;
+        margin-bottom: 48px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 16px;
+      }
+      .stat-val {
+        font-family: "Space Mono", monospace;
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .results-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* rapid fire stopped */
+      .rapid-stop-banner {
+        background: rgba(255, 61, 113, 0.12);
+        border: 1px solid rgba(255, 61, 113, 0.35);
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: var(--accent2);
+        font-family: "Space Mono", monospace;
+        display: none;
+      }
+      .rapid-stop-banner.show {
+        display: block;
+      }
+
+      /* ─── REVIEW SCREEN ─── */
+      #review {
+        display: none;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      .review-body {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 40px 24px;
+      }
+      .review-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .review-sub {
+        color: var(--text-dim);
+        margin-bottom: 32px;
+        font-size: 14px;
+      }
+      .review-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+      .review-item.rev-wrong {
+        border-color: rgba(255, 61, 113, 0.4);
+      }
+      .review-q {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        line-height: 1.4;
+      }
+      .review-answers {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .review-ans {
+        font-size: 13px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .rev-correct-ans {
+        background: rgba(0, 230, 118, 0.1);
+        color: var(--correct);
+      }
+      .rev-wrong-ans {
+        background: rgba(255, 61, 113, 0.1);
+        color: var(--accent2);
+      }
+      .rev-badge {
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rev-badge.correct {
+        background: rgba(0, 230, 118, 0.2);
+        color: var(--correct);
+      }
+      .rev-badge.wrong {
+        background: rgba(255, 61, 113, 0.2);
+        color: var(--accent2);
+      }
+
+      @media (max-width: 480px) {
+        .quiz-header {
+          padding: 12px 16px;
+        }
+        .quiz-body {
+          padding: 24px 16px 80px;
+        }
+        .mode-card {
+          width: 100%;
+          max-width: 320px;
+        }
+      }
+
+      /* scroll reveal anim */
+      .fade-in {
+        animation: fadeIn 0.35s ease both;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════════════════════ -->
+    <div id="home">
+      <div class="home-badge">Unit 2 — Microcontrollers & Programming</div>
+      <h1 class="home-title">8051 <span>MCU</span><br />Quiz</h1>
+      <p class="home-sub">
+        Master every concept from the slides. Choose your mode.
+      </p>
+
+      <div class="mode-cards">
+        <div
+          class="mode-card"
+          onclick="startQuiz('learning')">
+          <div class="mode-icon">📚</div>
+          <div class="mode-name">Learning</div>
+          <div class="mode-desc">
+            Answer at your own pace. Instant feedback after each question.
+            Navigate freely with Next / Previous buttons.
+          </div>
+        </div>
+        <div
+          class="mode-card rapid"
+          onclick="startQuiz('rapid')">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-name">Rapid Fire</div>
+          <div class="mode-desc">
+            Correct → auto-advance. Wrong → you must manually proceed. How far
+            can you go without a mistake?
+          </div>
+        </div>
+      </div>
+
+      <div class="home-stats">
+        Total questions: <span id="total-count">0</span> &nbsp;|&nbsp; Topics
+        covered: <span>15+</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     QUIZ
+═══════════════════════════════════════════════════════════ -->
+    <div id="quiz">
+      <div class="quiz-header">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+          ">
+          <span
+            class="quiz-mode-tag"
+            id="mode-tag"></span>
+          <span
+            class="quiz-progress-info"
+            id="progress-info"></span>
+        </div>
+        <div class="score-display">
+          <span
+            class="score-correct"
+            id="score-correct"
+            >✓ 0</span
+          >
+          <span
+            class="score-wrong"
+            id="score-wrong"
+            >✗ 0</span
+          >
+        </div>
+        <button
+          class="btn btn-home"
+          onclick="goHome()">
+          ← Home
+        </button>
+      </div>
+      <div class="progress-bar-wrap">
+        <div
+          class="progress-bar-fill"
+          id="progress-bar"></div>
+      </div>
+
+      <div class="quiz-body">
+        <div
+          class="rapid-stop-banner"
+          id="rapid-stop">
+          ⚠ Wrong answer — chain broken! Review the correct answer below, then
+          click Next.
+        </div>
+        <div
+          class="question-number"
+          id="q-number"></div>
+        <div
+          class="topic-tag"
+          id="q-topic"></div>
+        <div
+          class="question-text"
+          id="q-text"></div>
+        <div
+          class="options-grid"
+          id="options-container"></div>
+        <div
+          class="feedback-box"
+          id="feedback-box"></div>
+        <div
+          class="nav-buttons"
+          id="nav-buttons"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     RESULTS
+═══════════════════════════════════════════════════════════ -->
+    <div id="results">
+      <div class="results-body">
+        <div
+          class="results-emoji"
+          id="res-emoji"></div>
+        <h2
+          class="results-title"
+          id="res-title"></h2>
+        <p
+          class="results-subtitle"
+          id="res-sub"></p>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div
+              class="stat-val"
+              id="stat-score"
+              style="color: var(--accent)"></div>
+            <div class="stat-label">Score</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-val"
+              id="stat-correct"
+              style="color: var(--correct)"></div>
+            <div class="stat-label">Correct</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-val"
+              id="stat-wrong"
+              style="color: var(--wrong)"></div>
+            <div class="stat-label">Wrong</div>
+          </div>
+          <div class="stat-card">
+            <div
+              class="stat-val"
+              id="stat-pct"
+              style="color: var(--yellow)"></div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+        <div
+          class="results-actions"
+          id="results-actions"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     REVIEW
+═══════════════════════════════════════════════════════════ -->
+    <div id="review">
+      <div class="review-body">
+        <div style="margin-bottom: 24px">
+          <button
+            class="btn btn-secondary"
+            onclick="showResults()">
+            ← Back to Results
+          </button>
+        </div>
+        <h2 class="review-title">Answer Review</h2>
+        <p
+          class="review-sub"
+          id="review-sub"></p>
+        <div id="review-list"></div>
+      </div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════════════════
+      // QUESTION BANK — comprehensive coverage of all PPT topics
+      // ═══════════════════════════════════════════════════════════
+      const ALL_QUESTIONS = [
+        // ─── MICROCONTROLLER BASICS ───
+        {
+          topic: "Microcontroller Basics",
+          q: "What is a microcontroller?",
+          opts: [
+            "A large mainframe computer",
+            "A compact integrated circuit designed to govern a specific operation in an embedded system",
+            "A type of memory chip",
+            "An external oscillator",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "What does a typical microcontroller include on a single chip?",
+          opts: [
+            "Only a CPU",
+            "Only RAM and ROM",
+            "A processor, memory, and I/O peripherals",
+            "A CPU and display unit",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "Which microcontroller is also known as MCS-51?",
+          opts: ["8086", "8085", "8051", "Z80"],
+          ans: 2,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "In which year did Intel introduce the 8051 microcontroller?",
+          opts: ["1975", "1978", "1981", "1985"],
+          ans: 2,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "What does the 'C' in 80C51 indicate?",
+          opts: [
+            "Cache technology",
+            "CMOS technology",
+            "Complementary logic",
+            "Clock circuit",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "The 8051 is an 8-bit microcontroller. What does this mean?",
+          opts: [
+            "It has 8 address lines",
+            "Its data bus is 8-bit and can process 8 bits at a time",
+            "It runs at 8 MHz",
+            "It has 8 I/O ports",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Microcontroller Basics",
+          q: "Which technology is the 8051 based on?",
+          opts: ["TTL", "NMOS", "CMOS", "BiCMOS"],
+          ans: 2,
+        },
+
+        // ─── COMPUTING ESSENTIALS ───
+        {
+          topic: "Computing Essentials",
+          q: "In the basic computing model, what does the CPU interact with?",
+          opts: [
+            "Only I/O",
+            "Only memory",
+            "I/O, data memory, and program memory",
+            "Only the display",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Computing Essentials",
+          q: "Which memory stores instructions being executed in a microcontroller?",
+          opts: ["Data Memory (RAM)", "Cache", "Program Memory (ROM)", "Stack"],
+          ans: 2,
+        },
+        {
+          topic: "Computing Essentials",
+          q: "Which memory stores temporary data and intermediate results?",
+          opts: ["ROM", "Program Memory", "Flash", "Data Memory (RAM)"],
+          ans: 3,
+        },
+
+        // ─── COMPONENTS ───
+        {
+          topic: "Components",
+          q: "Which of the following is NOT a component of a microprocessor/controller?",
+          opts: ["CPU", "Timer", "Display screen", "Interrupt"],
+          ans: 2,
+        },
+        {
+          topic: "Components",
+          q: "What type of bus carries addresses from CPU to memory?",
+          opts: [
+            "Data bus (bidirectional)",
+            "Address bus (unidirectional)",
+            "Control bus (bidirectional)",
+            "Serial bus",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Components",
+          q: "What is the data bus characteristic in terms of direction?",
+          opts: [
+            "Unidirectional",
+            "Bidirectional",
+            "Tristate only",
+            "No direction",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Components",
+          q: "Which components are found in a microcontroller but NOT on the CPU chip of a general-purpose microprocessor?",
+          opts: [
+            "ALU only",
+            "Program Counter",
+            "RAM, ROM, I/O ports on the same chip",
+            "Clock circuit only",
+          ],
+          ans: 2,
+        },
+
+        // ─── MICROPROCESSOR vs MICROCONTROLLER ───
+        {
+          topic: "µP vs µC Comparison",
+          q: "A general-purpose microprocessor is primarily a:",
+          opts: [
+            "Single-chip computer",
+            "CPU for computers without on-chip RAM/ROM/I/O",
+            "Embedded controller",
+            "Signal processor",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "What architecture does the 8051 microcontroller use?",
+          opts: ["Von Neumann", "RISC", "Harvard", "CISC only"],
+          ans: 2,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "What architecture do general-purpose microprocessors typically use?",
+          opts: ["Harvard", "Von Neumann", "RISC only", "VLIW"],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "Which of the following uses an internal controlling bus?",
+          opts: ["Microprocessor", "Microcontroller", "Both", "Neither"],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "Which is typically more expensive due to processing many instructions?",
+          opts: ["Microcontroller", "Microprocessor", "Both the same", "FPGA"],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "What is a microcontroller described as in terms of chip integration?",
+          opts: [
+            "CPU only on a chip",
+            "A byproduct of microprocessor development with CPU + peripherals",
+            "Just a memory chip",
+            "An external bus controller",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "Where are microcontrollers primarily used?",
+          opts: [
+            "Personal computers",
+            "Supercomputers",
+            "Embedded systems",
+            "Mainframes",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "Which has RAM, ROM, CPU and other peripherals embedded on a single chip?",
+          opts: [
+            "Microprocessor",
+            "Both equally",
+            "Microcontroller",
+            "Neither",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "A microprocessor is programmed using:",
+          opts: [
+            "Assembly only",
+            "Low-level language only",
+            "High-level programming language typically",
+            "No programming needed",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "A microcontroller is often programmed using:",
+          opts: [
+            "Only Java",
+            "High-level language only",
+            "Low-level language or assembly code",
+            "Machine language printed on chip",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "Which device can run up to 200MHz or more?",
+          opts: [
+            "Microprocessor",
+            "Microcontroller",
+            "Both exactly the same",
+            "Neither",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "µP vs µC Comparison",
+          q: "An example of a microcontroller is:",
+          opts: [
+            "Intel Core i7",
+            "Qualcomm Snapdragon",
+            "Arduino Uno (8051-based)",
+            "AMD Ryzen",
+          ],
+          ans: 2,
+        },
+
+        // ─── MICROCONTROLLER FEATURES ───
+        {
+          topic: "Features of Microcontroller",
+          q: "Which feature allows microcontrollers to interface with external devices via timers, serial ports, and ADCs?",
+          opts: [
+            "Low power consumption",
+            "On-chip peripherals",
+            "External bus",
+            "High clock speed",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Features of Microcontroller",
+          q: "Which type of memory in a microcontroller stores the instructions executed by the processor?",
+          opts: [
+            "Data memory",
+            "Stack memory",
+            "Program memory",
+            "Cache memory",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Features of Microcontroller",
+          q: "Microcontrollers are suitable for battery-powered devices because of their:",
+          opts: [
+            "High clock speed",
+            "Large memory",
+            "Low power consumption",
+            "Multiple cores",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Features of Microcontroller",
+          q: "I/O pins in a microcontroller are used to interface with:",
+          opts: [
+            "Only displays",
+            "External devices like sensors or actuators",
+            "Other CPUs only",
+            "Power supply only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Features of Microcontroller",
+          q: "What is the technology used to fabricate the CPU on a single chip?",
+          opts: [
+            "PCB technology",
+            "LSI and VLSI technology",
+            "BJT technology",
+            "Vacuum tube technology",
+          ],
+          ans: 1,
+        },
+
+        // ─── 8051 ARCHITECTURE ───
+        {
+          topic: "8051 Architecture",
+          q: "What does CPU stand for in the context of microcontrollers?",
+          opts: [
+            "Central Power Unit",
+            "Chip Processing Unit",
+            "Central Processing Unit",
+            "Core Program Unit",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "What is the role of the CPU in the 8051 microcontroller?",
+          opts: [
+            "Store programs permanently",
+            "Act as mind, synchronize and manage all processes",
+            "Provide power supply",
+            "Connect to external devices only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "Does the user have direct control over the CPU functioning in an 8051?",
+          opts: [
+            "Yes, full control",
+            "Partial control",
+            "No, user has no power to control CPU functioning",
+            "Only through hardware switches",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "What is an interrupt in the 8051 microcontroller?",
+          opts: [
+            "A subroutine call triggered when a high-priority program requests system buses",
+            "A timer overflow",
+            "A memory write operation",
+            "A port configuration command",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "How much program memory (ROM) does the 8051 have?",
+          opts: ["1 KB", "2 KB", "4 KB", "8 KB"],
+          ans: 2,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "How much data memory (RAM) does the 8051 have?",
+          opts: ["64 bytes", "128 bytes", "256 bytes", "512 bytes"],
+          ans: 1,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "What is a bus in the context of microcontrollers?",
+          opts: [
+            "A power line",
+            "A group of wires used as a communication canal for data transfer",
+            "An interrupt line",
+            "A clock signal",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "How many bits is the address bus of the 8051 microcontroller?",
+          opts: ["8-bit", "12-bit", "16-bit", "32-bit"],
+          ans: 2,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "What is the data bus width of the 8051?",
+          opts: ["4-bit", "8-bit", "16-bit", "32-bit"],
+          ans: 1,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "What is the purpose of the oscillator in the 8051?",
+          opts: [
+            "Store data",
+            "Generate timely pulses for timer operations",
+            "Handle interrupts",
+            "Manage I/O ports",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "All 8051 microcontrollers have a 16-bit addressing bus capable of addressing how much memory?",
+          opts: ["32 KB", "48 KB", "64 KB", "128 KB"],
+          ans: 2,
+        },
+        {
+          topic: "8051 Architecture",
+          q: "How many I/O ports does the 8051 microcontroller have?",
+          opts: ["2", "3", "4", "8"],
+          ans: 2,
+        },
+
+        // ─── INTERRUPTS ───
+        {
+          topic: "Interrupts",
+          q: "Which interrupt is triggered by Timer 0 overflow?",
+          opts: ["INT0", "TF1", "TF0", "RI/TI"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "Which interrupt flag corresponds to Timer 1 overflow?",
+          opts: ["TF0", "INT1", "TF1", "IE1"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "Which pin is used for External Hardware Interrupt 0?",
+          opts: ["INT1", "TF0", "INT0", "TF1"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "The serial communication interrupt in 8051 is:",
+          opts: ["TF0", "INT0", "RI/TI", "TF1"],
+          ans: 2,
+        },
+
+        // ─── MEMORY ORGANIZATION ───
+        {
+          topic: "Memory Organization",
+          q: "What are the two types of memory in the 8051?",
+          opts: [
+            "Flash and EEPROM",
+            "Cache and RAM",
+            "Program Memory and Data Memory",
+            "Stack and Heap",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "Program Memory (ROM) is used to:",
+          opts: [
+            "Temporarily store variables",
+            "Permanently save the program being executed",
+            "Store interrupt vectors only",
+            "Cache frequently used data",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "Depending on the 8051 model, how much RAM is typically available?",
+          opts: [
+            "64 or 128 bytes",
+            "128 or 256 bytes",
+            "256 or 512 bytes",
+            "512 or 1024 bytes",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "The first models of the 8051 family had no internal program memory — where was it added?",
+          opts: [
+            "On the data bus",
+            "As an external separate chip",
+            "Inside the CPU core",
+            "In the oscillator circuit",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "What is a 'lookup table' used for in 8051 program memory?",
+          opts: [
+            "Storing interrupt vectors",
+            "Pre-computed results for complex equations stored in memory",
+            "Managing register banks",
+            "Configuring I/O ports",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "When EA pin = 0, what does the 8051 do?",
+          opts: [
+            "Executes from internal ROM first",
+            "Ignores internal program memory and executes from external memory only",
+            "Enters power-down mode",
+            "Resets the microcontroller",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "When EA pin = 1, what does the 8051 do?",
+          opts: [
+            "Uses only external memory",
+            "Executes from internal ROM first, then external memory",
+            "Disables all I/O",
+            "Stops the oscillator",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "How much data memory is available internally in the 8051 (maximum)?",
+          opts: ["64 bytes", "128 bytes", "256 bytes", "512 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "The registers R0 to R7 use which address range?",
+          opts: ["08H to 0FH", "00H to 07H", "10H to 17H", "20H to 27H"],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "How many register banks does the 8051 provide?",
+          opts: ["Two", "Three", "Four", "Eight"],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "How many register banks can be active at one time in the 8051?",
+          opts: ["All four", "Two", "One", "Depends on clock speed"],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "Which bits in PSW are used to select the register bank?",
+          opts: [
+            "CY and AC bits",
+            "RS0 and RS1 bits",
+            "OV and P bits",
+            "F0 and AC bits",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "The first 128 bytes of internal data memory are:",
+          opts: [
+            "Indirectly addressable only",
+            "Directly addressable only",
+            "Both directly and indirectly addressable",
+            "Not addressable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "The upper 128 bytes of data memory (0x80 to 0xFF) can be addressed:",
+          opts: [
+            "Directly only",
+            "Both directly and indirectly",
+            "Indirectly only",
+            "Not at all",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "SFR stands for:",
+          opts: [
+            "Serial Function Register",
+            "Special Flag Register",
+            "Special Function Register",
+            "System Flag Register",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Memory Organization",
+          q: "How many bytes of memory does the 8051 provide for SFRs?",
+          opts: ["64 bytes", "128 bytes", "256 bytes", "32 bytes"],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "SFRs are used to control:",
+          opts: [
+            "Only timers",
+            "Timers, counters, serial I/O, port I/O, and peripherals",
+            "Only memory access",
+            "Only interrupts",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "Register Bank 1 occupies which address range?",
+          opts: ["00H to 07H", "08H to 0FH", "10H to 17H", "18H to 1FH"],
+          ans: 1,
+        },
+        {
+          topic: "Memory Organization",
+          q: "Register Bank 3 occupies which address range?",
+          opts: ["00H to 07H", "08H to 0FH", "10H to 17H", "18H to 1FH"],
+          ans: 3,
+        },
+
+        // ─── PIN DIAGRAM ───
+        {
+          topic: "Pin Diagram",
+          q: "The 8051 microcontroller comes in a how-many-pin DIP package?",
+          opts: ["20-pin", "28-pin", "40-pin", "48-pin"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "What is the logic rule for configuring an I/O pin as INPUT in the 8051?",
+          opts: [
+            "Apply logic 0",
+            "Apply logic 1",
+            "Apply 5V directly",
+            "Leave floating",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "What is the logic rule for configuring an I/O pin as OUTPUT in the 8051?",
+          opts: [
+            "Apply logic 1",
+            "Apply logic 0",
+            "Apply 3.3V",
+            "Apply negative voltage",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins 1 to 8 (P1.0 to P1.7) are assigned to:",
+          opts: ["Port 0", "Port 2", "Port 1", "Port 3"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Port 1 pins are described as:",
+          opts: [
+            "Unidirectional output only",
+            "Bidirectional pins",
+            "Input only",
+            "Address bus pins",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 9 is the RST pin. It is:",
+          opts: [
+            "Active-low input",
+            "Active-high input",
+            "Active-high output",
+            "Active-low output",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "The RST pin resets the microcontroller if held high for a minimum of:",
+          opts: [
+            "1 machine cycle",
+            "2 machine cycles",
+            "5 machine cycles",
+            "10 machine cycles",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "RST is often called the 'power-on-reset' pin because:",
+          opts: [
+            "It provides power to the chip",
+            "It resets the microcontroller to initial values when power is on",
+            "It regulates voltage",
+            "It controls the oscillator",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins 10 to 17 belong to:",
+          opts: ["Port 0", "Port 1", "Port 2", "Port 3"],
+          ans: 3,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin P3.0 (RXD) is used for:",
+          opts: [
+            "Serial data transmit",
+            "Timer 0 external input",
+            "Serial data receive",
+            "External interrupt 0",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin P3.1 (TXD) is used for:",
+          opts: [
+            "Serial data receive",
+            "Serial data transmit",
+            "Timer 1 external input",
+            "External interrupt 1",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins P3.2 and P3.3 are for:",
+          opts: [
+            "Serial communication",
+            "Timer 0 and Timer 1 external inputs",
+            "External Hardware Interrupt 0 and 1",
+            "Write and Read operations",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "When INT0 or INT1 interrupt is activated (low), the 8051 jumps to the interrupt vector. What is the vector for INT0?",
+          opts: ["0000H", "0003H", "000BH", "0013H"],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "What is the interrupt vector for INT1?",
+          opts: ["0003H", "000BH", "0013H", "001BH"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins P3.4 and P3.5 (T0 and T1) are for:",
+          opts: [
+            "Serial I/O",
+            "External memory read/write",
+            "Timer 0 and Timer 1 external inputs",
+            "External interrupts",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin P3.6 (WR') is used for:",
+          opts: [
+            "Reading from external memory",
+            "Writing data to external memory",
+            "Serial data transmit",
+            "Timer overflow",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin P3.7 (RD') is used for:",
+          opts: [
+            "Writing to external memory",
+            "Serial data receive",
+            "Reading data from external memory",
+            "Reset",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins 18 and 19 (XTAL1 and XTAL2) are connected to:",
+          opts: [
+            "Power supply",
+            "Ground",
+            "External quartz crystal oscillator",
+            "I/O devices",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "XTAL pins provide an external clock frequency of:",
+          opts: [
+            "1MHz to 10MHz",
+            "4MHz to 30MHz",
+            "10MHz to 100MHz",
+            "0.1MHz to 1MHz",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 20 (GND) must be connected to:",
+          opts: ["+5V", "−5V", "0V (ground/negative terminal)", "3.3V"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins 21 to 28 belong to:",
+          opts: ["Port 0", "Port 1", "Port 2", "Port 3"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "When external memory is used, Port 2 acts as:",
+          opts: [
+            "Lower address byte",
+            "Higher-order address bytes (A8–A15)",
+            "Data bus",
+            "Control bus",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 29 (PSEN) stands for:",
+          opts: [
+            "Program Store Enable",
+            "Port Select Enable",
+            "Power Supply Enable",
+            "Pulse Signal Enable",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "PSEN is what type of pin?",
+          opts: [
+            "Input, active-high",
+            "Output, active-low",
+            "Output, active-high",
+            "Input, active-low",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "PSEN is used to:",
+          opts: [
+            "Reset the microcontroller",
+            "Write to external memory",
+            "Read external memory",
+            "Control serial port",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 30 (ALE) stands for:",
+          opts: [
+            "Analog Latch Enable",
+            "Address Latch Enable",
+            "Active Low Enable",
+            "Addressable Logic Enable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "ALE is what type of pin?",
+          opts: [
+            "Output, active-low",
+            "Input, active-high",
+            "Input, active-low",
+            "Output, active-high",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "ALE is used to:",
+          opts: [
+            "Read external ROM",
+            "Distinguish between memory chips and de-multiplex address/data signals at port 0",
+            "Write to RAM",
+            "Control power supply",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "During flash programming of EPROM, the ALE pin acts as:",
+          opts: [
+            "Address latch",
+            "Program pulse input (PROG)",
+            "Data input",
+            "Clock input",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 31 (EA/VPP) stands for:",
+          opts: [
+            "Enable Address",
+            "External Access input",
+            "Enable All",
+            "Error Alert",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "For 8051, the EA pin is connected to:",
+          opts: ["GND", "Vcc (because it has on-chip ROM)", "XTAL", "RST"],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "For 8031 and 8032 (no on-chip ROM), the EA pin is connected to:",
+          opts: ["Vcc", "XTAL1", "GND", "RST"],
+          ans: 2,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pins 32 to 39 belong to:",
+          opts: ["Port 1", "Port 2", "Port 3", "Port 0"],
+          ans: 3,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Port 0 is designated as AD0-AD7 because:",
+          opts: [
+            "It has 8-bit ADC",
+            "8051 multiplexes address and data through Port 0 to save pins",
+            "It is reserved for analog data",
+            "It controls 7 devices",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Port 0 pins do not have internal pull-ups. What is used externally?",
+          opts: [
+            "1kΩ pull-up resistors",
+            "10kΩ pull-up resistors",
+            "100Ω pull-down resistors",
+            "10kΩ pull-down resistors",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Pin Diagram",
+          q: "Pin 40 (VCC) provides:",
+          opts: [
+            "0V ground",
+            "−5V supply",
+            "Data input",
+            "+ 5 Volts power supply to the circuit",
+          ],
+          ans: 3,
+        },
+
+        // ─── PORTS ───
+        {
+          topic: "Ports in 8051",
+          q: "Port 1 (P1) is a true I/O port because:",
+          opts: [
+            "It has alternative address functions",
+            "It doesn't have any alternative functions like P0; general I/O only",
+            "It is unidirectional",
+            "It has no pull-up resistors",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ports in 8051",
+          q: "Port 1 has a built-in pull-up resistor and is compatible with:",
+          opts: [
+            "CMOS only",
+            "TTL circuits",
+            "ECL circuits",
+            "Both TTL and ECL",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ports in 8051",
+          q: "Port 2 is similar to Port 0 when:",
+          opts: [
+            "Serial communication is active",
+            "No memory is connected",
+            "External memory is used",
+            "Interrupts are enabled",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ports in 8051",
+          q: "Port 2 can be used for higher address byte with addresses:",
+          opts: ["A0–A7", "A8–A15", "A16–A23", "A0–A15"],
+          ans: 1,
+        },
+        {
+          topic: "Ports in 8051",
+          q: "In Port 3, functions are similar to other ports except:",
+          opts: [
+            "Logic 0 must be applied to P3 register bits",
+            "Logic 1 must be applied to appropriate bit of P3 register",
+            "No pull-up resistors",
+            "It is unidirectional",
+          ],
+          ans: 1,
+        },
+
+        // ─── STORAGE REGISTERS ───
+        {
+          topic: "Storage Registers",
+          q: "The Accumulator (register A) is used for:",
+          opts: [
+            "Storing addresses only",
+            "All arithmetic and logic operations",
+            "Serial communication only",
+            "Timer control",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "Why is using the accumulator faster than storing results in main memory?",
+          opts: [
+            "Accumulator is larger",
+            "Main memory technology is slower than register technology",
+            "Accumulator has error correction",
+            "Main memory is not accessible",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "The 'R' registers consist of:",
+          opts: [
+            "R0 to R3, a set of 4 registers",
+            "R0 to R7, a set of 8 registers",
+            "R0 to R15, a set of 16 registers",
+            "R0 to R4, a set of 5 registers",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "R registers function as:",
+          opts: [
+            "Program counters",
+            "Auxiliary or temporary storage registers",
+            "I/O port registers",
+            "Serial buffer registers",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "The B register holds how many bits?",
+          opts: ["4-bit", "8-bit (1-byte)", "16-bit", "32-bit"],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "The B register is used only by which two instructions?",
+          opts: [
+            "ADD and SUB",
+            "MOV and MOVX",
+            "MUL A,B and DIV A,B",
+            "ANL and ORL",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Storage Registers",
+          q: "Apart from MUL and DIV, the B register is often used as:",
+          opts: [
+            "A program counter extension",
+            "Another temporary storage register (like a ninth R register)",
+            "A serial buffer",
+            "A timer register",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "DPTR (Data Pointer) is the only user-accessible register of what size?",
+          opts: ["8-bit", "12-bit", "16-bit (2-byte)", "32-bit"],
+          ans: 2,
+        },
+        {
+          topic: "Storage Registers",
+          q: "DPTR is used by the 8051 to:",
+          opts: [
+            "Store program instructions",
+            "Access external memory using the address in DPTR",
+            "Control timers",
+            "Manage interrupts",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "The Program Counter (PC) is what size?",
+          opts: ["8-bit", "12-bit", "2-byte address", "4-byte address"],
+          ans: 2,
+        },
+        {
+          topic: "Storage Registers",
+          q: "The Program Counter tells the 8051:",
+          opts: [
+            "The current data value",
+            "Where the next instruction to execute is in memory",
+            "The current stack depth",
+            "The timer count value",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Storage Registers",
+          q: "When a value is pushed onto the stack, the Stack Pointer (SP):",
+          opts: [
+            "Decrements then stores value",
+            "Stores value then decrements",
+            "Increments then stores value",
+            "Stores value then increments",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Storage Registers",
+          q: "When a value is popped from the stack, the SP:",
+          opts: [
+            "Increments then returns value",
+            "Returns value from SP location then decrements",
+            "Decrements only",
+            "Stays unchanged",
+          ],
+          ans: 1,
+        },
+
+        // ─── ADDRESSING MODES ───
+        {
+          topic: "Addressing Modes",
+          q: "What is an addressing mode?",
+          opts: [
+            "The speed at which instructions execute",
+            "The method of specifying the data to be operated on by the instruction",
+            "The number of registers available",
+            "The clock frequency selection",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Using efficient addressing modes will:",
+          opts: [
+            "Decrease code size only",
+            "Increase processing speed and shorten processing time",
+            "Slow down execution",
+            "Use more memory",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Register Addressing Mode, the instruction specifies:",
+          opts: [
+            "A memory address",
+            "An immediate value",
+            "The name of the register where data is available",
+            "An indirect address",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Register Addressing Mode, at least one of which registers must be involved?",
+          opts: ["A and B only", "DPTR only", "R0–R7", "PC only"],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which of the following is a VALID Register Addressing Mode instruction?",
+          opts: ["MOV R4, R5", "MOV A, R0", "MOV @R0, #05H", "MOVC A, @A+DPTR"],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which instruction is INVALID in Register Addressing Mode?",
+          opts: ["MOV A, R0", "MOV R2, A", "ADD A, R5", "MOV R4, R5"],
+          ans: 3,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Direct Addressing Mode:",
+          opts: [
+            "The operand is in a register",
+            "The address of the data is directly specified in the instruction",
+            "A register holds the address",
+            "Data is immediately provided",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which instruction uses Direct Addressing Mode?",
+          opts: ["MOV A, R0", "MOV A, #55H", "MOV A, 020H", "MOV A, @R0"],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Register Indirect Addressing Mode, what symbol indicates indirect addressing?",
+          opts: ["#", "$", "@", "&"],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Register Indirect Addressing, which registers are used for 8-bit addresses?",
+          opts: ["R0 and R1", "R2 and R3", "R4 and R5", "R6 and R7"],
+          ans: 0,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Register Indirect Addressing, DPTR is used for:",
+          opts: [
+            "8-bit addresses",
+            "12-bit addresses",
+            "16-bit addresses",
+            "4-bit addresses",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which instruction uses Register Indirect Addressing?",
+          opts: ["MOV A, R5", "MOV A, @R0", "MOV A, #45H", "MOV A, 40H"],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Immediate Addressing Mode, the data is:",
+          opts: [
+            "In a register",
+            "At a memory address",
+            "Provided immediately in the instruction after the opcode",
+            "Pointed to by a register",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which symbol is used in Immediate Addressing Mode to denote the immediate value?",
+          opts: ["@", "$", "#", "&"],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "Which is an example of Immediate Addressing?",
+          opts: ["MOV A, R0", "MOV A, 40H", "MOV A, @R1", "MOV A, #0AFH"],
+          ans: 3,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Indexed Addressing Mode, the source memory can only be accessed from:",
+          opts: [
+            "External RAM",
+            "Internal RAM",
+            "Program memory",
+            "Stack only",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Indexed Addressing Mode, the destination operand is always:",
+          opts: ["Register B", "DPTR", "Register A", "R0"],
+          ans: 2,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "What does MOVC A, @A+PC do?",
+          opts: [
+            "Moves content of A to PC",
+            "Moves code byte from (A+PC) address to A",
+            "Moves PC to A",
+            "Clears accumulator",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "In Implied Addressing Mode, there is:",
+          opts: [
+            "Two operands",
+            "A single operand (register-specific instruction)",
+            "No operands",
+            "Three operands",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "'RL A' in implied addressing mode means:",
+          opts: [
+            "Reset left accumulator",
+            "Rotate the accumulator left",
+            "Read left address",
+            "Reset logic A",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Addressing Modes",
+          q: "'SWAP A' in implied addressing mode does what?",
+          opts: [
+            "Swaps A with B register",
+            "Interchanges the low and high-order nibbles of the Accumulator",
+            "Swaps A with R0",
+            "Clears the accumulator",
+          ],
+          ans: 1,
+        },
+
+        // ─── INSTRUCTION SET ───
+        {
+          topic: "Instruction Set",
+          q: "The first part of each instruction (referring to the operation performed) is called:",
+          opts: ["Opcode", "Operand", "Mnemonic", "Label"],
+          ans: 2,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Which group of instructions perform addition, subtraction, multiplication, division?",
+          opts: [
+            "Logic Instructions",
+            "Branch Instructions",
+            "Arithmetic Instructions",
+            "Data Transfer Instructions",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Instruction Set",
+          q: "In the instruction 'ADD A, R1', where is the result stored?",
+          opts: ["In R1", "In the accumulator A", "In memory", "In DPTR"],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Unconditional jump instructions:",
+          opts: [
+            "Jump only if a condition is met",
+            "Always jump to a new location to continue execution",
+            "Stop program execution",
+            "Reset the microcontroller",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Conditional jump instructions:",
+          opts: [
+            "Always jump",
+            "Jump only if a specified condition is met; otherwise proceed normally",
+            "Never jump",
+            "Jump and reset",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Data Transfer Instructions move content of one register to another. The source register:",
+          opts: [
+            "Is cleared after transfer",
+            "Remains unchanged",
+            "Is doubled",
+            "Is reset to zero",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "If Data Transfer instructions have the suffix 'X' (MOVX), it means:",
+          opts: [
+            "Data is exchanged with program memory",
+            "Data is exchanged with external memory",
+            "Data is multiplied",
+            "Data is extended to 16-bit",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Logic Instructions perform operations upon:",
+          opts: [
+            "Entire 16-bit words",
+            "Corresponding bits of two registers",
+            "Only the carry flag",
+            "Only port pins",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "After a logic operation, where is the result stored?",
+          opts: ["Second operand", "First operand", "DPTR", "Stack"],
+          ans: 1,
+        },
+        {
+          topic: "Instruction Set",
+          q: "Bit-oriented instructions differ from logic instructions in that they:",
+          opts: [
+            "Operate on bytes not bits",
+            "Perform operations on single bits",
+            "Use only the accumulator",
+            "Cannot use carry flag",
+          ],
+          ans: 1,
+        },
+
+        // ─── ARITHMETIC INSTRUCTIONS (detailed) ───
+        {
+          topic: "Arithmetic Instructions",
+          q: "ADDC stands for:",
+          opts: [
+            "Add carry flag only",
+            "Addition with carry",
+            "Add complement",
+            "Add and clear carry",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "SUBB stands for:",
+          opts: [
+            "Subtract byte",
+            "Subtraction with Borrow",
+            "Subtract B register",
+            "Subtract and branch",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'INC A' does what?",
+          opts: [
+            "Inverts accumulator",
+            "Increments accumulator by 1",
+            "Initializes accumulator to 0",
+            "Inputs a value to A",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'DEC Rn' does what?",
+          opts: [
+            "Decrements the register by 1",
+            "Declares register n",
+            "Disables register n",
+            "Doubles the register value",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'MUL AB' performs:",
+          opts: [
+            "[A] ← [A] + [B]",
+            "[A] ← [A] * [B]",
+            "[A] ← [A] / [B]",
+            "[A] ← [A] − [B]",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'DIV AB' performs:",
+          opts: [
+            "[A] ← [A] * [B]",
+            "[A] ← [A] + [B]",
+            "[A] ← [A] / [B]",
+            "[A] ← [A] mod [B]",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'DA A' instruction is used for:",
+          opts: [
+            "Data acknowledge",
+            "Decimal adjustment of the accumulator according to BCD code",
+            "Direct addressing",
+            "Disable accumulator",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "'INC DPTR' increments:",
+          opts: [
+            "Data at address pointed by DPTR",
+            "The Data Pointer by 1",
+            "The stack pointer",
+            "The program counter",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "In ADD A, #14H — what does #14H represent?",
+          opts: [
+            "Memory address 14H",
+            "Register 14H",
+            "Immediate hexadecimal value 14H",
+            "Indirect address 14H",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "In ADD A, 14H — what is 14H?",
+          opts: [
+            "Immediate data",
+            "Indirect register",
+            "A memory address (direct addressing)",
+            "A port number",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "In 8051 arithmetic, if the result of addition is a 9-bit number, where is the 9th bit stored?",
+          opts: ["Overflow flag", "Accumulator MSB", "Carry flag", "Stack"],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "How many different instructions are in the 8051 Arithmetic Group?",
+          opts: ["16", "20", "24", "32"],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "How many total opcodes are in the 8051 Arithmetic Group?",
+          opts: ["24", "48", "64", "128"],
+          ans: 2,
+        },
+        {
+          topic: "Arithmetic Instructions",
+          q: "Which flags are affected by ADD, ADDC, SUBB instructions?",
+          opts: [
+            "TF0 and TF1",
+            "CY, AC and OV flags",
+            "RS0 and RS1",
+            "IE and TMOD",
+          ],
+          ans: 1,
+        },
+
+        // ─── LOGICAL INSTRUCTIONS (detailed) ───
+        {
+          topic: "Logical Instructions",
+          q: "ANL stands for:",
+          opts: [
+            "Analog Logic",
+            "AND Logic",
+            "Arithmetic Negate Logic",
+            "Address Normal Load",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "ORL stands for:",
+          opts: [
+            "Output Register Load",
+            "OR Logic",
+            "Oscillator Reset Logic",
+            "Operand Register Link",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "XRL stands for:",
+          opts: [
+            "XOR Logic",
+            "External Register Load",
+            "X-Ray Logic",
+            "Cross Reference Link",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'CLR A' does what?",
+          opts: [
+            "Clears carry flag only",
+            "Complements the accumulator",
+            "Clears accumulator to 0",
+            "Clocks the accumulator",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'CPL A' does what?",
+          opts: [
+            "Copies A to B",
+            "Complements the accumulator (1→0, 0→1)",
+            "Clears A",
+            "Counts pulses in A",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'SWAP A' does what?",
+          opts: [
+            "Swaps A with B",
+            "Swaps nibbles within the accumulator (bits 0-3 and bits 4-7)",
+            "Clears A",
+            "Increments A by 4",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'RL A' instruction:",
+          opts: [
+            "Rotates bits in accumulator right",
+            "Resets accumulator",
+            "Rotates bits in accumulator left",
+            "Reads left port",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "In 'RL A', where does the MSB go after rotation?",
+          opts: [
+            "It is lost",
+            "It goes to LSB and also to Carry Flag",
+            "It stays at MSB",
+            "It goes to B register",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'RR A' instruction:",
+          opts: [
+            "Rotates accumulator left",
+            "Rotates accumulator right",
+            "Resets registers",
+            "Reads right port",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "In 'RR A', the LSB value is assigned to:",
+          opts: [
+            "MSB and Carry Flag (CF is lost)",
+            "Only Carry Flag",
+            "Only MSB",
+            "B register",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'RLC A' rotates bits left through:",
+          opts: [
+            "Only the accumulator",
+            "Accumulator and carry flag (CF value goes to LSB, MSB goes to CF)",
+            "The stack",
+            "DPTR",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'RRC A' rotates bits:",
+          opts: [
+            "Left through carry",
+            "Right through carry (CF value goes to MSB, LSB goes to CF)",
+            "Only right without carry",
+            "Left without carry",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "The Carry Flag (CY) is affected only by which rotation instructions?",
+          opts: ["RL and RR", "SWAP and CLR", "RRC and RLC", "CPL and CLR"],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "How many logical instructions are in the 8051?",
+          opts: ["16", "20", "25", "30"],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "How many opcodes are in the 8051 Logical Instructions group?",
+          opts: ["25", "36", "49", "64"],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'ANL A, R0' performs:",
+          opts: [
+            "[A] ← [A] OR [R0]",
+            "[A] ← [A] AND [R0]",
+            "[A] ← [A] XOR [R0]",
+            "[A] ← [A] + [R0]",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'ORL A, #data' performs:",
+          opts: [
+            "[A] ← [A] AND [Data]",
+            "[A] ← [A] XOR [Data]",
+            "[A] ← [A] OR [Data]",
+            "[A] ← [Data]",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Logical Instructions",
+          q: "'ANL 14H, A' stores the result in:",
+          opts: ["Accumulator A", "Location 14H", "DPTR", "B register"],
+          ans: 1,
+        },
+
+        // ─── PSW (PROGRAM STATUS WORD) ───
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The Parity bit (P) in PSW shows:",
+          opts: [
+            "Even parity of all registers",
+            "Number of 1s in the accumulator — set to 1 if odd number of 1s",
+            "Parity of carry flag",
+            "Overflow condition",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "If the accumulator contains an even number of 1s, the P flag is:",
+          opts: ["Set to 1", "Cleared to 0", "Toggled", "Unchanged"],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The Overflow flag (OV) is set to 1 when:",
+          opts: [
+            "Timer overflows",
+            "A carry out of D7 or D6 bit of accumulator occurs in ALU operations",
+            "Serial data is received",
+            "Stack overflow occurs",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "Overflow flag is set when arithmetic operations like add/subtract result in:",
+          opts: [
+            "A zero result",
+            "Sign conflict",
+            "Carry out only",
+            "Borrow only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The General-purpose flag F0 in PSW:",
+          opts: [
+            "Automatically sets on overflow",
+            "Is user-programmable — user can store any bit here",
+            "Indicates carry out",
+            "Is the timer flag",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The Auxiliary Carry flag (AC) is used in association with:",
+          opts: [
+            "16-bit addition",
+            "BCD arithmetic, set when carry out of D3 bit of accumulator",
+            "Serial communication",
+            "Timer/counter operations",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The Carry flag (CY) indicates:",
+          opts: [
+            "Carry generated after arithmetic operations; also used as accumulator for bit operations",
+            "Timer overflow",
+            "Stack overflow",
+            "Serial data error",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "The 8051 supports bit manipulation instructions, meaning:",
+          opts: [
+            "Only byte operations are possible",
+            "In addition to byte operations, bit operations using bit data are also possible",
+            "Only bit operations are possible",
+            "Neither byte nor bit operations",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Program Status Word (PSW)",
+          q: "For bit operations, the contents of PSW are:",
+          opts: [
+            "Byte-addressable only",
+            "Bit-addressable",
+            "Stack-only",
+            "Not addressable",
+          ],
+          ans: 1,
+        },
+
+        // ─── TIMERS ───
+        {
+          topic: "Timers",
+          q: "How many timers does the 8051 have?",
+          opts: ["One", "Two", "Four", "Eight"],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "Both timers in the 8051 are:",
+          opts: [
+            "8-bit down counters",
+            "16-bit up counters",
+            "8-bit up counters",
+            "16-bit down counters",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "The timers can count from 0000 to FFFF, which is:",
+          opts: ["0 to 32,767", "0 to 65,535", "0 to 255", "0 to 4,095"],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "Since 8051 is 8-bit, each 16-bit timer is accessed by:",
+          opts: [
+            "One 16-bit register",
+            "Two separate 8-bit registers",
+            "Four 4-bit registers",
+            "One 8-bit register",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "The special function registers used to control timers are:",
+          opts: ["SCON and SBUF", "PCON and IE", "TMOD and TCON", "PSW and SP"],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "TL0 is:",
+          opts: [
+            "Timer 1 low byte",
+            "Timer 0 high byte",
+            "Timer 0 low byte",
+            "Timer 1 high byte",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "TH0 is:",
+          opts: [
+            "Timer 0 low byte",
+            "Timer 0 high byte",
+            "Timer 1 low byte",
+            "Timer 1 high byte",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "When TL0 overflows (reaches 255), what happens?",
+          opts: [
+            "Timer 0 resets",
+            "TH0 increments by 1",
+            "Program stops",
+            "Interrupt is immediately cleared",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "TL1 and TH1 are the:",
+          opts: [
+            "Timer 0 registers",
+            "Timer 1 low and high byte registers",
+            "Stack registers",
+            "Program counter registers",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "TCON stands for:",
+          opts: [
+            "Timer Configure",
+            "Timer Control Register",
+            "Timer Counter",
+            "Time Control Node",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "TMOD stands for:",
+          opts: [
+            "Timer Mode Register",
+            "Timer Module",
+            "Timer Model",
+            "Timer Monitor",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Timers",
+          q: "TCON is used to:",
+          opts: [
+            "Set timer mode only",
+            "Start/stop timers and indicate if timer is done counting",
+            "Control serial ports only",
+            "Configure I/O ports",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "TMOD is used to:",
+          opts: [
+            "Start and stop timers",
+            "Adjust the timer's mode of operation",
+            "Control interrupts",
+            "Manage memory banks",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "The TMOD register's lower 4 bits control:",
+          opts: ["Timer 1", "Timer 0", "Both timers", "Serial port"],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "The TMOD register's upper 4 bits control:",
+          opts: ["Timer 0", "Timer 1", "Both timers", "Interrupt enable"],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, the GATE bit = 1 means:",
+          opts: [
+            "Timer is always enabled",
+            "Enable Timer/Counter only when INT0/INT1 pin is high AND TR0/TR1 is set",
+            "Timer is disabled",
+            "Timer runs in counter mode",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, C/T = 1 means:",
+          opts: [
+            "Use as Timer",
+            "Use as Counter",
+            "Clear timer",
+            "Clock/Transfer mode",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, when M1=0 and M0=0, the mode is:",
+          opts: [
+            "Mode 1 (16-bit timer)",
+            "Mode 0 (13-bit timer)",
+            "Mode 2 (8-bit auto-reload)",
+            "Mode 3 (split timer)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, when M1=0 and M0=1, the mode is:",
+          opts: [
+            "Mode 0 (13-bit timer)",
+            "Mode 1 (16-bit timer)",
+            "Mode 2 (8-bit auto-reload)",
+            "Mode 3 (split timer)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, when M1=1 and M0=0, the mode is:",
+          opts: [
+            "Mode 0",
+            "Mode 1",
+            "Mode 2 (8-bit auto-reload)",
+            "Mode 3 (split timer)",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "In TMOD, when M1=1 and M0=1, the mode is:",
+          opts: ["Mode 0", "Mode 1", "Mode 2", "Mode 3 (split timer)"],
+          ans: 3,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, the TF1 flag is set to 1 when:",
+          opts: [
+            "Timer 0 overflows",
+            "Timer 1 overflows",
+            "External interrupt 1 occurs",
+            "Serial data is transmitted",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, the TR0 bit set to 1:",
+          opts: [
+            "Stops Timer 0",
+            "Starts Timer 0",
+            "Resets Timer 0",
+            "Reads Timer 0 value",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, the TR1 bit set to 0:",
+          opts: [
+            "Starts Timer 1",
+            "Resets Timer 1",
+            "Stops Timer 1",
+            "Reads Timer 1 value",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, the IE0 flag is set when:",
+          opts: [
+            "Timer 0 overflows",
+            "Timer 1 overflows",
+            "An external interrupt 0 occurs",
+            "Serial data is received",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, if IT0 = 1, the external interrupt 0 is:",
+          opts: [
+            "Level triggered",
+            "Disabled",
+            "Edge triggered",
+            "Timer triggered",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Timers",
+          q: "In TCON, if IT1 = 0, the external interrupt 1 is:",
+          opts: [
+            "Edge triggered",
+            "Level triggered",
+            "Disabled",
+            "Timer triggered",
+          ],
+          ans: 1,
+        },
+
+        // ─── SERIAL PORTS ───
+        {
+          topic: "Serial Communication",
+          q: "In serial transfer, data is transferred to devices:",
+          opts: [
+            "Only a few feet away",
+            "Many meters away (long distance)",
+            "Within the same chip",
+            "Only through USB",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In parallel transfer, data is transferred in:",
+          opts: [
+            "1 bit at a time",
+            "8 or more lines simultaneously",
+            "Serial format",
+            "Wireless only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "Parallel transfer is used for transferring data to devices:",
+          opts: [
+            "Many meters away",
+            "Only a few feet away",
+            "Across networks",
+            "Via serial protocol",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "What does UART stand for?",
+          opts: [
+            "Universal Asynchronous Receiver Transmitter",
+            "Universal Analog Radio Transmitter",
+            "Unified Asynchronous Register Transfer",
+            "Universal Address Resolution Table",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Serial Communication",
+          q: "The 8051 microcontroller uses UART for:",
+          opts: [
+            "Parallel communication",
+            "Serial communication",
+            "Timer control",
+            "Memory management",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In 8051, signals are transmitted and received by which pins?",
+          opts: [
+            "XTAL1 and XTAL2",
+            "RST and EA",
+            "Rx and Tx (P3.0 and P3.1)",
+            "ALE and PSEN",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In simplex transmission:",
+          opts: [
+            "Both send and receive simultaneously",
+            "Only one direction — computer can only send data (one wire)",
+            "Two-way alternating",
+            "Two-way simultaneous",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "If communication is only one way at a time, it is:",
+          opts: ["Full duplex", "Simplex", "Half duplex", "Parallel"],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "If both sides can communicate at the same time, it is:",
+          opts: ["Simplex", "Half duplex", "Full duplex", "Multiplexed"],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "Full duplex requires how many wire conductors for data lines?",
+          opts: ["One", "Two", "Three", "Four"],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "Synchronous Communication:",
+          opts: [
+            "Transfers one byte at a time without a clock",
+            "Transfers a block of data with events referenced to a clock",
+            "Uses start/stop bits",
+            "Has no timing reference",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "An example of synchronous communication protocol is:",
+          opts: ["UART", "RS-232", "SPI bus or I2C bus", "Parallel port"],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "Asynchronous Communication:",
+          opts: [
+            "Transfers a block of data at a time",
+            "Has a shared clock",
+            "Transfers a single byte at a time with start and stop bits, no shared clock",
+            "Requires synchronization signal",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "UART is an example of:",
+          opts: [
+            "Synchronous communication",
+            "Asynchronous communication",
+            "Parallel communication",
+            "Full duplex only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "The rate of data transfer in serial communication is expressed as:",
+          opts: [
+            "MHz",
+            "Hertz",
+            "bps (bits per second) / baud rate",
+            "Bytes per minute",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "USART stands for:",
+          opts: [
+            "Universal Synchronous Asynchronous Receiver Transmitter",
+            "Universal Serial Asynchronous Receiver Transducer",
+            "Unified Serial And Register Transfer",
+            "Universal Synchronous Amplified Receiver Transmitter",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In 8051, SBUF (serial buffer) register is used to:",
+          opts: [
+            "Control timers",
+            "Hold serial data",
+            "Control data rates",
+            "Set interrupt priorities",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "SCON (serial port control register) is used to:",
+          opts: [
+            "Control timers",
+            "Hold serial data",
+            "Control data communication",
+            "Set power modes",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "PCON (power mode control register) is used to:",
+          opts: [
+            "Control serial port modes",
+            "Control data rates",
+            "Hold serial data",
+            "Manage interrupts",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "SCON is described as:",
+          opts: [
+            "Not bit addressable",
+            "Byte-addressable only",
+            "A bit addressable register",
+            "A 16-bit register",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, SMO and SM1 bits are used for:",
+          opts: [
+            "Reception enable",
+            "9th data bit control",
+            "Serial mode control (mode selection)",
+            "Interrupt flag",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, SM2 enables:",
+          opts: [
+            "Single byte mode",
+            "Multiprocessor communication in mode 2/3",
+            "Mode 1 operation",
+            "Data parity check",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, REN bit is:",
+          opts: [
+            "Set/cleared by hardware to indicate reception complete",
+            "Set/cleared by software to enable/disable reception",
+            "Automatic reception control",
+            "Reserved",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, TI (Transmit Interrupt flag) is:",
+          opts: [
+            "Set by software",
+            "Set by hardware at end of transmission, must be cleared by software",
+            "Set by hardware and cleared by hardware",
+            "Always 1",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, RI (Receive Interrupt flag) is:",
+          opts: [
+            "Set and cleared by hardware",
+            "Set by hardware, must be cleared by software",
+            "Set by software only",
+            "Always 0",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "In SCON, TB8 is:",
+          opts: [
+            "The 8th bit of serial data",
+            "The 9th bit to be transmitted in mode 2/3, set/cleared by software",
+            "Timer bit 8",
+            "Transmit buffer 8",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "When SM0=0 and SM1=0, the serial mode is:",
+          opts: [
+            "Serial Mode 1",
+            "Serial Mode 2",
+            "Serial Mode 0 (shift register, baud = 1/12 Osc)",
+            "Serial Mode 3",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Serial Communication",
+          q: "When SM0=0 and SM1=1, the baud rate is:",
+          opts: [
+            "1/12 Oscillator frequency",
+            "Determined by Timer 1",
+            "1/64 or 1/32 Osc frequency",
+            "Fixed at 9600 bps",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Serial Communication",
+          q: "When SM0=1 and SM1=0, the baud rate is:",
+          opts: [
+            "Determined by Timer 1",
+            "1/12 Osc frequency",
+            "1/64 or 1/32 Oscillator frequency",
+            "Fixed",
+          ],
+          ans: 2,
+        },
+
+        // ─── INTERRUPTS (detailed) ───
+        {
+          topic: "Interrupts",
+          q: "What is an interrupt?",
+          opts: [
+            "A memory read operation",
+            "A signal to the processor emitted by hardware or software indicating an event needing immediate attention",
+            "A timer overflow only",
+            "A serial data error",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "What does ISR stand for?",
+          opts: [
+            "Interrupt Status Register",
+            "Interrupt Service Routine",
+            "Internal Shift Register",
+            "Input Signal Relay",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "When an interrupt occurs, the controller:",
+          opts: [
+            "Immediately halts and never resumes",
+            "Completes current instruction then executes the ISR",
+            "Discards the current instruction",
+            "Restarts from the beginning",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "A hardware interrupt is:",
+          opts: [
+            "Caused by a special software instruction",
+            "An electronic alerting signal from an external device like a disk controller",
+            "Triggered by dividing by zero",
+            "Generated by the compiler",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "Pressing a key on a keyboard triggers which type of interrupt?",
+          opts: [
+            "Software interrupt",
+            "Memory interrupt",
+            "Hardware interrupt",
+            "Timer interrupt",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "A software interrupt is caused by:",
+          opts: [
+            "External device signals",
+            "An exceptional condition or special instruction in the instruction set",
+            "Power supply fluctuation",
+            "Clock signal variation",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "Dividing a number by zero causes:",
+          opts: [
+            "A hardware interrupt",
+            "A software interrupt (exceptional condition)",
+            "A timer interrupt",
+            "A serial interrupt",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "Polling is:",
+          opts: [
+            "Responding only to interrupts",
+            "The state of continuous monitoring where microcontroller checks other devices constantly",
+            "A serial protocol",
+            "An addressing mode",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the disadvantage of polling?",
+          opts: [
+            "It responds too quickly",
+            "Microcontroller does no other operation and consumes all processing time monitoring",
+            "It misses all interrupts",
+            "It uses too much memory",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "In the interrupt method, the controller responds:",
+          opts: [
+            "Continuously to all events",
+            "Only when an interruption occurs, without needing to monitor constantly",
+            "Only to timer events",
+            "Only to external events",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the Interrupt Vector Table?",
+          opts: [
+            "A list of all registers",
+            "A table of memory locations holding addresses of ISRs",
+            "A timer configuration table",
+            "A register bank selection table",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "How many interrupts (including RESET) does the 8051 have?",
+          opts: ["Three", "Four", "Six", "Eight"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the ROM location for the RESET interrupt?",
+          opts: ["0003H", "000BH", "0013H", "0000H"],
+          ans: 3,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the ROM location for Timer 0 (TF0) interrupt?",
+          opts: ["0000H", "000BH", "0013H", "001BH"],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the ROM location for External HW interrupt 1 (INT1)?",
+          opts: ["0003H", "000BH", "0013H", "001BH"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the ROM location for Timer 1 (TF1) interrupt?",
+          opts: ["000BH", "0013H", "001BH", "0023H"],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "What is the ROM location for Serial COM (RI and TI) interrupt?",
+          opts: ["001BH", "0023H", "0013H", "000BH"],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "The External HW interrupt 0 (INT0) is on which pin?",
+          opts: [
+            "P3.3 (pin 13)",
+            "P3.2 (pin 12)",
+            "P3.0 (pin 10)",
+            "P3.1 (pin 11)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "Steps to handle an interrupt: After completing current instruction, the microcontroller saves what on the stack?",
+          opts: [
+            "Current data value",
+            "Address of next instruction (PC)",
+            "Timer value",
+            "Serial buffer content",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "After ISR execution, the instruction used to return to the interrupted program is:",
+          opts: ["RET", "RETI (return from interrupt)", "JMP", "CALL"],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "Upon Reset, all interrupts are:",
+          opts: [
+            "Enabled automatically",
+            "Disabled, and must be enabled by software",
+            "Partially enabled",
+            "Timer-only enabled",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "IE register stands for:",
+          opts: [
+            "Interrupt Enable",
+            "Interrupt Error",
+            "Internal Enable",
+            "Interrupt Execute",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Interrupts",
+          q: "The IE register is:",
+          opts: [
+            "Not addressable",
+            "Byte-addressable only",
+            "Bit addressable",
+            "Read-only",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "The EA bit (D7) in the IE register, when set to 1:",
+          opts: [
+            "Disables all interrupts",
+            "Allows the rest of the IE register to take effect (interrupts can be enabled)",
+            "Enables only serial interrupt",
+            "Resets the microcontroller",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "If EA = 0 in the IE register:",
+          opts: [
+            "All enabled interrupts work normally",
+            "No interrupts will be responded to, even if their IE bits are high",
+            "Only timer interrupts work",
+            "Only external interrupts work",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "In the IE register, EX0 bit enables:",
+          opts: [
+            "Timer 0 interrupt",
+            "Timer 1 interrupt",
+            "External 0 interrupt",
+            "Serial port interrupt",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "In the IE register, ET1 bit enables:",
+          opts: [
+            "External interrupt 1",
+            "Timer 1 interrupt",
+            "Serial interrupt",
+            "Timer 0 interrupt",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Interrupts",
+          q: "In the IE register, ES bit enables:",
+          opts: [
+            "External interrupt",
+            "Stack interrupt",
+            "Serial port interrupt",
+            "Timer 2 interrupt",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Interrupts",
+          q: "In the IE register, ET2 enables:",
+          opts: [
+            "External interrupt 2",
+            "Timer 0 interrupt",
+            "Timer 2 interrupt",
+            "Serial interrupt",
+          ],
+          ans: 2,
+        },
+      ];
+
+      // ═══════════════════════════════════════════════════════════
+      // STATE
+      // ═══════════════════════════════════════════════════════════
+      let questions = [];
+      let currentIdx = 0;
+      let mode = "learning";
+      let answers = {}; // idx → { selected, correct }
+      let rapidStopped = false;
+      let isRetakeMode = false;
+      let wrongOnly = [];
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ─── INIT ───
+      document.getElementById("total-count").textContent = ALL_QUESTIONS.length;
+
+      // ═══════════════════════════════════════════════════════════
+      // NAVIGATION
+      // ═══════════════════════════════════════════════════════════
+      function showScreen(id) {
+        ["home", "quiz", "results", "review"].forEach((s) => {
+          document.getElementById(s).style.display = "none";
+        });
+        document.getElementById(id).style.display = "block";
+      }
+      function goHome() {
+        if (confirm("Return to home? Your progress will be lost."))
+          showScreen("home");
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // START QUIZ
+      // ═══════════════════════════════════════════════════════════
+      function startQuiz(m, retakeWrong = false) {
+        mode = m;
+        answers = {};
+        rapidStopped = false;
+        isRetakeMode = retakeWrong;
+
+        if (retakeWrong && wrongOnly.length > 0) {
+          questions = shuffle([...wrongOnly]);
+        } else {
+          questions = shuffle([...ALL_QUESTIONS]);
+          wrongOnly = [];
+        }
+        currentIdx = 0;
+        showScreen("quiz");
+        updateModeTag();
+        renderQuestion();
+      }
+
+      function updateModeTag() {
+        const tag = document.getElementById("mode-tag");
+        if (mode === "learning") {
+          tag.textContent = "📚 Learning";
+          tag.className = "quiz-mode-tag tag-learning";
+        } else {
+          tag.textContent = "⚡ Rapid Fire";
+          tag.className = "quiz-mode-tag tag-rapid";
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // RENDER QUESTION
+      // ═══════════════════════════════════════════════════════════
+      function renderQuestion() {
+        const q = questions[currentIdx];
+        const total = questions.length;
+
+        // header
+        document.getElementById(
+          "progress-info"
+        ).innerHTML = `Question <strong>${currentIdx + 1}</strong> / ${total}`;
+        document.getElementById("progress-bar").style.width = `${
+          ((currentIdx + 1) / total) * 100
+        }%`;
+
+        const correctCount = Object.values(answers).filter(
+          (a) => a.correct
+        ).length;
+        const wrongCount = Object.values(answers).filter(
+          (a) => !a.correct
+        ).length;
+        document.getElementById(
+          "score-correct"
+        ).textContent = `✓ ${correctCount}`;
+        document.getElementById("score-wrong").textContent = `✗ ${wrongCount}`;
+
+        // question body
+        document.getElementById("q-number").textContent = `Q${
+          currentIdx + 1
+        } of ${total}`;
+        document.getElementById("q-topic").textContent = q.topic;
+        document.getElementById("q-text").textContent = q.q;
+
+        // options
+        const optContainer = document.getElementById("options-container");
+        optContainer.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+
+        const savedAns = answers[currentIdx];
+
+        q.opts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn fade-in";
+          btn.style.animationDelay = `${i * 0.05}s`;
+
+          let cls = "";
+          let icon = "";
+          if (savedAns !== undefined) {
+            btn.disabled = true;
+            if (i === q.ans) {
+              cls = "correct";
+              icon = "✓";
+            } else if (i === savedAns.selected && !savedAns.correct) {
+              cls = "wrong";
+              icon = "✗";
+            }
+          }
+          if (cls) btn.classList.add(cls);
+
+          btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}<span class="option-icon">${icon}</span>`;
+          if (savedAns === undefined) {
+            btn.onclick = () => selectAnswer(i);
+          }
+          optContainer.appendChild(btn);
+        });
+
+        // feedback
+        const fb = document.getElementById("feedback-box");
+        fb.className = "feedback-box";
+        fb.style.display = "none";
+        if (savedAns !== undefined) {
+          if (savedAns.correct) {
+            fb.textContent = "✓ Correct!";
+            fb.className = "feedback-box correct-fb show";
+          } else {
+            fb.textContent = `✗ Incorrect. The correct answer is: "${
+              q.opts[q.ans]
+            }"`;
+            fb.className = "feedback-box wrong-fb show";
+          }
+          fb.style.display = "block";
+        }
+
+        // rapid fire stop banner
+        const stopBanner = document.getElementById("rapid-stop");
+        stopBanner.className =
+          "rapid-stop-banner" +
+          (rapidStopped && savedAns !== undefined && !savedAns.correct
+            ? " show"
+            : "");
+
+        renderNavButtons();
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // SELECT ANSWER
+      // ═══════════════════════════════════════════════════════════
+      function selectAnswer(selected) {
+        const q = questions[currentIdx];
+        const isCorrect = selected === q.ans;
+
+        answers[currentIdx] = { selected, correct: isCorrect };
+
+        if (!isCorrect) {
+          wrongOnly.push(q);
+          if (mode === "rapid") rapidStopped = true;
+        }
+
+        renderQuestion();
+
+        if (mode === "rapid" && isCorrect) {
+          // auto-advance after short delay
+          setTimeout(() => {
+            if (currentIdx < questions.length - 1) {
+              currentIdx++;
+              rapidStopped = false;
+              renderQuestion();
+            } else {
+              showResults();
+            }
+          }, 700);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // NAV BUTTONS
+      // ═══════════════════════════════════════════════════════════
+      function renderNavButtons() {
+        const nav = document.getElementById("nav-buttons");
+        nav.innerHTML = "";
+
+        const total = questions.length;
+        const savedAns = answers[currentIdx];
+        const isLast = currentIdx === total - 1;
+
+        if (mode === "learning") {
+          // Prev
+          if (currentIdx > 0) {
+            const prev = document.createElement("button");
+            prev.className = "btn btn-secondary";
+            prev.textContent = "← Previous";
+            prev.onclick = () => {
+              currentIdx--;
+              renderQuestion();
+            };
+            nav.appendChild(prev);
+          }
+          // Next
+          if (savedAns !== undefined) {
+            const next = document.createElement("button");
+            next.className = "btn btn-primary";
+            next.textContent = isLast ? "Finish Quiz →" : "Next →";
+            next.onclick = () => {
+              if (isLast) showResults();
+              else {
+                currentIdx++;
+                renderQuestion();
+              }
+            };
+            nav.appendChild(next);
+          }
+        } else {
+          // RAPID FIRE
+          // Prev button always
+          if (currentIdx > 0) {
+            const prev = document.createElement("button");
+            prev.className = "btn btn-secondary";
+            prev.textContent = "← Previous";
+            prev.onclick = () => {
+              currentIdx--;
+              rapidStopped = false;
+              renderQuestion();
+            };
+            nav.appendChild(prev);
+          }
+          // Next only shown if: answer was given (wrong — manual next) or last question
+          if (savedAns !== undefined && (!savedAns.correct || isLast)) {
+            const next = document.createElement("button");
+            next.className = savedAns.correct
+              ? "btn btn-primary"
+              : "btn btn-danger";
+            next.textContent = isLast ? "Finish →" : "Next →";
+            next.onclick = () => {
+              if (isLast) showResults();
+              else {
+                currentIdx++;
+                rapidStopped = false;
+                renderQuestion();
+              }
+            };
+            nav.appendChild(next);
+          }
+          // Finish early button if stopped
+          if (rapidStopped || savedAns !== undefined) {
+            const fin = document.createElement("button");
+            fin.className = "btn btn-secondary";
+            fin.textContent = "End & See Results";
+            fin.onclick = showResults;
+            nav.appendChild(fin);
+          }
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // RESULTS
+      // ═══════════════════════════════════════════════════════════
+      function showResults() {
+        showScreen("results");
+
+        const total = questions.length;
+        const answered = Object.keys(answers).length;
+        const correct = Object.values(answers).filter((a) => a.correct).length;
+        const wrong = answered - correct;
+        const pct = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+
+        let emoji = "🏆",
+          title = "Outstanding!",
+          sub = "You nailed it!";
+        if (pct < 40) {
+          emoji = "😅";
+          title = "Keep Practicing!";
+          sub = "Review the material and try again.";
+        } else if (pct < 60) {
+          emoji = "📖";
+          title = "Getting There!";
+          sub = "A bit more revision and you'll crush it.";
+        } else if (pct < 80) {
+          emoji = "👍";
+          title = "Good Job!";
+          sub = "Solid performance. Focus on your weak areas.";
+        } else if (pct < 95) {
+          emoji = "🌟";
+          title = "Excellent!";
+          sub = "Very strong performance!";
+        }
+
+        document.getElementById("res-emoji").textContent = emoji;
+        document.getElementById("res-title").textContent = title;
+        document.getElementById("res-sub").textContent = sub;
+        document.getElementById(
+          "stat-score"
+        ).textContent = `${correct}/${answered}`;
+        document.getElementById("stat-correct").textContent = correct;
+        document.getElementById("stat-wrong").textContent = wrong;
+        document.getElementById("stat-pct").textContent = `${pct}%`;
+
+        const acts = document.getElementById("results-actions");
+        acts.innerHTML = "";
+
+        // Retake all
+        const retakeAll = document.createElement("button");
+        retakeAll.className = "btn btn-primary";
+        retakeAll.textContent = "🔄 Retake All Questions";
+        retakeAll.onclick = () => startQuiz(mode, false);
+        acts.appendChild(retakeAll);
+
+        // Retake wrong
+        if (wrongOnly.length > 0) {
+          const retakeWrong = document.createElement("button");
+          retakeWrong.className = "btn btn-danger";
+          retakeWrong.textContent = `⚡ Retake Wrong (${wrongOnly.length})`;
+          retakeWrong.onclick = () => startQuiz(mode, true);
+          acts.appendChild(retakeWrong);
+        }
+
+        // Review answers
+        const reviewBtn = document.createElement("button");
+        reviewBtn.className = "btn btn-secondary";
+        reviewBtn.textContent = "🔍 Review Answers";
+        reviewBtn.onclick = showReview;
+        acts.appendChild(reviewBtn);
+
+        // Switch mode
+        const switchBtn = document.createElement("button");
+        switchBtn.className = "btn btn-secondary";
+        switchBtn.textContent =
+          mode === "learning" ? "⚡ Try Rapid Fire" : "📚 Try Learning Mode";
+        switchBtn.onclick = () =>
+          startQuiz(mode === "learning" ? "rapid" : "learning", false);
+        acts.appendChild(switchBtn);
+
+        // Home
+        const homeBtn = document.createElement("button");
+        homeBtn.className = "btn btn-home";
+        homeBtn.textContent = "← Home";
+        homeBtn.onclick = () => showScreen("home");
+        acts.appendChild(homeBtn);
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // REVIEW
+      // ═══════════════════════════════════════════════════════════
+      function showReview() {
+        showScreen("review");
+        const letters = ["A", "B", "C", "D"];
+        const list = document.getElementById("review-list");
+        list.innerHTML = "";
+
+        const answered = Object.keys(answers)
+          .map(Number)
+          .sort((a, b) => a - b);
+        document.getElementById("review-sub").textContent = `Showing ${
+          answered.length
+        } answered question(s). Correct: ${
+          answered.filter((i) => answers[i].correct).length
+        }, Wrong: ${answered.filter((i) => !answers[i].correct).length}`;
+
+        answered.forEach((i) => {
+          const q = questions[i];
+          const a = answers[i];
+          const item = document.createElement("div");
+          item.className = "review-item" + (a.correct ? "" : " rev-wrong");
+
+          const qEl = document.createElement("div");
+          qEl.className = "review-q";
+          qEl.textContent = `Q${i + 1}. ${q.q}`;
+
+          const ansDiv = document.createElement("div");
+          ansDiv.className = "review-answers";
+
+          q.opts.forEach((opt, oi) => {
+            const isCorrect = oi === q.ans;
+            const isSelected = oi === a.selected;
+            if (!isCorrect && !isSelected) return;
+
+            const row = document.createElement("div");
+            row.className =
+              "review-ans " + (isCorrect ? "rev-correct-ans" : "rev-wrong-ans");
+            const badge = document.createElement("span");
+            badge.className = "rev-badge " + (isCorrect ? "correct" : "wrong");
+            badge.textContent = isCorrect
+              ? isSelected
+                ? "Your Answer ✓"
+                : "Correct"
+              : "Your Answer ✗";
+            row.textContent = `${letters[oi]}. ${opt}`;
+            row.appendChild(badge);
+            ansDiv.appendChild(row);
+          });
+
+          item.appendChild(qEl);
+          item.appendChild(ansDiv);
+          list.appendChild(item);
+        });
+
+        if (answered.length === 0) {
+          list.innerHTML =
+            '<p style="color:var(--text-dim);text-align:center;padding:40px 0;">No questions answered yet.</p>';
+        }
+      }
+    </script>
+  </body>
+</html>
