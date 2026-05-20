@@ -1,0 +1,2953 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>ESIOT Quiz — Embedded Systems Unit 1</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0a0a0f;
+        --surface: #12121a;
+        --surface2: #1a1a26;
+        --border: #2a2a3d;
+        --accent: #ff4444;
+        --accent2: #ff8800;
+        --green: #00e676;
+        --red: #ff1744;
+        --blue: #448aff;
+        --text: #e8e8f0;
+        --muted: #7070a0;
+        --gold: #ffd740;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(255, 68, 68, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(255, 68, 68, 0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+
+      /* HEADER */
+      .header {
+        text-align: center;
+        padding: 40px 0 28px;
+      }
+      .chip {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff;
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        padding: 4px 14px;
+        border-radius: 2px;
+        margin-bottom: 16px;
+      }
+      .header h1 {
+        font-size: clamp(26px, 6vw, 50px);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -1px;
+      }
+      .header h1 span {
+        color: var(--accent);
+      }
+      .header p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      /* STATS */
+      .stats-row {
+        display: flex;
+        gap: 14px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+      .stat-box {
+        flex: 1;
+        min-width: 110px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+      }
+      .stat-box .num {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--accent);
+        font-family: "Space Mono", monospace;
+      }
+      .stat-box .lbl {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* MODE CARDS */
+      .mode-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 24px;
+      }
+      @media (max-width: 520px) {
+        .mode-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mode-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        padding: 30px 26px;
+        cursor: pointer;
+        transition: all 0.25s;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s;
+      }
+      .mode-card.rf::before {
+        background: var(--accent2);
+      }
+      .mode-card:hover {
+        transform: translateY(-3px);
+      }
+      .mode-card:hover::before {
+        transform: scaleX(1);
+      }
+      .mode-card.learn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 12px 40px rgba(255, 68, 68, 0.15);
+      }
+      .mode-card.rf:hover {
+        border-color: var(--accent2);
+        box-shadow: 0 12px 40px rgba(255, 136, 0, 0.15);
+      }
+      .mode-icon {
+        font-size: 38px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .mode-card h2 {
+        font-size: 21px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .mode-card.learn h2 {
+        color: var(--accent);
+      }
+      .mode-card.rf h2 {
+        color: var(--accent2);
+      }
+      .mode-card p {
+        color: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.65;
+      }
+      .mode-badge {
+        display: inline-block;
+        margin-top: 14px;
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        padding: 3px 9px;
+        border-radius: 4px;
+      }
+      .mode-card.learn .mode-badge {
+        background: rgba(255, 68, 68, 0.12);
+        color: var(--accent);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+      }
+      .mode-card.rf .mode-badge {
+        background: rgba(255, 136, 0, 0.12);
+        color: var(--accent2);
+        border: 1px solid rgba(255, 136, 0, 0.3);
+      }
+
+      /* QUIZ SCREEN */
+      .quiz-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .mode-label {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        padding: 4px 12px;
+        border-radius: 4px;
+      }
+      .mode-label.learn {
+        background: rgba(255, 68, 68, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+      }
+      .mode-label.rf {
+        background: rgba(255, 136, 0, 0.1);
+        color: var(--accent2);
+        border: 1px solid rgba(255, 136, 0, 0.3);
+      }
+      .quiz-counter {
+        font-family: "Space Mono", monospace;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .btn-exit {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+      .btn-exit:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* PROGRESS */
+      .progress-track {
+        width: 100%;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 2px;
+        transition: width 0.4s;
+      }
+      .progress-label {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+        text-align: right;
+        margin-bottom: 20px;
+      }
+
+      /* RF TIMER */
+      .rf-bar-wrap {
+        width: 100%;
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-bottom: 18px;
+        overflow: hidden;
+        display: none;
+      }
+      .rf-bar {
+        height: 100%;
+        background: var(--accent2);
+        border-radius: 2px;
+      }
+
+      /* QUESTION */
+      .q-category {
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .q-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 26px 28px;
+        margin-bottom: 18px;
+      }
+      .q-text {
+        font-size: clamp(15px, 2.5vw, 19px);
+        font-weight: 700;
+        line-height: 1.55;
+        color: var(--text);
+      }
+
+      /* OPTIONS */
+      .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .opt-btn {
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 13px 17px;
+        cursor: pointer;
+        font-family: "Syne", sans-serif;
+        font-size: 14.5px;
+        color: var(--text);
+        text-align: left;
+        transition: all 0.2s;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        line-height: 1.4;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--blue);
+        background: rgba(68, 138, 255, 0.08);
+      }
+      .opt-btn.correct {
+        border-color: var(--green) !important;
+        background: rgba(0, 230, 118, 0.1) !important;
+        color: var(--green) !important;
+      }
+      .opt-btn.wrong {
+        border-color: var(--red) !important;
+        background: rgba(255, 23, 68, 0.1) !important;
+        color: var(--red) !important;
+      }
+      .opt-btn:disabled {
+        cursor: default;
+      }
+      .opt-letter {
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        border-radius: 6px;
+        background: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        margin-top: 1px;
+      }
+      .opt-btn.correct .opt-letter {
+        background: var(--green);
+        color: #000;
+      }
+      .opt-btn.wrong .opt-letter {
+        background: var(--red);
+        color: #fff;
+      }
+
+      /* FEEDBACK */
+      .feedback-box {
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-top: 14px;
+        font-size: 13.5px;
+        line-height: 1.65;
+        display: none;
+        border: 1px solid;
+      }
+      .feedback-box.show {
+        display: block;
+        animation: fadeUp 0.3s ease;
+      }
+      .feedback-box.correct {
+        background: rgba(0, 230, 118, 0.07);
+        border-color: var(--green);
+        color: #a0f0c0;
+      }
+      .feedback-box.wrong {
+        background: rgba(255, 23, 68, 0.07);
+        border-color: var(--red);
+        color: #ffaaaa;
+      }
+      .feedback-box strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+      }
+
+      /* CONTROLS */
+      .quiz-controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 18px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 14.5px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #e53030;
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: transparent;
+        border: 1.5px solid var(--border);
+        color: var(--muted);
+      }
+      .btn-secondary:hover {
+        border-color: var(--text);
+        color: var(--text);
+      }
+      .btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      .rf-status {
+        font-family: "Space Mono", monospace;
+        font-size: 12px;
+        display: none;
+      }
+
+      /* RESULTS */
+      .result-hero {
+        text-align: center;
+        padding: 36px 20px 28px;
+      }
+      .result-emoji {
+        font-size: 60px;
+        margin-bottom: 14px;
+        display: block;
+      }
+      .result-score {
+        font-size: 64px;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+        line-height: 1;
+      }
+      .result-frac {
+        font-size: 24px;
+        color: var(--muted);
+      }
+      .result-msg {
+        color: var(--muted);
+        margin-top: 10px;
+        font-size: 15px;
+      }
+      .result-breakdown {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 22px 0;
+      }
+      @media (max-width: 480px) {
+        .result-breakdown {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .rb-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+      }
+      .rb-card .rnum {
+        font-size: 30px;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+      }
+      .rb-card .rlbl {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+      .rb-card.g .rnum {
+        color: var(--green);
+      }
+      .rb-card.r .rnum {
+        color: var(--red);
+      }
+      .rb-card.b .rnum {
+        color: var(--gold);
+      }
+      .result-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .wrong-section {
+        margin-top: 28px;
+      }
+      .wrong-section h3 {
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        margin-bottom: 12px;
+      }
+      .wrong-item {
+        background: var(--surface);
+        border: 1px solid rgba(255, 23, 68, 0.2);
+        border-radius: 10px;
+        padding: 14px 17px;
+        margin-bottom: 9px;
+        font-size: 13.5px;
+      }
+      .wrong-item .wi-q {
+        color: var(--text);
+        margin-bottom: 6px;
+        font-weight: 600;
+        line-height: 1.4;
+      }
+      .wrong-item .wi-your {
+        color: #ff8888;
+        font-size: 12.5px;
+      }
+      .wrong-item .wi-correct {
+        color: var(--green);
+        font-size: 12.5px;
+        margin-top: 3px;
+      }
+
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+        animation: fadeUp 0.4s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* CATEGORY FILTER */
+      .category-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .pill {
+        font-family: "Space Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 1px;
+        padding: 5px 11px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        background: var(--surface);
+      }
+      .pill:hover,
+      .pill.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .pill.rf-pill:hover,
+      .pill.rf-pill.active {
+        background: var(--accent2);
+        border-color: var(--accent2);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- ══════════════ HOME ══════════════ -->
+      <div
+        id="screen-home"
+        class="screen active">
+        <div class="header">
+          <div class="chip">B.E. CSE · ESIOT</div>
+          <h1>Embedded Systems<br /><span>&amp; IoT</span> Quiz</h1>
+          <p>Complete Unit 1 coverage · Every concept · Every protocol</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div
+              class="num"
+              id="total-q-count">
+              —
+            </div>
+            <div class="lbl">Questions</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">9</div>
+            <div class="lbl">Topics</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">2</div>
+            <div class="lbl">Game Modes</div>
+          </div>
+        </div>
+
+        <div
+          id="category-section"
+          style="margin-top: 24px">
+          <div
+            style="
+              font-family: 'Space Mono', monospace;
+              font-size: 11px;
+              color: var(--muted);
+              letter-spacing: 1px;
+              margin-bottom: 10px;
+            ">
+            FILTER BY TOPIC (optional — leave all selected for full quiz)
+          </div>
+          <div
+            class="category-pills"
+            id="cat-pills"></div>
+        </div>
+
+        <div class="mode-grid">
+          <div
+            class="mode-card learn"
+            onclick="startMode('learning')">
+            <span class="mode-icon">📖</span>
+            <h2>Learning Mode</h2>
+            <p>
+              See instant feedback after every answer. Navigate freely with Prev
+              / Next. Retake only wrong questions at the end.
+            </p>
+            <span class="mode-badge">SELF-PACED</span>
+          </div>
+          <div
+            class="mode-card rf"
+            onclick="startMode('rapidfire')">
+            <span class="mode-icon">⚡</span>
+            <h2>Rapid Fire</h2>
+            <p>
+              Correct? Auto-advance after 1.2s. Wrong? It stops — review it,
+              then click Next manually to continue.
+            </p>
+            <span class="mode-badge rf-pill">FAST-PACED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ QUIZ ══════════════ -->
+      <div
+        id="screen-quiz"
+        class="screen">
+        <div class="quiz-topbar">
+          <span
+            class="mode-label learn"
+            id="mode-label-tag"
+            >📖 LEARNING</span
+          >
+          <span
+            class="quiz-counter"
+            id="q-counter"
+            >Q 1 / 100</span
+          >
+          <button
+            class="btn-exit"
+            onclick="exitQuiz()">
+            ✕ Exit
+          </button>
+        </div>
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            id="progress-fill"
+            style="width: 0%"></div>
+        </div>
+        <div
+          class="progress-label"
+          id="progress-label">
+          0%
+        </div>
+        <div
+          class="rf-bar-wrap"
+          id="rf-bar-wrap">
+          <div
+            class="rf-bar"
+            id="rf-bar"></div>
+        </div>
+
+        <div
+          class="q-category"
+          id="q-category">
+          CATEGORY
+        </div>
+        <div class="q-card">
+          <div
+            class="q-text"
+            id="q-text">
+            Loading…
+          </div>
+        </div>
+        <div
+          class="options-grid"
+          id="options-grid"></div>
+        <div
+          class="feedback-box"
+          id="feedback-box"></div>
+
+        <div class="quiz-controls">
+          <button
+            class="btn btn-secondary"
+            id="btn-prev"
+            onclick="goQ(currentIdx-1)">
+            ← Prev
+          </button>
+          <span
+            class="rf-status"
+            id="rf-status"></span>
+          <button
+            class="btn btn-primary"
+            id="btn-next"
+            onclick="handleNext()">
+            Next →
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════ RESULTS ══════════════ -->
+      <div
+        id="screen-result"
+        class="screen">
+        <div class="result-hero">
+          <span
+            class="result-emoji"
+            id="res-emoji"
+            >🎉</span
+          >
+          <div class="result-score">
+            <span id="res-pct">0%</span
+            ><span
+              class="result-frac"
+              id="res-frac">
+              (0/0)</span
+            >
+          </div>
+          <div
+            class="result-msg"
+            id="res-msg"></div>
+        </div>
+        <div class="result-breakdown">
+          <div class="rb-card g">
+            <div
+              class="rnum"
+              id="rb-c">
+              0
+            </div>
+            <div class="rlbl">Correct</div>
+          </div>
+          <div class="rb-card r">
+            <div
+              class="rnum"
+              id="rb-w">
+              0
+            </div>
+            <div class="rlbl">Wrong</div>
+          </div>
+          <div class="rb-card b">
+            <div
+              class="rnum"
+              id="rb-s">
+              0
+            </div>
+            <div class="rlbl">Skipped</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button
+            class="btn btn-primary"
+            id="btn-retake-wrong"
+            onclick="retakeWrong()"
+            style="display: none">
+            🔁 Retake Wrong Only
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="retakeAll()">
+            ↺ Retake All
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="goHome()">
+            🏠 Home
+          </button>
+        </div>
+        <div
+          class="wrong-section"
+          id="wrong-section"></div>
+      </div>
+    </div>
+    <!-- /wrap -->
+
+    <script>
+      // ═══════════════════════════════════════════════════
+      // QUESTION BANK — full PPT coverage
+      // ═══════════════════════════════════════════════════
+      const Q = [
+        // ── EMBEDDED SYSTEMS BASICS ──
+        {
+          c: "Embedded Systems",
+          q: "What is an embedded system?",
+          o: [
+            "A general-purpose computer used for multiple tasks",
+            "A combination of hardware and software where firmware is embedded into the hardware",
+            "A purely hardware system with no software",
+            "A cloud-based computing platform",
+          ],
+          a: 1,
+          e: "Embedded systems are a combination of hardware and software where the software (called firmware) is embedded into the hardware.",
+        },
+        {
+          c: "Embedded Systems",
+          q: "What is the software inside an embedded system commonly called?",
+          o: [
+            "Application software",
+            "Firmware",
+            "Operating system",
+            "Middleware",
+          ],
+          a: 1,
+          e: "The software in an embedded system is usually known as firmware — it is embedded directly into the hardware.",
+        },
+        {
+          c: "Embedded Systems",
+          q: "What is one of the most important characteristics of embedded systems?",
+          o: [
+            "They never require any time limits",
+            "They provide output within specified time limits (real-time response)",
+            "They always require internet connectivity",
+            "They cannot work in complex devices",
+          ],
+          a: 1,
+          e: "One of the most important characteristics of embedded systems is that they give output within specified time limits — they operate in real-time.",
+        },
+        {
+          c: "Embedded Systems",
+          q: "Which of the following is NOT a typical embedded system application?",
+          o: [
+            "Microwave oven",
+            "TV remote control",
+            "General-purpose desktop PC",
+            "Home security system",
+          ],
+          a: 2,
+          e: "General-purpose desktop PCs are NOT embedded systems. Microwaves, TV remotes, calculators, home security, and traffic control systems are all embedded system applications.",
+        },
+        {
+          c: "Embedded Systems",
+          q: "In an embedded system block diagram, what enters and leaves the Embedded Computer?",
+          o: [
+            "Only clock signals",
+            "Input Variables enter and Output Variables leave",
+            "Only power supply",
+            "Only firmware updates",
+          ],
+          a: 1,
+          e: "An embedded system takes Input Variables, processes them through software and hardware, and produces Output Variables. It also has a User Interface and can link to other systems.",
+        },
+        {
+          c: "Embedded Systems",
+          q: "Why are embedded systems used in both simple and complex devices?",
+          o: [
+            "They are exclusive and very expensive",
+            "They make work more perfect and convenient",
+            "They only work in simple devices",
+            "They replace all human roles",
+          ],
+          a: 1,
+          e: "Embedded systems support making work more perfect and convenient, so they are used in both simple (calculator) and complex (traffic control) devices.",
+        },
+
+        // ── EMBEDDED PROCESSORS ──
+        {
+          c: "Embedded Processors",
+          q: "What is an embedded processor?",
+          o: [
+            "A microprocessor used in a general-purpose computer",
+            "A microprocessor used in an embedded system — a self-contained system to control a specific device",
+            "A GPU used for graphics",
+            "A network processor only for routers",
+          ],
+          a: 1,
+          e: "An embedded processor is a microprocessor used in an embedded system. It is embedded within a larger device to control its operation.",
+        },
+        {
+          c: "Embedded Processors",
+          q: "Which applications typically require embedded processors with real-time processing?",
+          o: [
+            "Only word processors",
+            "Industrial control systems, automotive systems, and consumer electronics",
+            "Only scientific research computers",
+            "Only gaming consoles",
+          ],
+          a: 1,
+          e: "Embedded processors are found in devices requiring real-time processing: industrial control systems, automotive systems, and consumer electronics.",
+        },
+        {
+          c: "Embedded Processors",
+          q: "What are the main design priorities of embedded processors?",
+          o: [
+            "Maximum speed, large size, high power consumption",
+            "Small size, low power consumption, and high efficiency",
+            "Only maximum clock speed",
+            "Only maximum memory",
+          ],
+          a: 1,
+          e: "Embedded processors are designed to be small, low-power, and efficient — they are used in devices where space and power are at a premium.",
+        },
+        {
+          c: "Embedded Processors",
+          q: "Which of the following devices uses an embedded processor?",
+          o: [
+            "Filing cabinet",
+            "Paper notebook",
+            "Washing machine",
+            "Manual typewriter",
+          ],
+          a: 2,
+          e: "Smartphones, TVs, washing machines, and aircraft systems are all examples of devices that use embedded processors.",
+        },
+        {
+          c: "Embedded Processors",
+          q: "Which of the following is NOT listed as a type of embedded processor in the unit?",
+          o: [
+            "Microcontroller",
+            "Digital Signal Processor (DSP)",
+            "Graphics Processing Unit (GPU)",
+            "System-on-Chip (SoC)",
+          ],
+          a: 2,
+          e: "The types listed are: GPPs, Microprocessors, Microcontrollers, DSP, Single-Purpose Embedded Processor, and SoC. GPU is not listed as a type of embedded processor in this unit.",
+        },
+        {
+          c: "Embedded Processors",
+          q: "What does SoC stand for?",
+          o: [
+            "Software on Chip",
+            "System-on-Chip",
+            "Signal on Controller",
+            "Subsystem on Circuit",
+          ],
+          a: 1,
+          e: "SoC stands for System-on-Chip — a type of embedded processor that integrates all components of a computer onto a single chip.",
+        },
+
+        // ── MICROPROCESSOR ──
+        {
+          c: "Microprocessor",
+          q: "What is a microprocessor?",
+          o: [
+            "A processor contained on a microchip (IC) that acts as a CPU and executes program instructions",
+            "A type of RAM chip",
+            "A power supply unit",
+            "A wireless communication module",
+          ],
+          a: 0,
+          e: "A microprocessor is a processor contained on a microchip or integrated circuit (IC). It is a central processing unit (CPU) that executes the instructions of a computer program.",
+        },
+        {
+          c: "Microprocessor",
+          q: "What does the instruction set of a microprocessor define?",
+          o: [
+            "The physical size of the chip",
+            "The operations that the microprocessor can perform",
+            "The amount of RAM available",
+            "The clock frequency range",
+          ],
+          a: 1,
+          e: "Microprocessors have a specific instruction set that defines the operations they can perform.",
+        },
+        {
+          c: "Microprocessor",
+          q: "What does clock speed determine in a microprocessor?",
+          o: [
+            "Power consumption only",
+            "How much external memory is used",
+            "How fast the processor can execute instructions",
+            "The width of the data bus",
+          ],
+          a: 2,
+          e: "The clock speed of a microprocessor determines how fast it can execute instructions. High clock speeds allow tasks to be performed quickly.",
+        },
+        {
+          c: "Microprocessor",
+          q: "What is the data bus used for in a microprocessor?",
+          o: [
+            "Transferring memory addresses",
+            "Transferring data between the microprocessor and other system components",
+            "Supplying power",
+            "Generating clock signals",
+          ],
+          a: 1,
+          e: "The data bus is a communication pathway used to transfer data between the microprocessor and other components in the system.",
+        },
+        {
+          c: "Microprocessor",
+          q: "What is the address bus used for in a microprocessor?",
+          o: [
+            "Transferring data between components",
+            "Supplying power to the chip",
+            "Transferring the address of a memory location between the microprocessor and other components",
+            "Carrying clock signals",
+          ],
+          a: 2,
+          e: "The address bus is a communication pathway used to transfer the address of a memory location between the microprocessor and other system components.",
+        },
+        {
+          c: "Microprocessor",
+          q: "What is cache memory in a microprocessor?",
+          o: [
+            "A large secondary storage device",
+            "A small amount of high-speed memory that stores frequently accessed data to improve performance",
+            "The main program memory",
+            "External RAM modules",
+          ],
+          a: 1,
+          e: "Cache is a small amount of high-speed memory used to store frequently accessed data. This helps to improve the performance of the microprocessor.",
+        },
+        {
+          c: "Microprocessor",
+          q: "Which voltage level microprocessor is used in most high-performance systems?",
+          o: [
+            "1.5V ± 0.2V systems",
+            "2.0V ± 0.2V systems",
+            "3.3V ± 0.3V systems",
+            "5.0V ± 0.25V systems",
+          ],
+          a: 3,
+          e: "There is an inverse relationship between propagation delay in gates and operational voltage. Therefore, 5V system processors and units are used in most high-performance systems.",
+        },
+        {
+          c: "Microprocessor",
+          q: "A microprocessor compared to a microcontroller typically requires:",
+          o: [
+            "Memory and peripherals integrated on the same chip",
+            "External memory and other components to function",
+            "No external components at all",
+            "Only a power supply to function",
+          ],
+          a: 0,
+          e: "A microprocessor typically requires external memory and other components to function. A microcontroller has memory and peripherals integrated on the same chip.",
+        },
+
+        // ── MICROCONTROLLER ──
+        {
+          c: "Microcontroller",
+          q: "What is a microcontroller?",
+          o: [
+            "A large server computer",
+            "A small low-power computer contained in a single integrated circuit (IC)",
+            "A type of display adapter",
+            "A wireless networking device",
+          ],
+          a: 1,
+          e: "A microcontroller is a small, low-power computer contained in a single integrated circuit (IC). It is a type of embedded processor used in a wide range of devices.",
+        },
+        {
+          c: "Microcontroller",
+          q: "What are on-chip peripherals in a microcontroller?",
+          o: [
+            "External USB devices",
+            "Built-in components like timers, serial ports, and analog-to-digital converters for interfacing with external devices",
+            "Additional CPUs",
+            "Only external memory chips",
+          ],
+          a: 1,
+          e: "On-chip peripherals — timers, serial ports, and analog-to-digital converters (ADCs) — are built into the microcontroller and allow it to interface with external devices.",
+        },
+        {
+          c: "Microcontroller",
+          q: "What types of memory does a microcontroller have?",
+          o: [
+            "Only RAM",
+            "Only ROM",
+            "Both program memory (instructions) and data memory (variables)",
+            "Only cache memory",
+          ],
+          a: 2,
+          e: "Microcontrollers have both program memory (stores instructions executed by the processor) and data memory (stores variables and other data).",
+        },
+        {
+          c: "Microcontroller",
+          q: "What are I/O pins on a microcontroller used for?",
+          o: [
+            "Power supply only",
+            "Interfacing with external devices like sensors or actuators",
+            "Connecting to the internet",
+            "Displaying graphics",
+          ],
+          a: 1,
+          e: "Microcontrollers have a set of I/O pins that can be used to interface with external devices, such as sensors or actuators.",
+        },
+        {
+          c: "Microcontroller",
+          q: "Why is low power consumption a key feature of microcontrollers?",
+          o: [
+            "To increase processing speed",
+            "To make them suitable for battery-powered devices",
+            "To reduce manufacturing cost only",
+            "To increase memory capacity",
+          ],
+          a: 1,
+          e: "Microcontrollers are designed to be low-power, which makes them suitable for use in battery-powered devices — a critical requirement for portable embedded systems.",
+        },
+        {
+          c: "Microcontroller",
+          q: "How do microcontrollers compare to general-purpose processors in cost?",
+          o: [
+            "Microcontrollers are more expensive",
+            "Microcontrollers are typically less expensive — designed for specific tasks with fewer capabilities",
+            "They cost exactly the same",
+            "Cost depends only on the manufacturer",
+          ],
+          a: 1,
+          e: "Microcontrollers are typically less expensive than general-purpose processors because they are designed for specific tasks and do not have as many capabilities.",
+        },
+        {
+          c: "Microcontroller",
+          q: "What makes microcontrollers versatile despite being designed for specific tasks?",
+          o: [
+            "Their very high clock speeds",
+            "They can be programmed to perform a wide range of tasks (highly flexible)",
+            "They include large secondary storage",
+            "They support multiple users simultaneously",
+          ],
+          a: 1,
+          e: "Microcontrollers are highly flexible and can be programmed to perform a wide range of tasks, making them versatile across many applications.",
+        },
+        {
+          c: "Microcontroller",
+          q: "How is a microcontroller typically programmed?",
+          o: [
+            "Only with Python",
+            "Using a low-level language or assembly code",
+            "Only with Java",
+            "Only with MATLAB",
+          ],
+          a: 1,
+          e: "A microcontroller is often programmed using a low-level language or assembly code, unlike microprocessors which are usually programmed in high-level languages.",
+        },
+        {
+          c: "Microcontroller",
+          q: "Which are classic examples of microcontrollers?",
+          o: [
+            "Intel Core i9 and Qualcomm Snapdragon",
+            "Arduino Uno and PIC microcontrollers",
+            "ARM Cortex-A and MIPS processors",
+            "NVIDIA RTX and AMD Radeon GPUs",
+          ],
+          a: 1,
+          e: "Examples of microcontrollers include the Arduino Uno (DIY electronics projects) and PIC microcontrollers (industrial control and consumer devices).",
+        },
+        {
+          c: "Microcontroller",
+          q: "What is a key structural difference between a microprocessor and a microcontroller?",
+          o: [
+            "Microcontrollers have higher clock speed",
+            "Microcontrollers are used in general-purpose computers",
+            "Microcontrollers integrate memory and peripherals on the same chip; microprocessors require them externally",
+            "Microprocessors are smaller than microcontrollers",
+          ],
+          a: 2,
+          e: "A microcontroller has memory and other peripherals integrated into the same chip. A microprocessor requires external memory and components to function, making microcontrollers more self-contained.",
+        },
+
+        // ── CHARACTERISTICS ──
+        {
+          c: "Characteristics",
+          q: "An embedded system generally executes:",
+          o: [
+            "Many different tasks simultaneously",
+            "A particular operation and repeats the same work continually",
+            "Random tasks based on user input",
+            "Tasks that change every day",
+          ],
+          a: 1,
+          e: "Generally, an embedded system executes a particular operation and does similar work continually. For instance, a pager is constantly functioning as a pager.",
+        },
+        {
+          c: "Characteristics",
+          q: "Which design metrics must an embedded system possess?",
+          o: [
+            "Only maximum performance",
+            "Size, power, cost, and performance (design metrics for execution features)",
+            "Only minimum size",
+            "Only minimum cost",
+          ],
+          a: 1,
+          e: "An embedded system must possess design metrics in terms of execution features like size, power, cost, and also performance.",
+        },
+        {
+          c: "Characteristics",
+          q: "Why must an embedded system perform fast AND consume less power?",
+          o: [
+            "To generate more heat for industrial use",
+            "To increase battery life",
+            "To support wireless connectivity",
+            "To run more complex algorithms",
+          ],
+          a: 1,
+          e: "An embedded system must perform fast enough and consume less power to increase battery life — critical for portable embedded devices.",
+        },
+        {
+          c: "Characteristics",
+          q: "The car cruise controller is used as an example of real-time constraints because:",
+          o: [
+            "It displays maps",
+            "It must calculate acceleration/deceleration frequently in limited time — a delayed computation can cause loss of car control",
+            "It connects to the internet",
+            "It plays music",
+          ],
+          a: 1,
+          e: "A car cruise controller continuously displays and responds to speed & brake sensors. It must calculate acceleration/deceleration frequently in a limited time; a delayed computation can lead to failure to control the car.",
+        },
+        {
+          c: "Characteristics",
+          q: "Where is the firmware of an embedded system typically stored?",
+          o: [
+            "Secondary memory like HDD",
+            "ROM (Read Only Memory)",
+            "Cloud storage",
+            "Only in RAM",
+          ],
+          a: 1,
+          e: "An embedded system requires memory; its software is generally inserted in ROM. It does not require secondary memories like a PC does.",
+        },
+        {
+          c: "Characteristics",
+          q: "In an embedded system, what role does hardware play vs software?",
+          o: [
+            "Hardware provides flexibility; software provides security",
+            "Hardware is used for security and performance; software is used for flexibility and features",
+            "Both provide identical functions",
+            "Only software matters",
+          ],
+          a: 1,
+          e: "An embedded system is inbuilt with hardware and software where hardware is used for security and performance, and software is used for more flexibility and features.",
+        },
+        {
+          c: "Characteristics",
+          q: "An embedded system must be based on what type of processor?",
+          o: [
+            "Only a GPU",
+            "A microcontroller or microprocessor",
+            "Only a general-purpose CPU",
+            "Only a DSP",
+          ],
+          a: 1,
+          e: "An embedded system must be based on a microcontroller or microprocessor. It must also require memory, connected peripherals to attach input & output devices.",
+        },
+
+        // ── ARCHITECTURES ──
+        {
+          c: "Computer Architecture",
+          q: "Von Neumann Architecture stores program data and instruction data:",
+          o: [
+            "In separate memories",
+            "In the same memory",
+            "In external storage only",
+            "In cache only",
+          ],
+          a: 1,
+          e: "Von Neumann Architecture is based on the concept of stored program computers where program data and instruction data are stored in the same memory.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "Who designed Von Neumann Architecture and in what year?",
+          o: [
+            "Alan Turing in 1936",
+            "John Von Neumann in 1945",
+            "Charles Babbage in 1837",
+            "Gordon Moore in 1965",
+          ],
+          a: 1,
+          e: "Von Neumann Architecture was designed by the famous mathematician and physicist John Von Neumann in 1945.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "Harvard Architecture was developed to:",
+          o: [
+            "Increase memory size only",
+            "Overcome the bottleneck of Von Neumann Architecture using separate storage and buses",
+            "Reduce clock speed",
+            "Make computers cheaper",
+          ],
+          a: 1,
+          e: "Harvard Architecture was basically developed to overcome the bottleneck of Von Neumann Architecture by having separate storage and buses for instructions and data.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "What is the fundamental difference between Harvard and Von Neumann architectures?",
+          o: [
+            "Harvard uses more RAM",
+            "Harvard has separate memory addresses AND separate buses for instructions and data",
+            "Von Neumann is faster in all cases",
+            "Harvard uses a shared memory bus",
+          ],
+          a: 1,
+          e: "Harvard Architecture uses separate physical memory addresses and separate buses for instructions and data, unlike Von Neumann which uses the same physical memory address and a common bus.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "How many clock cycles does Von Neumann Architecture need to execute one instruction?",
+          o: [
+            "One clock cycle",
+            "Two clock cycles",
+            "Four clock cycles",
+            "It varies with no fixed number",
+          ],
+          a: 1,
+          e: "Two clock cycles are required to execute a single instruction in Von Neumann Architecture. In Harvard Architecture, an instruction is executed in a single cycle.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "Which architecture is cheaper to implement?",
+          o: [
+            "Harvard Architecture",
+            "Von Neumann Architecture",
+            "Both cost exactly the same",
+            "Cost depends entirely on brand",
+          ],
+          a: 1,
+          e: "Von Neumann Architecture is cheaper in cost. Harvard Architecture is more costly than Von Neumann Architecture.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "In Von Neumann Architecture, can the CPU access instructions and read/write data simultaneously?",
+          o: [
+            "Yes, always simultaneously",
+            "No — the CPU cannot access instructions and read/write at the same time due to the shared bus",
+            "Only in special high-speed modes",
+            "Only with additional cache hardware",
+          ],
+          a: 1,
+          e: "In Von Neumann Architecture, the CPU cannot access instructions and read/write at the same time because they share the same bus and memory. Harvard Architecture allows simultaneous access.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "Von Neumann Architecture is used in:",
+          o: [
+            "Microcontrollers and signal processing",
+            "Personal computers and small computers",
+            "Only supercomputers",
+            "Only embedded systems",
+          ],
+          a: 1,
+          e: "Von Neumann Architecture is used in personal computers and small computers. Harvard Architecture is used in microcontrollers and signal processing.",
+        },
+        {
+          c: "Computer Architecture",
+          q: "Harvard Architecture is based on which historical model?",
+          o: [
+            "Harvard Mark III relay model",
+            "Harvard Mark I relay-based model",
+            "Harvard Mark II transistor model",
+            "Harvard Mark V digital model",
+          ],
+          a: 1,
+          e: "Harvard Architecture is modern computer architecture based on the Harvard Mark I relay-based model.",
+        },
+
+        // ── EMBEDDED SYSTEM ARCHITECTURE ──
+        {
+          c: "Embedded Architecture",
+          q: "The architecture of an embedded system is best described as:",
+          o: [
+            "A detailed transistor-level schematic",
+            "An abstraction that represents hardware and software as interacting elements without showing detailed implementation",
+            "The exact firmware source code",
+            "The physical PCB layout diagram",
+          ],
+          a: 1,
+          e: "The architecture of an embedded system is an abstraction — a generalization that doesn't show detailed implementation (source code or circuit design) but represents hardware and software components as interacting elements.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What information do architectural elements in an embedded system retain?",
+          o: [
+            "Full implementation details including source code",
+            "Only behavioral and inter-relationship information (implementation details are abstracted away)",
+            "Only physical dimensions",
+            "Only power consumption data",
+          ],
+          a: 1,
+          e: "Elements are representations of hardware and/or software whose implementation details have been abstracted out, leaving only behavioral and inter-relationship information.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What is the purpose of a Watchdog Timer in an embedded system?",
+          o: [
+            "To keep accurate time and date",
+            "To reset the system after a predefined timeout if a fault develops and the program gets stuck",
+            "To generate periodic interrupt signals",
+            "To regulate the power supply voltage",
+          ],
+          a: 1,
+          e: "A Watchdog Timer is a timing device that resets the system after a predefined timeout. In many embedded systems it is essential because it helps rescue the system if a fault develops and the program gets stuck. On restart, the system can function normally.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What voltage range is used in most high-performance embedded systems?",
+          o: ["1.5V ± 0.2V", "2.0V ± 0.2V", "3.3V ± 0.3V", "5.0V ± 0.25V"],
+          a: 3,
+          e: "There is an inverse relationship between propagation delay in gates and operational voltage. Therefore, 5V system processors and units are used in most high-performance systems.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What does the Clock Oscillator Circuit control in an embedded system?",
+          o: [
+            "Power regulation",
+            "The time for executing instructions, system timers, and CPU machine cycles",
+            "Memory addressing",
+            "I/O port selection",
+          ],
+          a: 1,
+          e: "The clock controls the time for executing an instruction. After the power supply, the clock is the basic unit of a system. It controls CPU machine cycles for fetching, decoding, and executing instructions.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What happens when the Reset Circuit deactivates in an embedded system?",
+          o: [
+            "The system shuts down permanently",
+            "A program executes from a start-up (default beginning) address",
+            "Memory is erased",
+            "The clock stops",
+          ],
+          a: 1,
+          e: "The reset circuit activates for a fixed period then deactivates. The processor keeps the reset pin active then deactivates to let the program proceed from a default beginning address. On deactivation, a program executes from a start-up address.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "What is the Real-Time Clock (RTC) used for in embedded systems?",
+          o: [
+            "Only to display time on screen",
+            "Generating system interrupts periodically for schedulers, real-time programs, and for periodic saving of time and date; also for software-controlled delays and timeouts",
+            "Only for alarm functions",
+            "Only to synchronize network time",
+          ],
+          a: 1,
+          e: "A timer circuit configured as an RTC generates system interrupts periodically for schedulers, real-time programs, and for periodic saving of time and date. The RTC or system timer is also used to obtain software-controlled delays and time-outs.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "Which forms of system memory exist in an embedded system?",
+          o: [
+            "Only RAM and ROM",
+            "Internal RAM, System RAM, Internal Caches, External RAM, Flash/EEPROM, ROM/PROM, and Memory Addresses at System Ports",
+            "Only Flash memory",
+            "Only external hard drives",
+          ],
+          a: 1,
+          e: "Various forms of system memory include: Internal RAM at Microcontroller, RAM at System-on-Chip/External RAM, Internal Caches at Microprocessor, External RAM Chip(s), Flash/EEPROM, ROM/PROM, and Memory Addresses at System Ports.",
+        },
+        {
+          c: "Embedded Architecture",
+          q: "Which programming language is most preferred for embedded system software?",
+          o: ["Python", "Java", "C", "BASIC"],
+          a: 2,
+          e: "Since coding in assembly language is time consuming, software is developed in high-level languages — C or C++ or Java in most cases. C is usually the preferred language for embedded programming.",
+        },
+
+        // ── ASIC ──
+        {
+          c: "ASIC",
+          q: "What does ASIC stand for?",
+          o: [
+            "Advanced System Integrated Circuit",
+            "Application Specific Integrated Circuit",
+            "Automated Signal Integrated Component",
+            "Analog Signal Interface Controller",
+          ],
+          a: 1,
+          e: "ASIC stands for Application Specific Integrated Circuit — integrated circuits specifically designed and tailored for a particular application or use.",
+        },
+        {
+          c: "ASIC",
+          q: "How does an ASIC differ from a general-purpose IC?",
+          o: [
+            "ASICs are always cheaper than all other ICs",
+            "ASICs are created from the ground up based on specific application needs; general-purpose ICs are used in a variety of devices",
+            "ASICs can be reprogrammed after manufacture like FPGAs",
+            "ASICs support more applications than general-purpose ICs",
+          ],
+          a: 1,
+          e: "Unlike general-purpose integrated circuits used in many devices, ASICs are usually created from the ground up based on the specific needs of the application they are intended for.",
+        },
+        {
+          c: "ASIC",
+          q: "What are the advantages of Full Custom ASICs?",
+          o: [
+            "Low cost and fast time-to-market",
+            "Highest performance and lowest power consumption (but most expensive and time-consuming to design)",
+            "Easy to reprogram after manufacture",
+            "Moderate performance suitable for any application",
+          ],
+          a: 1,
+          e: "Full Custom ASICs offer the highest performance and the lowest power consumption. However, they are the most expensive and time-consuming to design and manufacture.",
+        },
+        {
+          c: "ASIC",
+          q: "In Standard Cell ASIC design, what does the standard cell library contain?",
+          o: [
+            "Pre-placed transistors only",
+            "Pre-designed logic cells like AND gates, OR gates, multiplexers, and flip-flops",
+            "Only memory cells",
+            "Custom cells designed per project",
+          ],
+          a: 1,
+          e: "In standard cell-based ASIC design, a standard cell library contains pre-designed logic cells like AND gates, OR gates, multiplexers, and flip-flops. These cells are standardized and stored for reuse in ASIC chip designs.",
+        },
+        {
+          c: "ASIC",
+          q: "In Gate Array ASICs, what can the designer modify?",
+          o: [
+            "The transistor placement on the silicon wafer",
+            "Only the interconnections between pre-placed transistors using metal layers",
+            "The number of transistors",
+            "The power supply voltage",
+          ],
+          a: 1,
+          e: "Gate Array ASICs have predefined transistors on the silicon wafer. The designer CANNOT alter transistor placement but CAN change the interconnections between them using the die's initial metal layers.",
+        },
+        {
+          c: "ASIC",
+          q: "What are the three types of Gate Array ASICs?",
+          o: [
+            "Full, Semi, Programmable",
+            "Channeled, Channel-less, and Structured Gate Arrays",
+            "Star, Mesh, Tree",
+            "Analog, Digital, Mixed-signal",
+          ],
+          a: 1,
+          e: "Gate Array ASIC designs typically result in Channeled, Channel-less, or Structured Gate Arrays, each varying in their interconnection approach.",
+        },
+        {
+          c: "ASIC",
+          q: "What distinguishes Channel-less Gate Arrays from Channeled Gate Arrays?",
+          o: [
+            "Channel-less arrays have more routing channels",
+            "Channel-less arrays lack predefined routing channels, allowing interconnects directly over cells — enhancing chip density",
+            "Channel-less arrays are always larger",
+            "Channel-less arrays use more metal layers",
+          ],
+          a: 1,
+          e: "Channel-less Gate Arrays lack predefined routing channels, allowing more compact designs by placing interconnects directly over cells, enhancing chip density — unlike Channeled Gate Arrays which have predefined routing channels between cells.",
+        },
+        {
+          c: "ASIC",
+          q: "What do Structured Gate Arrays combine?",
+          o: [
+            "Only routing channels with base cells",
+            "Predefined logic blocks with customizable interconnect layers — offering a balance between design flexibility and rapid development",
+            "Only fixed blocks with no customization",
+            "Only standard cells with fixed interconnects",
+          ],
+          a: 1,
+          e: "Structured Gate Arrays combine predefined logic blocks with customizable interconnect layers, offering a balance between design flexibility and rapid development.",
+        },
+        {
+          c: "ASIC",
+          q: "What is a PLD (Programmable Logic Device)?",
+          o: [
+            "A type of analog circuit",
+            "A digital IC that can be programmed to perform a wide range of logical operations without custom semiconductor manufacturing",
+            "A power line driver",
+            "A parallel loading device",
+          ],
+          a: 1,
+          e: "PLD (Programmable Logic Device) is a type of digital integrated circuit that can be programmed to perform a wide range of logical operations. They implement custom logic circuits without the need for custom semiconductor manufacturing.",
+        },
+        {
+          c: "ASIC",
+          q: "What makes FPGAs unique compared to other ASICs?",
+          o: [
+            "They cannot be programmed at all",
+            "They are reprogrammable — they can be configured by the user AFTER manufacturing according to different needs",
+            "They are always the cheapest option",
+            "They only work at specific voltage levels",
+          ],
+          a: 1,
+          e: "FPGAs are reprogrammable and can be used for various applications. They can be configured by the user after manufacturing according to different needs, making them very flexible.",
+        },
+        {
+          c: "ASIC",
+          q: "What is currently one of the most notable uses of ASIC technology?",
+          o: [
+            "Running web servers",
+            "Bitcoin mining",
+            "Playing AAA video games",
+            "Office productivity software",
+          ],
+          a: 1,
+          e: "Currently, one of the most notable uses of ASIC technology is in Bitcoin mining, where ASICs provide massive efficiency improvements over general-purpose processors.",
+        },
+        {
+          c: "ASIC",
+          q: "What impact have ASICs had on electronic manufacturing?",
+          o: [
+            "Larger die sizes and lower logic density",
+            "Smaller die sizes and greater logic gate density per chip",
+            "No significant change",
+            "Only cost reductions without performance gains",
+          ],
+          a: 1,
+          e: "The distinct characteristics of ASICs have transformed electronic manufacturing, leading to smaller die sizes and greater logic gate density per chip.",
+        },
+
+        // ── COMMUNICATION INTERFACES ──
+        {
+          c: "Communication",
+          q: "What are the two perspectives of communication interfaces in embedded systems?",
+          o: [
+            "Serial and parallel only",
+            "Device/board level (onboard) and product level (external communication interface)",
+            "Wired and wireless only",
+            "Input and output interfaces",
+          ],
+          a: 1,
+          e: "The communication interface can be viewed in two perspectives: (1) Device/board level communication interface (Onboard) and (2) Product level communication interface (External).",
+        },
+        {
+          c: "Communication",
+          q: "Which of these is an example of an ONBOARD communication interface?",
+          o: [
+            "Bluetooth",
+            "Wi-Fi",
+            "I2C, SPI, UART — serial interfaces connecting components within the board",
+            "USB connected externally",
+          ],
+          a: 2,
+          e: "Examples of device/board level (onboard) communication interfaces include serial interfaces like I2C, SPI, UART, and Parallel bus interface — they connect components within the embedded product.",
+        },
+        {
+          c: "Communication",
+          q: "Which of these is an example of a WIRELESS external communication interface?",
+          o: [
+            "RS-232",
+            "USB",
+            "SPI",
+            "Infrared (IR), Bluetooth (BT), Wi-Fi, RF waves, GPRS",
+          ],
+          a: 3,
+          e: "Examples of wireless external communication interfaces include Infrared (IR), Bluetooth (BT), Wireless LAN (Wi-Fi), Radio Frequency waves (RF), and GPRS.",
+        },
+        {
+          c: "Communication",
+          q: "Which of these is an example of a WIRED external communication interface?",
+          o: [
+            "Bluetooth",
+            "ZigBee",
+            "RS-232C/RS-422/RS-485, USB, Ethernet (TCP-IP), Parallel port",
+            "GPRS",
+          ],
+          a: 2,
+          e: "Examples of wired external communication interfaces include RS-232C/RS-422/RS-485, USB, Ethernet (TCP-IP), and Parallel port.",
+        },
+
+        // ── RS-232 ──
+        {
+          c: "RS-232",
+          q: "What is RS-232 primarily used for?",
+          o: [
+            "Wireless communication between mobile devices",
+            "Transferring commands and data between a PC and a microcontroller over a serial link",
+            "High-speed network routing",
+            "Memory interfacing between chips",
+          ],
+          a: 1,
+          e: "RS-232 is a popular standard interface for transferring commands and data between a personal computer and a microcontroller. It defines the signals and hardware used.",
+        },
+        {
+          c: "RS-232",
+          q: "How many wires does an RS-232 serial bus use for communication?",
+          o: [
+            "One wire",
+            "Two wires — one for sending (TX), one for receiving (RX)",
+            "Four wires",
+            "Eight wires",
+          ],
+          a: 1,
+          e: "An RS-232 serial bus consists of just two communication wires: one for sending data (TX) and another for receiving data (RX).",
+        },
+        {
+          c: "RS-232",
+          q: "What are the two serial pins on an RS-232 device called?",
+          o: [
+            "VCC and GND",
+            "CLK and DATA",
+            "RX (Receiver) and TX (Transmitter)",
+            "MOSI and MISO",
+          ],
+          a: 2,
+          e: "Serial devices have two serial pins: the receiver (RX) and the transmitter (TX). RS-232 data is sent serially — one bit at a time.",
+        },
+        {
+          c: "RS-232",
+          q: "What is the maximum speed defined by the RS-232 standard?",
+          o: ["9,600 bps", "20 kbit/s", "115,200 baud", "1 Mbps"],
+          a: 1,
+          e: "The maximum speed according to the RS-232 standard is 20 kbit/s. However, modern equipment can operate much faster (e.g., Lynx can reach 115,200 baud).",
+        },
+        {
+          c: "RS-232",
+          q: "RS-232 is architecturally described as what type of link?",
+          o: [
+            "Multi-master multi-slave bus",
+            "A bidirectional point-to-point link with two independent channels for full-duplex communication",
+            "A token ring network",
+            "A broadcast network",
+          ],
+          a: 1,
+          e: "Architecturally, RS-232 is a bidirectional point-to-point link. Two independent channels are established for two-way (full-duplex) communications.",
+        },
+        {
+          c: "RS-232",
+          q: "What additional signals can RS-232 carry besides TX and RX?",
+          o: [
+            "Power and video signals only",
+            "Flow control signals (RTS, CTS) and modem control signals (DCD, DTR, DSR, RI)",
+            "Only audio signals",
+            "Only timing signals",
+          ],
+          a: 1,
+          e: "RS-232 can also carry additional signals used for flow control (RTS — Request to Send, CTS — Clear to Send) and modem control (DCD, DTR, DSR, RI).",
+        },
+        {
+          c: "RS-232",
+          q: "How does cable length affect RS-232 maximum communication speed?",
+          o: [
+            "Longer cables allow higher speeds",
+            "Cable length has absolutely no effect",
+            "The longer the cable, the slower the maximum accurate communication speed",
+            "Shorter cables always reduce speed",
+          ],
+          a: 2,
+          e: "The length of the cable plays a part in maximum speed. The longer the cable, the slower the speed at which accurate results can be obtained. Wire capacitance and inductance also limit both cable length and speed.",
+        },
+        {
+          c: "RS-232",
+          q: "What type of transmission does RS-232 use?",
+          o: [
+            "Balanced differential transmission",
+            "Unbalanced transmission — single-ended communication",
+            "Optical transmission",
+            "Radio frequency transmission",
+          ],
+          a: 1,
+          e: "RS-232 uses unbalanced transmission — single-ended communication. This contrasts with RS-485 which uses balanced transmission and differential reception.",
+        },
+
+        // ── RS-485 ──
+        {
+          c: "RS-485",
+          q: "RS-485 is built upon and expands which previous standard?",
+          o: ["USB", "I2C", "RS-232", "SPI"],
+          a: 2,
+          e: "RS-485 expands the physical function on the basis of the RS-232 interface, offering much better performance in terms of distance, speed, and number of devices.",
+        },
+        {
+          c: "RS-485",
+          q: "What type of transmission does RS-485 use to suppress noise?",
+          o: [
+            "Single-ended unbalanced transmission",
+            "Balanced transmission and differential reception — giving it the ability to suppress common mode interference",
+            "Optical fiber transmission",
+            "Spread spectrum radio frequency",
+          ],
+          a: 1,
+          e: "RS-485 adopts balanced transmission and differential reception, so it has the ability to suppress common mode interference — making it much more noise-resistant than RS-232.",
+        },
+        {
+          c: "RS-485",
+          q: "What is the maximum transmission rate of RS-485?",
+          o: ["20 kbps", "115,200 baud", "10 Mbps", "1 Gbps"],
+          a: 2,
+          e: "The RS-485 maximum transmission rate is 10 Mbps, far exceeding RS-232's 20 kbps limit.",
+        },
+        {
+          c: "RS-485",
+          q: "How far can RS-485 signals be recovered?",
+          o: [
+            "20 meters",
+            "100 meters",
+            "500 meters",
+            "Several kilometers away (transmission distance up to 3000 meters)",
+          ],
+          a: 3,
+          e: "The bus transceiver has high sensitivity — it can detect voltages as low as 200mV — so the transmission signal can be recovered from kilometers away. The RS-485 transmission distance can reach 3000 meters.",
+        },
+        {
+          c: "RS-485",
+          q: "How many devices can RS-485 support on a single bus?",
+          o: [
+            "Only 1 (point-to-point)",
+            "Up to 8 devices",
+            "Up to 32 devices (1 to 32 communication)",
+            "Unlimited devices",
+          ],
+          a: 2,
+          e: "RS-485 supports 1 to 32 communication (up to 32 devices on the bus), compared to RS-232's strictly 1 to 1 communication.",
+        },
+        {
+          c: "RS-485",
+          q: "How many wires does RS-485 use?",
+          o: ["Three wires", "Two wires", "Four wires", "One wire"],
+          a: 1,
+          e: "RS-485 uses two wires (a differential pair), whereas RS-232 uses three wires. The two-wire differential approach is what gives RS-485 its noise immunity.",
+        },
+        {
+          c: "RS-485",
+          q: "What voltage levels represent logic 1 and logic 0 in RS-485?",
+          o: [
+            "-15V to -5V = logic 1; +5V to +15V = logic 0",
+            "+2V to +6V = logic 1; -6V to -2V = logic 0",
+            "+5V = logic 1; 0V = logic 0",
+            "0V = logic 1; +5V = logic 0",
+          ],
+          a: 1,
+          e: "+2V~+6V means logic 1 and -6V~-2V means logic 0 in RS-485. RS-232 uses -15V to -5V for logic 1 and +5V to +15V for logic 0.",
+        },
+        {
+          c: "RS-485",
+          q: "What is the communication rate of RS-232 compared to RS-485?",
+          o: [
+            "RS-232 at 20KB/S vs RS-485 at 10MB/S",
+            "RS-232 at 10MB/S vs RS-485 at 20KB/S",
+            "Both at the same rate",
+            "RS-232 is always faster",
+          ],
+          a: 0,
+          e: "RS-232 has a communication rate of 20KB/S while RS-485 has a communication rate of 10MB/S — RS-485 is 500 times faster.",
+        },
+
+        // ── SPI ──
+        {
+          c: "SPI",
+          q: "What does SPI stand for?",
+          o: [
+            "Serial Parallel Interface",
+            "Serial Peripheral Interface Bus",
+            "Signal Processing Interface",
+            "Synchronous Port Interface",
+          ],
+          a: 1,
+          e: "SPI stands for Serial Peripheral Interface Bus — a synchronous bi-directional full-duplex four-wire serial interface bus.",
+        },
+        {
+          c: "SPI",
+          q: "Who introduced the SPI concept?",
+          o: [
+            "Intel",
+            "Texas Instruments",
+            "Motorola",
+            "Philips Semiconductors",
+          ],
+          a: 2,
+          e: "The concept of SPI was introduced by Motorola.",
+        },
+        {
+          c: "SPI",
+          q: "SPI is which type of master-slave system?",
+          o: [
+            "Multi-master multi-slave",
+            "Single master multi-slave system",
+            "Single master single-slave only",
+            "Multi-master single-slave",
+          ],
+          a: 1,
+          e: "SPI is a single master multi-slave system. It is possible to have more than one SPI master, provided only one is active at any given point in time.",
+        },
+        {
+          c: "SPI",
+          q: "SPI is what type of communication protocol?",
+          o: [
+            "Asynchronous half-duplex",
+            "Asynchronous full-duplex",
+            "Synchronous bi-directional full-duplex",
+            "Synchronous half-duplex",
+          ],
+          a: 2,
+          e: "SPI is a synchronous bi-directional full-duplex four-wire serial interface bus — it can send and receive data simultaneously.",
+        },
+        {
+          c: "SPI",
+          q: "What is SPI typically used to connect?",
+          o: [
+            "Two computers over a network",
+            "Microcontrollers with small peripherals such as shift registers, sensors, and SD cards",
+            "Devices over long distances",
+            "Computers over fiber optic cables",
+          ],
+          a: 1,
+          e: "SPI is used to send data between microcontrollers and small peripherals such as shift registers, sensors, and SD cards.",
+        },
+        {
+          c: "SPI",
+          q: "How many wires does SPI use?",
+          o: ["2 wires", "3 wires", "4 wires", "8 wires"],
+          a: 2,
+          e: "SPI is a four-wire serial interface bus. The four signals are: SCK (Serial Clock), MOSI (Master Out Slave In), MISO (Master In Slave Out), and SS/CS (Slave Select/Chip Select).",
+        },
+
+        // ── I2C ──
+        {
+          c: "I2C",
+          q: "What does I2C stand for and how is it pronounced?",
+          o: [
+            "Integrated Interface Circuit — pronounced I-two-C",
+            "Inter Integrated Circuit Bus — pronounced I-square-C",
+            "Intelligent Interface Controller — pronounced I-I-C",
+            "Internal IC Communication — pronounced I-squared-C",
+          ],
+          a: 1,
+          e: "I2C stands for Inter Integrated Circuit Bus and is pronounced as 'I square C' (I²C).",
+        },
+        {
+          c: "I2C",
+          q: "Who developed the I2C bus concept and when?",
+          o: [
+            "Motorola in the early 1990s",
+            "Texas Instruments in the 1970s",
+            "Philips Semiconductors in the early 1980s",
+            "Intel in the 2000s",
+          ],
+          a: 2,
+          e: "The concept of I2C bus was developed by Philips Semiconductors in the early 1980s.",
+        },
+        {
+          c: "I2C",
+          q: "What was the original purpose of I2C?",
+          o: [
+            "High-speed industrial automation",
+            "Easy connection between microprocessor/microcontroller systems and peripheral chips in Television sets",
+            "Military communications",
+            "Automotive CAN bus replacement",
+          ],
+          a: 1,
+          e: "The original intention of I2C was to provide an easy way of connection between a microprocessor/microcontroller system and the peripheral chips in Television sets.",
+        },
+        {
+          c: "I2C",
+          q: "How many bus lines does I2C use and what are they called?",
+          o: [
+            "4 lines: SCK, MOSI, MISO, SS",
+            "3 lines: TX, RX, GND",
+            "2 lines: SCL (Serial Clock) and SDA (Serial Data)",
+            "1 line: a single bidirectional data line",
+          ],
+          a: 2,
+          e: "The I2C bus is comprised of two bus lines: SCL (Serial Clock Line) and SDA (Serial Data Line).",
+        },
+        {
+          c: "I2C",
+          q: "I2C is what type of communication protocol?",
+          o: [
+            "Asynchronous full-duplex",
+            "Synchronous bi-directional half-duplex — one direction at a given point in time",
+            "Asynchronous half-duplex",
+            "Synchronous full-duplex",
+          ],
+          a: 1,
+          e: "I2C is a synchronous bi-directional half-duplex protocol — at any given point in time, communication occurs in only one direction.",
+        },
+        {
+          c: "I2C",
+          q: "Who ALWAYS generates the synchronization clock signal in I2C?",
+          o: [
+            "Always the slave device",
+            "The master device — regardless of whether it is transmitting or receiving",
+            "Both master and slave alternate",
+            "A dedicated clock master separate from data master",
+          ],
+          a: 1,
+          e: "Regardless of whether a master is acting as transmitter or receiver, the synchronization clock signal is always generated by the Master device only.",
+        },
+        {
+          c: "I2C",
+          q: "What is the role of the Master device in I2C communication?",
+          o: [
+            "Only to receive data from slaves",
+            "To control communication by initiating/terminating data transfer, sending data, and generating synchronization clock pulses",
+            "To respond to slave commands",
+            "To only select which slave to communicate with",
+          ],
+          a: 1,
+          e: "The Master device is responsible for controlling the communication by initiating/terminating data transfer, sending data and generating necessary synchronization clock pulses.",
+        },
+        {
+          c: "I2C",
+          q: "Does I2C support multiple masters on the same bus?",
+          o: [
+            "No — strictly one master only",
+            "Yes — I2C supports multi-master on the same bus",
+            "Only with additional arbitration hardware",
+            "Only in I2C version 3.0 and above",
+          ],
+          a: 1,
+          e: "I2C supports multi-masters on the same bus, making it more flexible than SPI for certain multi-master applications.",
+        },
+
+        // ── USB ──
+        {
+          c: "USB",
+          q: "What does USB stand for?",
+          o: [
+            "Universal System Bus",
+            "Universal Serial Bus",
+            "Unified Serial Bridge",
+            "Universal Signal Bus",
+          ],
+          a: 1,
+          e: "USB stands for Universal Serial Bus — a common interface that allows communication between peripheral devices and a host controller.",
+        },
+        {
+          c: "USB",
+          q: "Which USB connector types are MOST frequently used?",
+          o: [
+            "Mini-USB and Micro-USB",
+            "USB Type-A and Type-B",
+            "USB-C exclusively",
+            "All types are equally used",
+          ],
+          a: 1,
+          e: "There are different types of USB connectors — Type A and Type B are the most frequently used ones. Older connectors are being replaced by Mini-USB, Micro-USB, and USB-C.",
+        },
+        {
+          c: "USB",
+          q: "How many pins does a Type-A USB connector have?",
+          o: ["2 pins", "4 pins", "8 pins", "9 pins"],
+          a: 1,
+          e: "Type-A USB connectors have 4 pins: Pin1 (VBUS — red, power supply), Pin2 (D- — white, differential pair), Pin3 (D+ — green, differential pair), Pin4 (GND — black, ground).",
+        },
+        {
+          c: "USB",
+          q: "On what principle does the USB protocol work?",
+          o: [
+            "Interrupt-driven I/O",
+            "Token passing",
+            "Polling — the processor continuously checks if I/O devices are ready to transmit",
+            "CSMA/CD collision detection",
+          ],
+          a: 2,
+          e: "The USB protocol works on the polling principle — the processor continuously checks whether the I/O device is prepared for transmitting data. This makes USB low-cost and simple to implement.",
+        },
+        {
+          c: "USB",
+          q: "What is the maximum data transfer speed of USB 2.0?",
+          o: [
+            "12 Mbps (Full Speed)",
+            "480 Mbps (High Speed)",
+            "5 Gbps (SuperSpeed)",
+            "10 Gbps (SuperSpeed+)",
+          ],
+          a: 1,
+          e: "USB 2.0 is a high-speed USB with 480 Mbps of maximum data transfer speed. Its maximum cable length is 5 meters.",
+        },
+        {
+          c: "USB",
+          q: "What is the maximum data transfer speed of USB 3.2 Generation 1?",
+          o: ["480 Mbps", "5 Gbps", "10 Gbps", "20 Gbps"],
+          a: 1,
+          e: "USB 3.2 Generation 1 is a SuperSpeed USB with 5 Gbps of maximum data transfer speed, with a maximum cable length of 3 meters.",
+        },
+        {
+          c: "USB",
+          q: "What is the maximum speed of USB 3.2 Generation 2×2?",
+          o: ["5 Gbps", "10 Gbps", "20 Gbps", "40 Gbps"],
+          a: 2,
+          e: "USB 3.2 Generation 2×2 is a SuperSpeed USB with 20 Gbps of maximum data transfer speed.",
+        },
+        {
+          c: "USB",
+          q: "What is the maximum data transfer speed for both Thunderbolt 3 and USB 4?",
+          o: ["10 Gbps", "20 Gbps", "40 Gbps", "100 Gbps"],
+          a: 2,
+          e: "Both Thunderbolt 3 and USB 4 (Thunderbolt 4) support up to 40 Gbps of maximum data transfer speed, with max charging power up to 100W.",
+        },
+        {
+          c: "USB",
+          q: "How many peripherals can be connected using a single USB host controller?",
+          o: ["Up to 10", "Up to 50", "Above 100 peripherals", "Unlimited"],
+          a: 2,
+          e: "By using a single USB host controller, above 100 peripherals can be connected.",
+        },
+        {
+          c: "USB",
+          q: "Which is a key DISADVANTAGE of USB?",
+          o: [
+            "USB is very expensive to implement",
+            "USB does not support broadcasting — individual messages are only communicated between the host and peripheral",
+            "USB cannot power external devices",
+            "USB requires its own dedicated power supply always",
+          ],
+          a: 1,
+          e: "USB does not give the broadcasting feature, so individual messages are only communicated between the host and peripheral — no broadcast or multicast support.",
+        },
+        {
+          c: "USB",
+          q: "What are the three speed modes supported by USB?",
+          o: [
+            "Slow (1 Mbps), Medium (100 Mbps), Fast (1 Gbps)",
+            "Low speed (1.5 Mbps), Full speed (12 Mbps), and High speed (480 Mbps)",
+            "Basic, Advanced, and Super speeds",
+            "Quarter, Half, and Full duplex speeds",
+          ],
+          a: 1,
+          e: "USB supports three types of speed: Low speed (1.5 Mbps), Full speed (12 Mbps), and High speed (480 Mbps).",
+        },
+        {
+          c: "USB",
+          q: "What operating voltage and maximum current does a USB device use?",
+          o: [
+            "3.3V and 100 mA",
+            "5V and up to 500 mA",
+            "12V and 1 A",
+            "1.8V and 250 mA",
+          ],
+          a: 1,
+          e: "The power used by a USB device is up to 5V and it delivers up to 500 mA. At 5V, the computer can provide power up to 500 mA on the power wires.",
+        },
+
+        // ── BLUETOOTH ──
+        {
+          c: "Bluetooth",
+          q: "Bluetooth is classified as what type of network technology?",
+          o: [
+            "Wide Area Network (WAN)",
+            "Wireless Personal Area Network (WPAN)",
+            "Local Area Network (LAN)",
+            "Metropolitan Area Network (MAN)",
+          ],
+          a: 1,
+          e: "Bluetooth is a Wireless Personal Area Network (WPAN) technology used for data communications over smaller distances.",
+        },
+        {
+          c: "Bluetooth",
+          q: "In which frequency band does Bluetooth operate?",
+          o: [
+            "5 GHz to 6 GHz",
+            "900 MHz ISM band",
+            "2.4 GHz to 2.485 GHz (ISM band)",
+            "433 MHz industrial band",
+          ],
+          a: 2,
+          e: "Bluetooth operates within the unlicensed ISM (Industrial, Scientific, Medical/Clinical) bands from 2.4 GHz to 2.485 GHz.",
+        },
+        {
+          c: "Bluetooth",
+          q: "What is the typical communication range of Bluetooth?",
+          o: ["100 meters", "1 kilometer", "Up to 10 meters", "50 meters"],
+          a: 2,
+          e: "Bluetooth stages up to 10 meters. A Bluetooth piconet has up to 8 active nodes present at a distance of 10 meters.",
+        },
+        {
+          c: "Bluetooth",
+          q: "What spread spectrum method does Bluetooth use?",
+          o: [
+            "DSSS (Direct Sequence Spread Spectrum)",
+            "OFDM (Orthogonal Frequency Division Multiplexing)",
+            "FHSS (Frequency-Hopping Spread Spectrum)",
+            "CDMA (Code Division Multiple Access)",
+          ],
+          a: 2,
+          e: "The spreading method that Bluetooth uses is FHSS (Frequency-hopping spread spectrum).",
+        },
+        {
+          c: "Bluetooth",
+          q: "What is a single Bluetooth network called?",
+          o: ["Scatternet", "Piconet", "Meshnet", "Starnet"],
+          a: 1,
+          e: "A Bluetooth network is called a piconet. A group of interconnected piconets is called a scatternet.",
+        },
+        {
+          c: "Bluetooth",
+          q: "A Bluetooth Piconet consists of:",
+          o: [
+            "Only two devices",
+            "One master node and up to seven active slave nodes (8 total active nodes within 10 meters)",
+            "Up to 100 devices",
+            "Only slave devices",
+          ],
+          a: 1,
+          e: "A Piconet contains one primary node (master) and seven active secondary nodes (slaves) — a total of 8 active nodes present at a distance of 10 meters.",
+        },
+        {
+          c: "Bluetooth",
+          q: "What is a Scatternet in Bluetooth?",
+          o: [
+            "A single piconet with all 8 nodes active",
+            "A network formed by multiple interconnected piconets — where a slave in one piconet can act as master in another",
+            "A failed piconet",
+            "A Bluetooth 5.0 exclusive feature",
+          ],
+          a: 1,
+          e: "A Scatternet is formed using various piconets. A slave in one piconet can act as master in another. Such a node is called a bridge node. A station cannot be master in two piconets.",
+        },
+        {
+          c: "Bluetooth",
+          q: "What is the transmission capacity of Bluetooth?",
+          o: ["54 Mbps", "720 kbps", "11 Mbps", "1 Gbps"],
+          a: 1,
+          e: "The transmission capacity of Bluetooth is 720 kbps, and it presents information at 1 Mbps or 3 Mbps depending on the version.",
+        },
+        {
+          c: "Bluetooth",
+          q: "Can slave devices communicate directly with each other in a Bluetooth Piconet?",
+          o: [
+            "Yes, directly using SDA line",
+            "No — slave-slave communication is not possible; only master-slave communication is allowed",
+            "Yes, but only for voice data",
+            "Only in Bluetooth 5.0 mesh networks",
+          ],
+          a: 1,
+          e: "Slave-slave communication is not possible in a Bluetooth piconet. Communication is possible only between the master and slave.",
+        },
+        {
+          c: "Bluetooth",
+          q: "Which of these is a disadvantage of Bluetooth?",
+          o: [
+            "It cannot penetrate walls",
+            "It is very expensive for consumer use",
+            "It can be hacked (less secure) and has a slow data transfer rate of 3 Mbps; does not support routing",
+            "It requires a wired connection to function",
+          ],
+          a: 2,
+          e: "Disadvantages of Bluetooth include: it can be hacked and is hence less secure; it has a slow data transfer rate of 3 Mbps; and Bluetooth communication does not support routing.",
+        },
+        {
+          c: "Bluetooth",
+          q: "What is the basic architecture unit of Bluetooth?",
+          o: ["Scatternet", "Piconet", "Cluster", "Cell"],
+          a: 1,
+          e: "The basic architecture unit of Bluetooth is a piconet (one master + up to 7 slaves). Multiple piconets connect to form a scatternet.",
+        },
+
+        // ── ZIGBEE ──
+        {
+          c: "Zigbee",
+          q: "ZigBee is based on which IEEE standard?",
+          o: [
+            "IEEE 802.11 (Wi-Fi)",
+            "IEEE 802.15.4 — created by ZigBee Alliance",
+            "IEEE 802.3 (Ethernet)",
+            "Bluetooth SIG specification",
+          ],
+          a: 1,
+          e: "ZigBee is based on IEEE 802.15.4 and is created by the ZigBee Alliance. It is a Personal Area Network technology.",
+        },
+        {
+          c: "Zigbee",
+          q: "ZigBee is designed for:",
+          o: [
+            "High-speed broadband communication",
+            "Very low-cost, low-power devices with low data rates for short-range wireless communications",
+            "High-power industrial computers only",
+            "Long-range satellite communication",
+          ],
+          a: 1,
+          e: "ZigBee addresses the need for very low-cost implementation of low-power devices with low data rates for short-range wireless communications.",
+        },
+        {
+          c: "Zigbee",
+          q: "What are the three types of ZigBee devices?",
+          o: [
+            "Master, Slave, Bridge",
+            "Coordinator Device, Router, and End Device",
+            "Node, Hub, Gateway",
+            "Server, Client, Proxy",
+          ],
+          a: 1,
+          e: "The three types of ZigBee devices are: ZigBee Coordinator Device (connects devices, communicates with routers), ZigBee Router (passes data between devices), and ZigBee End Device (the device being controlled).",
+        },
+        {
+          c: "Zigbee",
+          q: "What is the data rate range of ZigBee?",
+          o: [
+            "1 Mbps to 10 Mbps",
+            "100 kbps to 1 Mbps",
+            "20 to 250 kbps",
+            "10 Gbps",
+          ],
+          a: 2,
+          e: "ZigBee has a low data rate of 20 to 250 kbps — suitable for sensor networks and control systems that don't need high bandwidth.",
+        },
+        {
+          c: "Zigbee",
+          q: "What is the typical communication range of ZigBee?",
+          o: ["10 meters", "75 to 100 meters", "1 kilometer", "10 kilometers"],
+          a: 1,
+          e: "ZigBee has a short range of 75 to 100 meters, suitable for in-building sensor networks and control systems.",
+        },
+        {
+          c: "Zigbee",
+          q: "Which network topologies does ZigBee support?",
+          o: [
+            "Only Star topology",
+            "Only Mesh topology",
+            "Star, Mesh (peer-to-peer), and Tree (Cluster Tree) topologies",
+            "Ring and Bus topologies only",
+          ],
+          a: 2,
+          e: "IEEE 802.15.4 supports star and peer-to-peer topologies. The ZigBee specification supports star and two kinds of peer-to-peer topologies: mesh and cluster tree.",
+        },
+        {
+          c: "Zigbee",
+          q: "How many total channels does ZigBee define across its 3 frequency bands?",
+          o: ["3 channels", "16 channels", "27 channels", "100 channels"],
+          a: 2,
+          e: "ZigBee uses 3 frequency bands with a total of 27 channels (only one channel is selected for use in a network at a time).",
+        },
+        {
+          c: "Zigbee",
+          q: "Which ZigBee frequency band is used GLOBALLY across the world?",
+          o: [
+            "Channel 0: 868 MHz (Europe only)",
+            "Channels 1-10: 915 MHz (US and Australia)",
+            "Channels 11-26: 2.4 GHz (Across the World)",
+            "Channels 27+: 5 GHz",
+          ],
+          a: 2,
+          e: "Channels 11-26 at 2.4 GHz are available across the world. Channel 0 (868 MHz) is for Europe, and Channels 1-10 (915 MHz) are for the US and Australia.",
+        },
+        {
+          c: "Zigbee",
+          q: "Theoretically, how many devices can one ZigBee network support?",
+          o: [
+            "100 devices",
+            "1,000 devices",
+            "Up to 65,000 devices (practically ~240)",
+            "Unlimited devices",
+          ],
+          a: 2,
+          e: "ZigBee can theoretically support up to 65,000 devices, though practically around 240 devices. This supports both small and large networks.",
+        },
+        {
+          c: "Zigbee",
+          q: "What is the approximate network join time for ZigBee?",
+          o: [
+            "300 milliseconds",
+            "~30 milliseconds",
+            "3 seconds",
+            "30 seconds",
+          ],
+          a: 1,
+          e: "The ZigBee network join time is approximately 30 milliseconds (~30 msec), making it fast to connect new devices.",
+        },
+        {
+          c: "Zigbee",
+          q: "Which of these is a ZigBee application?",
+          o: [
+            "4K video streaming",
+            "Home automation, medical data collection, industrial control systems, light control, meter reading",
+            "High-speed file transfer",
+            "Online gaming",
+          ],
+          a: 1,
+          e: "ZigBee applications include: Home Automation, Medical Data Collection, Industrial Control Systems, meter reading systems, light control systems, commercial applications, government markets, and home networking.",
+        },
+
+        // ── REAL-TIME SYSTEMS ──
+        {
+          c: "Real-Time Systems",
+          q: "How is a real-time system defined?",
+          o: [
+            "A system that processes data as fast as possible with no time limits",
+            "A system that reacts to events in the environment by performing predefined actions WITHIN SPECIFIED TIME INTERVALS",
+            "A system that only works in industrial environments",
+            "A system with no deadlines or constraints",
+          ],
+          a: 1,
+          e: "A real-time system is a system that reacts to events in the environment by performing predefined actions WITHIN SPECIFIED TIME INTERVALS.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Real-Time Embedded System (RTES)?",
+          o: [
+            "Any embedded system regardless of timing",
+            "An embedded system that responds to real-time situations with its embedded software and hardware within specified time constraints",
+            "An embedded system with the fastest processor only",
+            "A system with no operating system",
+          ],
+          a: 1,
+          e: "Real-time embedded systems are embedded systems which respond to real-time situations with the help of embedded software and hardware, within specified time constraints.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "Which is a key characteristic of RTES — Constant Response means:",
+          o: [
+            "The system responds differently each time",
+            "The system always responds in the same manner to a given situation — not deviating from its designated output",
+            "Response time can vary widely",
+            "The system skips non-critical events",
+          ],
+          a: 1,
+          e: "Constant Response: A real-time embedded system always responds in the same manner to a certain situation — it is not allowed to deviate from its normal designated output.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "Why is Accuracy a key characteristic of RTES?",
+          o: [
+            "Accurate systems cost less",
+            "A slight inaccuracy can cause catastrophic results — e.g., a pacemaker that cannot maintain heartbeat could cause patient death",
+            "Accuracy only matters for display systems",
+            "Accuracy is less important than speed in RTES",
+          ],
+          a: 1,
+          e: "Accuracy is important for RTES — consider: what would happen if the pacemaker can't maintain the heartbeat? The patient would eventually die. A slight inaccuracy can have fatal consequences.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is an RTOS (Real-Time Operating System)?",
+          o: [
+            "A general-purpose OS optimized for desktops",
+            "An OS used for time-sensitive embedded systems with a task scheduler that ensures critical tasks meet deadlines",
+            "An OS for database servers only",
+            "An OS that only runs on ARM processors",
+          ],
+          a: 1,
+          e: "An RTOS is used for embedded systems that are time-sensitive or time-critical. It includes a task scheduler whose goal is to ensure critical tasks meet their deadline, even sacrificing other performance areas.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Hard Real-Time Embedded System?",
+          o: [
+            "A system made with durable hardware components",
+            "A system where ALL critical processes MUST complete within the time frame — all delays are strictly bound, missing a deadline can cause catastrophic failure",
+            "A system allowing flexible deadlines",
+            "A system with the highest processing power",
+          ],
+          a: 1,
+          e: "In Hard Real-Time Embedded Systems, all critical processes must be completed within the given time frame. Delays are strictly time-bound. Little to no secondary memory is used. Missing a deadline can cause catastrophic consequences.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "Which is an example of a Hard Real-Time Embedded System?",
+          o: [
+            "DVD player",
+            "Audio system",
+            "Pacemaker, missile tracking systems, airbag deployment, radar systems",
+            "Web browser",
+          ],
+          a: 2,
+          e: "Hard RTES examples: pacemakers, missile tracking systems, airbag deployment systems, radar systems — where missing a deadline can result in loss of life or major system failure.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Soft Real-Time Embedded System?",
+          o: [
+            "A system made of soft materials",
+            "A less constrictive real-time system where deadlines are important but the time frame can be slightly flexible",
+            "A system with no time constraints whatsoever",
+            "A system used only in consumer multimedia",
+          ],
+          a: 1,
+          e: "Soft Real-Time Embedded Systems are much less constrictive than hard real-time systems. Critical processes need to complete within the time frame, but this frame can be a little flexible. Used in multimedia, scientific projects, etc.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "Which is an example of a Soft Real-Time Embedded System?",
+          o: [
+            "Missile with tracking system",
+            "Pacemaker or airbag",
+            "DVD player, audio system, television",
+            "Aircraft autopilot",
+          ],
+          a: 2,
+          e: "Soft RTES examples: DVD players, audio systems, and televisions. Occasional deadline misses degrade quality but don't cause catastrophic failures.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Firm Real-Time Embedded System?",
+          o: [
+            "Identical to Hard RTES",
+            "A system where occasional errors are permissible, missed deadlines degrade performance, but the system can recover if failures are infrequent",
+            "A system with no constraints",
+            "A system used only in financial applications",
+          ],
+          a: 1,
+          e: "In a Firm RTES, errors are occasionally permissible but missed deadlines result in degraded performance. The application can recover as long as failures are relatively infrequent.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is the classic example of a Firm Real-Time Embedded System?",
+          o: [
+            "Pacemaker",
+            "A fully automated assembly line — it ignores a missed task and continues with the rest rather than crashing",
+            "Wi-Fi router",
+            "Smartphone camera",
+          ],
+          a: 1,
+          e: "A fully automated assembly line is a Firm RTES example. It doesn't crash when a task isn't performed in time — it ignores that missed part and continues to complete the rest.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is Rate Monotonic Scheduling (RMS)?",
+          o: [
+            "Assigns priorities based on remaining execution time",
+            "Assigns STATIC priorities based on task periods — shorter period = higher priority; suitable for periodic tasks",
+            "Assigns priorities based on absolute deadlines",
+            "A best-effort scheduling with no priorities",
+          ],
+          a: 1,
+          e: "RMS assigns static priorities to tasks based on their periods — tasks with shorter periods receive higher priorities. It is suitable for periodic task sets and provides simple, efficient scheduling.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is Earliest Deadline First (EDF) scheduling?",
+          o: [
+            "Tasks are scheduled by creation time (FIFO)",
+            "Tasks are scheduled based on absolute deadlines — task with earliest deadline gets highest priority; optimal for preemptive task sets",
+            "Tasks are scheduled by execution time (shortest first)",
+            "Tasks are run in alphabetical order by name",
+          ],
+          a: 1,
+          e: "In EDF, tasks are scheduled based on their absolute deadlines — the task with the earliest deadline receives the highest priority. EDF is an optimal scheduling algorithm for preemptive task sets and achieves higher CPU utilization than RMS.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is Least Laxity First (LLF) scheduling?",
+          o: [
+            "Schedules tasks with the most remaining time first",
+            "Schedules tasks by laxity (time remaining before deadline minus remaining execution time) — lowest laxity = highest priority",
+            "Schedules by task size",
+            "Schedules by memory usage",
+          ],
+          a: 1,
+          e: "LLF schedules tasks based on their laxity = (deadline time remaining) - (remaining execution time). Tasks with lower laxity (less slack) get higher priority as they have less flexibility.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Periodic event in RTES?",
+          o: [
+            "An event that occurs only once",
+            "An event that occurs only on errors",
+            "An activity that occurs repeatedly at fixed regular intervals (e.g., reading a temperature sensor every second)",
+            "An event with no defined arrival pattern",
+          ],
+          a: 2,
+          e: "A Periodic event is an activity that occurs repeatedly at fixed intervals — e.g., monitoring environment values, temperature, etc. The period is the fixed time between occurrences.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is an Aperiodic event in RTES?",
+          o: [
+            "An event at perfectly fixed intervals",
+            "An event that can occur at ANY time with NO arrival pattern given",
+            "An event with a minimum time between arrivals",
+            "A guaranteed periodic task",
+          ],
+          a: 1,
+          e: "An Aperiodic event can occur at any time — no arrival pattern is given. This makes it the most unpredictable type of event in real-time systems.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a Sporadic event in RTES?",
+          o: [
+            "An event at fixed intervals like periodic",
+            "An event that can occur at any time BUT with a MINIMUM time (mint) between consecutive arrivals",
+            "An event that never repeats",
+            "An event with maximum time between arrivals",
+          ],
+          a: 1,
+          e: "A Sporadic event can occur at any time, but there is a defined minimum time (mint) between arrivals. It is between periodic (fixed intervals) and aperiodic (no constraint at all).",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is a disadvantage of Hard Real-Time Systems?",
+          o: [
+            "They are unreliable for critical tasks",
+            "High complexity and cost to design, resource over-provisioning requirements, and inflexibility in handling dynamic workloads",
+            "They cannot handle any time-critical tasks",
+            "They have no scheduling support",
+          ],
+          a: 1,
+          e: "Disadvantages of Hard RTES include: high complexity and cost (stringent timing/reliability), often requires over-provisioning of resources to guarantee deadlines, and inflexibility in handling dynamic workloads.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "What is an advantage of Soft Real-Time Systems?",
+          o: [
+            "Absolute guarantee of all deadlines",
+            "Flexibility to handle dynamic workloads, higher resource utilization efficiency, and lower development cost",
+            "Never misses any deadline",
+            "Used for all safety-critical applications",
+          ],
+          a: 1,
+          e: "Advantages of Soft RTES: flexibility in handling variable workloads (occasional misses acceptable), higher resource utilization (can overcommit resources dynamically), and generally cheaper to develop and maintain.",
+        },
+        {
+          c: "Real-Time Systems",
+          q: "In the typical real-time temperature control example, what does the embedded software do?",
+          o: [
+            "Send temperature data to a cloud server",
+            "In an infinite loop: read temperature sensor; if too high turn off heater; if too low turn on heater; else do nothing",
+            "Display temperature on screen only",
+            "Alert the user via smartphone app",
+          ],
+          a: 1,
+          e: "The typical real-time control loop: While true do { read temperature sensor; if temperature too high then turn off heater; else if temperature too low then turn on heater; else nothing }. This is the fundamental real-time embedded software pattern.",
+        },
+      ];
+
+      // ════════════════════════════════════════════════════════════
+      // CATEGORY SETUP
+      // ════════════════════════════════════════════════════════════
+      const CATEGORIES = [...new Set(Q.map((q) => q.c))];
+      let selectedCats = new Set(CATEGORIES);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("total-q-count").textContent = Q.length;
+        const pillContainer = document.getElementById("cat-pills");
+        // "All" pill
+        const allPill = document.createElement("span");
+        allPill.className = "pill active";
+        allPill.textContent = "ALL";
+        allPill.onclick = () => {
+          if (selectedCats.size === CATEGORIES.length) {
+            selectedCats.clear();
+            allPill.classList.remove("active");
+          } else {
+            selectedCats = new Set(CATEGORIES);
+            allPill.classList.add("active");
+            pills.forEach((p) => p.classList.add("active"));
+          }
+          updatePills();
+        };
+        pillContainer.appendChild(allPill);
+        const pills = [];
+        CATEGORIES.forEach((cat) => {
+          const p = document.createElement("span");
+          p.className = "pill active";
+          p.textContent = cat;
+          p.onclick = () => {
+            if (selectedCats.has(cat)) {
+              selectedCats.delete(cat);
+              p.classList.remove("active");
+            } else {
+              selectedCats.add(cat);
+              p.classList.add("active");
+            }
+            if (selectedCats.size === CATEGORIES.length)
+              allPill.classList.add("active");
+            else allPill.classList.remove("active");
+          };
+          pillContainer.appendChild(p);
+          pills.push(p);
+        });
+        function updatePills() {
+          pills.forEach((p, i) => {
+            if (selectedCats.has(CATEGORIES[i])) p.classList.add("active");
+            else p.classList.remove("active");
+          });
+        }
+      });
+
+      // ════════════════════════════════════════════════════════════
+      // STATE
+      // ════════════════════════════════════════════════════════════
+      let mode = "learning",
+        deck = [],
+        currentIdx = 0,
+        answered = {},
+        wrongIdxList = [];
+
+      function shuffle(a) {
+        let b = [...a];
+        for (let i = b.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [b[i], b[j]] = [b[j], b[i]];
+        }
+        return b;
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      function startMode(m, customDeck) {
+        mode = m;
+        if (customDeck) {
+          deck = customDeck;
+        } else {
+          const validIdx = Q.map((_, i) => i).filter((i) =>
+            selectedCats.has(Q[i].c)
+          );
+          if (validIdx.length === 0) {
+            alert("Please select at least one topic!");
+            return;
+          }
+          deck = shuffle(validIdx);
+        }
+        currentIdx = 0;
+        answered = {};
+        const ml = document.getElementById("mode-label-tag");
+        ml.textContent = m === "rapidfire" ? "⚡ RAPID FIRE" : "📖 LEARNING";
+        ml.className = "mode-label " + (m === "rapidfire" ? "rf" : "learn");
+        document.getElementById("rf-bar-wrap").style.display =
+          m === "rapidfire" ? "block" : "none";
+        showScreen("screen-quiz");
+        renderQ();
+      }
+
+      // ════════════════════════════════════════════════════════════
+      // RENDER
+      // ════════════════════════════════════════════════════════════
+      function renderQ() {
+        const qi = deck[currentIdx],
+          q = Q[qi],
+          total = deck.length;
+        const pct = Math.round((currentIdx / total) * 100);
+        document.getElementById("q-counter").textContent = `Q ${
+          currentIdx + 1
+        } / ${total}`;
+        document.getElementById("progress-fill").style.width = pct + "%";
+        document.getElementById("progress-label").textContent =
+          pct + "% complete";
+        document.getElementById("q-category").textContent = q.c.toUpperCase();
+        document.getElementById("q-text").textContent = q.q;
+
+        const grid = document.getElementById("options-grid");
+        grid.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.o.forEach((opt, oi) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerHTML = `<span class="opt-letter">${letters[oi]}</span><span>${opt}</span>`;
+          btn.onclick = () => selectAns(oi);
+          grid.appendChild(btn);
+        });
+
+        const fb = document.getElementById("feedback-box");
+        fb.className = "feedback-box";
+        fb.style.display = "none";
+
+        if (answered[qi] !== undefined) applyUI(qi, answered[qi].sel, false);
+
+        document.getElementById("btn-prev").disabled = currentIdx === 0;
+        const isLast = currentIdx === deck.length - 1;
+        document.getElementById("btn-next").textContent = isLast
+          ? "Finish ✓"
+          : "Next →";
+        const rfs = document.getElementById("rf-status");
+        rfs.style.display = "none";
+        rfs.style.color = "var(--accent2)";
+      }
+
+      // ════════════════════════════════════════════════════════════
+      // SELECT ANSWER
+      // ════════════════════════════════════════════════════════════
+      function selectAns(sel) {
+        const qi = deck[currentIdx],
+          q = Q[qi];
+        if (answered[qi] !== undefined) return;
+        const correct = sel === q.a;
+        answered[qi] = { sel, correct };
+        applyUI(qi, sel, true);
+
+        const rfs = document.getElementById("rf-status");
+        if (mode === "rapidfire") {
+          rfs.style.display = "inline";
+          if (correct) {
+            rfs.style.color = "var(--accent2)";
+            rfs.textContent = "✓ CORRECT — advancing in 1.2s…";
+            setTimeout(() => {
+              if (currentIdx < deck.length - 1) goQ(currentIdx + 1);
+              else showResults();
+            }, 1200);
+          } else {
+            rfs.style.color = "var(--red)";
+            rfs.textContent = "✗ INCORRECT — review then click Next";
+          }
+        }
+      }
+
+      function applyUI(qi, sel, animate) {
+        const q = Q[qi];
+        const btns = document.querySelectorAll(".opt-btn");
+        btns.forEach((btn, oi) => {
+          btn.disabled = true;
+          if (oi === q.a) btn.classList.add("correct");
+          if (oi === sel && sel !== q.a) btn.classList.add("wrong");
+        });
+        const fb = document.getElementById("feedback-box");
+        const ok = sel === q.a;
+        fb.className =
+          "feedback-box " +
+          (ok ? "correct" : "wrong") +
+          (animate ? " show" : "");
+        fb.style.display = "block";
+        fb.innerHTML = `<strong>${ok ? "✓ Correct!" : "✗ Incorrect"}</strong>${
+          q.e
+        }`;
+      }
+
+      // ════════════════════════════════════════════════════════════
+      // NAVIGATION
+      // ════════════════════════════════════════════════════════════
+      function goQ(idx) {
+        if (idx < 0 || idx >= deck.length) return;
+        currentIdx = idx;
+        renderQ();
+      }
+      function handleNext() {
+        if (currentIdx >= deck.length - 1) showResults();
+        else goQ(currentIdx + 1);
+      }
+
+      // ════════════════════════════════════════════════════════════
+      // RESULTS
+      // ════════════════════════════════════════════════════════════
+      function showResults() {
+        let correct = 0,
+          wrong = 0,
+          skip = 0;
+        wrongIdxList = [];
+        deck.forEach((qi) => {
+          const a = answered[qi];
+          if (!a) {
+            skip++;
+          } else if (a.correct) {
+            correct++;
+          } else {
+            wrong++;
+            wrongIdxList.push(qi);
+          }
+        });
+        const total = deck.length,
+          pct = Math.round((correct / total) * 100);
+        document.getElementById("res-pct").textContent = pct + "%";
+        document.getElementById(
+          "res-frac"
+        ).textContent = ` (${correct}/${total})`;
+        document.getElementById("rb-c").textContent = correct;
+        document.getElementById("rb-w").textContent = wrong;
+        document.getElementById("rb-s").textContent = skip;
+
+        let emoji = "💪",
+          msg = "Keep studying — you can do this!";
+        if (pct >= 95) {
+          emoji = "🏆";
+          msg = "Perfect! You completely mastered Unit 1!";
+        } else if (pct >= 85) {
+          emoji = "🎉";
+          msg = "Excellent! You have a strong grasp of the unit.";
+        } else if (pct >= 70) {
+          emoji = "👍";
+          msg = "Good job! Review the wrong ones and you'll be ready.";
+        } else if (pct >= 50) {
+          emoji = "📖";
+          msg = "You're getting there! More practice needed.";
+        } else {
+          emoji = "💪";
+          msg = "Keep at it — review all topics and try again!";
+        }
+        document.getElementById("res-emoji").textContent = emoji;
+        document.getElementById("res-msg").textContent = msg;
+
+        const ws = document.getElementById("wrong-section");
+        ws.innerHTML = "";
+        const btn = document.getElementById("btn-retake-wrong");
+        if (wrongIdxList.length > 0) {
+          btn.style.display = "inline-block";
+          ws.innerHTML = `<h3>❌ Wrong Answers (${wrongIdxList.length})</h3>`;
+          wrongIdxList.forEach((qi) => {
+            const q = Q[qi],
+              a = answered[qi];
+            const d = document.createElement("div");
+            d.className = "wrong-item";
+            d.innerHTML = `<div class="wi-q">${q.q}</div>
+        <div class="wi-your">✗ Your answer: ${q.o[a.sel]}</div>
+        <div class="wi-correct">✓ Correct answer: ${q.o[q.a]}</div>`;
+            ws.appendChild(d);
+          });
+        } else {
+          btn.style.display = "none";
+          ws.innerHTML =
+            '<div style="text-align:center;padding:20px;color:var(--green);font-size:15px;">🎯 No wrong answers! Perfect score on these questions!</div>';
+        }
+        document.getElementById("progress-fill").style.width = "100%";
+        showScreen("screen-result");
+      }
+
+      function retakeWrong() {
+        if (wrongIdxList.length === 0) return;
+        startMode(mode, shuffle([...wrongIdxList]));
+      }
+      function retakeAll() {
+        startMode(mode);
+      }
+      function exitQuiz() {
+        if (confirm("Exit quiz? Progress will be lost.")) goHome();
+      }
+      function goHome() {
+        showScreen("screen-home");
+      }
+    </script>
+  </body>
+</html>
