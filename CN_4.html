@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Routing Algorithms — MCQ Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #050d1a;
+        --surface: #0b1628;
+        --surface2: #0f1e36;
+        --border: #1a3050;
+        --accent: #00d4ff;
+        --accent2: #00ff9d;
+        --wrong: #ff4560;
+        --correct: #00e676;
+        --text: #e0eeff;
+        --muted: #5a7a99;
+        --card: #0d1f38;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+            ellipse 60% 40% at 20% 20%,
+            rgba(0, 212, 255, 0.05) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 50% 40% at 80% 80%,
+            rgba(0, 255, 157, 0.04) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(0, 212, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: flex;
+      }
+
+      /* ── WELCOME ── */
+      #welcome {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        gap: 2rem;
+      }
+
+      .logo-tag {
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
+        color: var(--accent);
+        text-transform: uppercase;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        padding: 0.3rem 1rem;
+        border-radius: 2px;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        background: linear-gradient(
+          135deg,
+          #e0eeff 0%,
+          var(--accent) 50%,
+          var(--accent2) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 1rem;
+        font-family: "Space Mono", monospace;
+        letter-spacing: 0.05em;
+      }
+
+      .stat-row {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .stat-num {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--accent);
+        font-family: "Space Mono", monospace;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .mode-cards {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 700px;
+      }
+
+      .mode-card {
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem 2.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 240px;
+        max-width: 300px;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 10px;
+      }
+
+      .mode-card.learning::before {
+        background: radial-gradient(
+          ellipse at top left,
+          rgba(0, 212, 255, 0.1),
+          transparent 60%
+        );
+      }
+      .mode-card.rapidfire::before {
+        background: radial-gradient(
+          ellipse at top left,
+          rgba(255, 69, 96, 0.12),
+          transparent 60%
+        );
+      }
+
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-card:hover {
+        transform: translateY(-4px);
+      }
+      .mode-card.learning:hover {
+        border-color: var(--accent);
+      }
+      .mode-card.rapidfire:hover {
+        border-color: var(--wrong);
+      }
+
+      .mode-icon {
+        font-size: 2.2rem;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+
+      .mode-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .mode-card.learning .mode-title {
+        color: var(--accent);
+      }
+      .mode-card.rapidfire .mode-title {
+        color: var(--wrong);
+      }
+
+      .mode-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.6;
+        font-family: "Space Mono", monospace;
+      }
+
+      .mode-badge {
+        display: inline-block;
+        margin-top: 1rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-family: "Space Mono", monospace;
+        padding: 0.25rem 0.6rem;
+        border-radius: 3px;
+      }
+
+      .mode-card.learning .mode-badge {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      }
+      .mode-card.rapidfire .mode-badge {
+        background: rgba(255, 69, 96, 0.1);
+        color: var(--wrong);
+        border: 1px solid rgba(255, 69, 96, 0.3);
+      }
+
+      /* ── QUIZ ── */
+      #quiz {
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 1.5rem;
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 780px;
+        margin: 0 auto;
+        gap: 1.25rem;
+      }
+
+      .quiz-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .mode-pill {
+        font-family: "Space Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 700;
+      }
+
+      .mode-pill.learning {
+        background: rgba(0, 212, 255, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      }
+      .mode-pill.rapidfire {
+        background: rgba(255, 69, 96, 0.15);
+        color: var(--wrong);
+        border: 1px solid rgba(255, 69, 96, 0.3);
+      }
+
+      .q-counter {
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .q-counter span {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .score-badge {
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--accent2);
+        background: rgba(0, 255, 157, 0.08);
+        border: 1px solid rgba(0, 255, 157, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+      }
+
+      .progress-wrap {
+        width: 100%;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.4s ease;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+      }
+
+      .section-tag {
+        font-family: "Space Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-left: 2px solid var(--accent);
+        padding-left: 0.6rem;
+        align-self: flex-start;
+      }
+
+      .q-card {
+        width: 100%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .q-num {
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.1em;
+      }
+
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.6;
+        color: var(--text);
+      }
+
+      .options-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      @media (max-width: 560px) {
+        .options-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .option-btn {
+        background: var(--surface2);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+        cursor: pointer;
+        text-align: left;
+        font-family: "Syne", sans-serif;
+        font-size: 0.88rem;
+        color: var(--text);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        line-height: 1.4;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: rgba(0, 212, 255, 0.06);
+        transform: translateY(-1px);
+      }
+
+      .option-letter {
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        border-radius: 6px;
+        background: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Mono", monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+
+      .option-btn:hover:not(:disabled) .option-letter {
+        background: rgba(0, 212, 255, 0.2);
+        color: var(--accent);
+      }
+
+      .option-btn.correct {
+        border-color: var(--correct);
+        background: rgba(0, 230, 118, 0.08);
+        animation: correctPulse 0.4s ease;
+      }
+
+      .option-btn.correct .option-letter {
+        background: var(--correct);
+        color: #000;
+      }
+
+      .option-btn.wrong {
+        border-color: var(--wrong);
+        background: rgba(255, 69, 96, 0.08);
+        animation: wrongShake 0.4s ease;
+      }
+
+      .option-btn.wrong .option-letter {
+        background: var(--wrong);
+        color: #fff;
+      }
+
+      .option-btn.reveal-correct {
+        border-color: rgba(0, 230, 118, 0.4);
+        background: rgba(0, 230, 118, 0.04);
+      }
+
+      .option-btn.reveal-correct .option-letter {
+        background: rgba(0, 230, 118, 0.3);
+        color: var(--correct);
+      }
+
+      .option-btn:disabled {
+        cursor: default;
+      }
+
+      @keyframes correctPulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes wrongShake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+
+      /* Feedback banner */
+      .feedback {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        display: none;
+        align-items: center;
+        gap: 0.75rem;
+        border: 1px solid;
+      }
+
+      .feedback.show {
+        display: flex;
+      }
+      .feedback.correct-fb {
+        border-color: rgba(0, 230, 118, 0.4);
+        background: rgba(0, 230, 118, 0.07);
+        color: var(--correct);
+      }
+      .feedback.wrong-fb {
+        border-color: rgba(255, 69, 96, 0.4);
+        background: rgba(255, 69, 96, 0.07);
+        color: var(--wrong);
+      }
+
+      .feedback-icon {
+        font-size: 1.2rem;
+      }
+      .feedback-text {
+        flex: 1;
+        line-height: 1.4;
+        color: var(--text);
+      }
+      .feedback-text strong {
+        color: inherit;
+      }
+
+      /* Auto-advance bar */
+      .auto-bar-wrap {
+        width: 100%;
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        display: none;
+        overflow: hidden;
+      }
+
+      .auto-bar-wrap.show {
+        display: block;
+      }
+
+      .auto-bar {
+        height: 100%;
+        background: var(--accent2);
+        border-radius: 2px;
+        width: 100%;
+        transition: width linear;
+      }
+
+      /* Navigation */
+      .nav-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        letter-spacing: 0.05em;
+      }
+
+      .btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .btn-prev {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .btn-prev:not(:disabled):hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .btn-next {
+        background: var(--accent);
+        color: #000;
+        font-weight: 800;
+      }
+
+      .btn-next:not(:disabled):hover {
+        background: var(--accent2);
+        transform: translateY(-1px);
+      }
+      .btn-next:disabled {
+        background: var(--border);
+        color: var(--muted);
+      }
+
+      .btn-home {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      .btn-home:hover {
+        border-color: var(--muted);
+        color: var(--text);
+      }
+
+      /* Rapid fire status bar */
+      .rf-streak {
+        width: 100%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
+      }
+
+      .rf-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .rf-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .rf-dot.green {
+        background: var(--correct);
+        box-shadow: 0 0 6px var(--correct);
+      }
+      .rf-dot.red {
+        background: var(--wrong);
+        box-shadow: 0 0 6px var(--wrong);
+      }
+      .rf-label {
+        color: var(--muted);
+      }
+      .rf-val {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      /* ── RESULTS ── */
+      #results {
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 2rem 1.5rem;
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        gap: 1.5rem;
+      }
+
+      .results-title {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .score-ring-wrap {
+        position: relative;
+        width: 140px;
+        height: 140px;
+      }
+
+      .score-ring-wrap svg {
+        transform: rotate(-90deg);
+      }
+
+      .score-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .score-pct {
+        font-size: 2.2rem;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+        color: var(--accent);
+      }
+
+      .score-sub {
+        font-size: 0.65rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .results-stats {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .res-stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        text-align: center;
+        min-width: 100px;
+      }
+
+      .res-stat-num {
+        font-size: 1.5rem;
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+        display: block;
+      }
+
+      .res-stat-num.c {
+        color: var(--correct);
+      }
+      .res-stat-num.w {
+        color: var(--wrong);
+      }
+      .res-stat-num.s {
+        color: var(--accent);
+      }
+
+      .res-stat-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .grade-tag {
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-family: "Space Mono", monospace;
+      }
+
+      .results-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn-retake {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 165, 0, 0.15),
+          rgba(255, 69, 96, 0.15)
+        );
+        border: 1px solid rgba(255, 165, 0, 0.4);
+        color: #ffb347;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-retake:hover {
+        transform: translateY(-2px);
+        border-color: #ffb347;
+      }
+      .btn-retake:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-restart {
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        color: var(--accent);
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-restart:hover {
+        transform: translateY(-2px);
+        background: rgba(0, 212, 255, 0.15);
+      }
+
+      .review-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .review-item {
+        background: var(--card);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        border-left: 3px solid;
+      }
+
+      .review-item.correct {
+        border-color: var(--correct);
+      }
+      .review-item.wrong {
+        border-color: var(--wrong);
+      }
+
+      .review-q {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+        line-height: 1.5;
+      }
+
+      .review-ans {
+        font-size: 0.78rem;
+        font-family: "Space Mono", monospace;
+        line-height: 1.6;
+      }
+
+      .review-correct-ans {
+        color: var(--correct);
+      }
+      .review-wrong-ans {
+        color: var(--wrong);
+      }
+
+      .section-heading {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-family: "Space Mono", monospace;
+        width: 100%;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .q-card,
+      .options-grid,
+      .feedback,
+      .nav-row {
+        animation: fadeInUp 0.3s ease both;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-bg"></div>
+
+    <!-- ── WELCOME ── -->
+    <div
+      id="welcome"
+      class="screen active">
+      <div class="logo-tag">4CN · Routing Algorithms</div>
+      <h1>Routing<br />Algorithms Quiz</h1>
+      <p class="subtitle">// Static · Dynamic · OSPF · RIP · EIGRP · BGP</p>
+      <div class="stat-row">
+        <div class="stat">
+          <span
+            class="stat-num"
+            id="totalQCount"
+            >70</span
+          ><span class="stat-label">Questions</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">8</span><span class="stat-label">Topics</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">2</span><span class="stat-label">Modes</span>
+        </div>
+      </div>
+      <div class="mode-cards">
+        <div
+          class="mode-card learning"
+          onclick="startQuiz('learning')">
+          <span class="mode-icon">📚</span>
+          <div class="mode-title">Learning Mode</div>
+          <p class="mode-desc">
+            Pick an answer and instantly see if it's correct. Navigate at your
+            own pace with prev/next buttons.
+          </p>
+          <span class="mode-badge">Self-Paced</span>
+        </div>
+        <div
+          class="mode-card rapidfire"
+          onclick="startQuiz('rapidfire')">
+          <span class="mode-icon">⚡</span>
+          <div class="mode-title">Rapid Fire</div>
+          <p class="mode-desc">
+            Correct answer → auto-advances. Wrong answer → stops. You decide
+            when to move on.
+          </p>
+          <span class="mode-badge">Speed Run</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── QUIZ ── -->
+    <div
+      id="quiz"
+      class="screen">
+      <div class="quiz-header">
+        <button
+          class="btn btn-home"
+          onclick="goHome()">
+          ← Home
+        </button>
+        <span
+          class="mode-pill"
+          id="modePill"
+          >Learning</span
+        >
+        <span class="q-counter"
+          >Q <span id="qNum">1</span> / <span id="qTotal">70</span></span
+        >
+        <span
+          class="score-badge"
+          id="scoreBadge"
+          >✓ 0 / 0</span
+        >
+      </div>
+
+      <div class="progress-wrap">
+        <div
+          class="progress-bar"
+          id="progressBar"
+          style="width: 0%"></div>
+      </div>
+
+      <div
+        id="rfStreakRow"
+        class="rf-streak"
+        style="display: none">
+        <div class="rf-item">
+          <div class="rf-dot green"></div>
+          <span class="rf-label">Streak:</span
+          ><span
+            class="rf-val"
+            id="rfStreak"
+            >0</span
+          >
+        </div>
+        <div class="rf-item">
+          <div class="rf-dot red"></div>
+          <span class="rf-label">Stopped:</span
+          ><span
+            class="rf-val"
+            id="rfStops"
+            >0</span
+          >
+        </div>
+        <div
+          style="margin-left: auto; font-size: 0.7rem; color: var(--muted)"
+          id="rfStatus">
+          Answer to continue
+        </div>
+      </div>
+
+      <div
+        class="section-tag"
+        id="sectionTag">
+        Basics
+      </div>
+
+      <div class="q-card">
+        <div
+          class="q-num"
+          id="qNumSmall">
+          QUESTION 01
+        </div>
+        <div
+          class="q-text"
+          id="qText">
+          Loading...
+        </div>
+      </div>
+
+      <div
+        class="options-grid"
+        id="optionsGrid"></div>
+
+      <div
+        class="feedback"
+        id="feedbackBanner">
+        <span
+          class="feedback-icon"
+          id="fbIcon"
+          >✓</span
+        >
+        <div>
+          <div
+            id="fbText"
+            class="feedback-text"></div>
+        </div>
+      </div>
+
+      <div
+        class="auto-bar-wrap"
+        id="autoBarWrap">
+        <div
+          class="auto-bar"
+          id="autoBar"></div>
+      </div>
+
+      <div class="nav-row">
+        <button
+          class="btn btn-prev"
+          id="btnPrev"
+          onclick="navigate(-1)"
+          disabled>
+          ← Prev
+        </button>
+        <button
+          class="btn btn-next"
+          id="btnNext"
+          onclick="navigate(1)"
+          disabled>
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- ── RESULTS ── -->
+    <div
+      id="results"
+      class="screen">
+      <div
+        class="results-title"
+        id="resultsTitle">
+        Quiz Complete!
+      </div>
+      <div class="score-ring-wrap">
+        <svg
+          width="140"
+          height="140"
+          viewBox="0 0 140 140">
+          <circle
+            cx="70"
+            cy="70"
+            r="56"
+            fill="none"
+            stroke="#1a3050"
+            stroke-width="12" />
+          <circle
+            cx="70"
+            cy="70"
+            r="56"
+            fill="none"
+            stroke="url(#ringGrad)"
+            stroke-width="12"
+            stroke-linecap="round"
+            stroke-dasharray="351.86"
+            stroke-dashoffset="351.86"
+            id="ringCircle"
+            style="transition: stroke-dashoffset 1s ease" />
+        </svg>
+        <svg
+          width="0"
+          height="0"
+          style="position: absolute">
+          <defs>
+            <linearGradient
+              id="ringGrad"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%">
+              <stop
+                offset="0%"
+                stop-color="#00d4ff" />
+              <stop
+                offset="100%"
+                stop-color="#00ff9d" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="score-center">
+          <span
+            class="score-pct"
+            id="scorePct"
+            >0%</span
+          >
+          <span class="score-sub">Score</span>
+        </div>
+      </div>
+
+      <div class="results-stats">
+        <div class="res-stat">
+          <span
+            class="res-stat-num s"
+            id="resTotal"
+            >0</span
+          ><span class="res-stat-label">Attempted</span>
+        </div>
+        <div class="res-stat">
+          <span
+            class="res-stat-num c"
+            id="resCorrect"
+            >0</span
+          ><span class="res-stat-label">Correct</span>
+        </div>
+        <div class="res-stat">
+          <span
+            class="res-stat-num w"
+            id="resWrong"
+            >0</span
+          ><span class="res-stat-label">Wrong</span>
+        </div>
+      </div>
+
+      <div
+        class="grade-tag"
+        id="gradeTag"></div>
+
+      <div class="results-actions">
+        <button
+          class="btn-retake"
+          id="btnRetakeWrong"
+          onclick="retakeWrong()">
+          🔁 Retake Wrong Only
+        </button>
+        <button
+          class="btn-restart"
+          onclick="restartSame()">
+          ↺ Restart Same Mode
+        </button>
+        <button
+          class="btn btn-home"
+          onclick="goHome()"
+          style="border-color: var(--border)">
+          ⌂ Home
+        </button>
+      </div>
+
+      <div class="section-heading">Question Review</div>
+      <div
+        class="review-list"
+        id="reviewList"></div>
+    </div>
+
+    <script>
+      const QUESTIONS = [
+        // ── SECTION 1: ROUTING BASICS ──
+        {
+          section: "Routing Basics",
+          q: "What is the definition of routing?",
+          opts: [
+            "The process of assigning IP addresses to devices",
+            "The process of selecting the best path among various available options",
+            "The process of encrypting network packets",
+            "The process of converting domain names to IP addresses",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Routing Basics",
+          q: "Which of the following correctly lists the types of routing?",
+          opts: [
+            "Static, Dynamic, and Default",
+            "Internal, External, and Border",
+            "Distance, Link-State, and Path-Vector",
+            "RIP, OSPF, and BGP",
+          ],
+          ans: 0,
+        },
+        {
+          section: "Routing Basics",
+          q: "Which routing type requires engineers to manually reconfigure routes whenever changes are needed?",
+          opts: [
+            "Dynamic routing",
+            "Default routing",
+            "Static routing",
+            "Distance vector routing",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Routing Basics",
+          q: "Which type of routing automatically updates routing tables using algorithms when topology changes occur?",
+          opts: [
+            "Static routing",
+            "Default routing",
+            "Manual routing",
+            "Dynamic routing",
+          ],
+          ans: 3,
+        },
+        {
+          section: "Routing Basics",
+          q: "Which routing type maintains a smaller routing table with only one entry for each destination?",
+          opts: [
+            "Dynamic routing",
+            "Link-state routing",
+            "Static routing",
+            "Distance vector routing",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Routing Basics",
+          q: "Which routing type offers better security?",
+          opts: [
+            "Dynamic routing",
+            "RIP routing",
+            "Link-state routing",
+            "Static routing",
+          ],
+          ans: 3,
+        },
+        {
+          section: "Routing Basics",
+          q: "Dynamic routing is best suited for:",
+          opts: [
+            "Small networks with fewer routers and unchanging architecture",
+            "Networks with a single router",
+            "Large networks that change frequently",
+            "Networks where security is the primary concern",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Routing Basics",
+          q: "Compared to dynamic routing, static routing requires:",
+          opts: [
+            "More CPU and bandwidth",
+            "Less computation time and bandwidth",
+            "More frequent updates",
+            "Larger routing tables",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Routing Basics",
+          q: "Dynamic routing is also known as:",
+          opts: [
+            "Manual routing",
+            "Adaptive routing",
+            "Default routing",
+            "Border routing",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Routing Basics",
+          q: "Static routes are best used for:",
+          opts: [
+            "Large frequently changing networks",
+            "Hiding parts of an internetwork or maintaining routing when only one path exists",
+            "Environments requiring frequent route updates",
+            "Exterior gateway communication",
+          ],
+          ans: 1,
+        },
+
+        // ── SECTION 2: DYNAMIC ROUTING ──
+        {
+          section: "Dynamic Routing",
+          q: "Dynamic routing uses which two types of complex algorithms?",
+          opts: [
+            "Encryption and decryption algorithms",
+            "Path vector and hop count algorithms",
+            "Distance vector protocols and link state protocols",
+            "Dijkstra-only and Bellman-only algorithms",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Dynamic Routing",
+          q: "Which of the following is a function of dynamic routing protocols?",
+          opts: [
+            "Statically configure routes between routers",
+            "Block traffic between autonomous systems",
+            "Dynamically share information between routers",
+            "Assign IP addresses to routers",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Dynamic Routing",
+          q: "Which is NOT a purpose of dynamic routing protocols?",
+          opts: [
+            "Discovery of remote networks",
+            "Maintaining up-to-date routing information",
+            "Manually pre-configuring routes",
+            "Ability to find a new best path when current path fails",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Dynamic Routing",
+          q: "Routing protocols are used to:",
+          opts: [
+            "Encrypt packets between routers",
+            "Exchange routing information between routers",
+            "Assign dynamic IP addresses",
+            "Block unauthorized traffic",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Dynamic Routing",
+          q: "Dynamic routing is more complex than static routing primarily because it:",
+          opts: [
+            "Has fewer available routes",
+            "Creates more possible routes to send packets across a network",
+            "Uses simpler algorithms",
+            "Requires less bandwidth",
+          ],
+          ans: 1,
+        },
+
+        // ── SECTION 3: PROTOCOL CLASSIFICATION ──
+        {
+          section: "Protocol Classification",
+          q: "Which protocol is classified as an Interior Gateway Protocol (IGP) using Distance Vector routing?",
+          opts: ["BGP", "OSPF", "IS-IS", "RIP"],
+          ans: 3,
+        },
+        {
+          section: "Protocol Classification",
+          q: "Which protocol is classified as an Exterior Gateway Protocol (EGP)?",
+          opts: ["RIP", "IGRP", "BGP", "OSPF"],
+          ans: 2,
+        },
+        {
+          section: "Protocol Classification",
+          q: "OSPF belongs to which category of routing protocols?",
+          opts: [
+            "Distance Vector IGP",
+            "Path Vector EGP",
+            "Link-State IGP",
+            "Distance Vector EGP",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Protocol Classification",
+          q: "EIGRP is classified under which type of routing protocol?",
+          opts: [
+            "Exterior Gateway Protocol — Path Vector",
+            "Interior Gateway Protocol — Advanced Distance Vector",
+            "Interior Gateway Protocol — Link State",
+            "Exterior Gateway Protocol — Distance Vector",
+          ],
+          ans: 1,
+        },
+
+        // ── SECTION 4: AUTONOMOUS SYSTEMS ──
+        {
+          section: "Autonomous Systems",
+          q: "What is an Autonomous System (AS)?",
+          opts: [
+            "A single router managing all internet traffic",
+            "A group of networks and routers under the authority of a single administration",
+            "A type of routing algorithm",
+            "A protocol for routing between networks",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "Routing inside an autonomous system is called:",
+          opts: [
+            "Interdomain routing",
+            "External routing",
+            "Border routing",
+            "Intradomain routing",
+          ],
+          ans: 3,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "Routing between autonomous systems is called:",
+          opts: [
+            "Intradomain routing",
+            "Internal routing",
+            "Static routing",
+            "Interdomain routing",
+          ],
+          ans: 3,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "A Stub AS is characterized by:",
+          opts: [
+            "More than one connection to other ASs and allows traffic to pass through",
+            "Only one connection to another AS and cannot pass through data",
+            "Multiple connections and allows data to pass through",
+            "No connections to other ASs",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "A Multihomed AS is characterized by:",
+          opts: [
+            "Only one connection to another AS",
+            "Has more than one connection but does NOT allow data to pass through",
+            "Has more than one connection and allows data to pass through",
+            "No connection to other ASs",
+          ],
+          ans: 1,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "A Transient AS is characterized by:",
+          opts: [
+            "Having only one connection to another AS",
+            "Not allowing traffic to pass through",
+            "Connected to more than one AS AND allows traffic to pass through",
+            "Only terminating data traffic",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Autonomous Systems",
+          q: "Which is a good example of a Stub AS?",
+          opts: [
+            "An internet backbone provider",
+            "A provider network with multiple ASs",
+            "A transient network passing data",
+            "A customer network that is only source or sink of data",
+          ],
+          ans: 3,
+        },
+
+        // ── SECTION 5: OSPF ──
+        {
+          section: "OSPF",
+          q: "OSPF stands for:",
+          opts: [
+            "Open Standard Protocol First",
+            "Optimized Shortest Path Finding",
+            "Open System Protocol Framework",
+            "Open Shortest Path First",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "OSPF is based on which routing algorithm type?",
+          opts: ["Distance vector", "Path vector", "Link-state", "Hop count"],
+          ans: 2,
+        },
+        {
+          section: "OSPF",
+          q: "OSPF operates on which port number?",
+          opts: ["179", "520", "88", "89"],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "In OSPF, what is the purpose of dividing an AS into areas?",
+          opts: [
+            "To increase routing table size",
+            "To support classful routing only",
+            "To prevent huge traffic volume from flooding LSPs across the whole AS",
+            "To simplify IP addressing",
+          ],
+          ans: 2,
+        },
+        {
+          section: "OSPF",
+          q: "How many levels of hierarchy does OSPF use?",
+          opts: [
+            "One (autonomous system only)",
+            "Three (AS, area, and subnet)",
+            "Four levels",
+            "Two (autonomous system and area)",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "What is the backbone area in OSPF responsible for?",
+          opts: [
+            "Running Dijkstra's algorithm for all areas",
+            "Assigning IP addresses to routers",
+            "Gluing the areas together",
+            "Processing all external routes",
+          ],
+          ans: 2,
+        },
+        {
+          section: "OSPF",
+          q: "Which OSPF packet type (Type 1) is used by a router to introduce itself to neighbors and announce known neighbors?",
+          opts: [
+            "Database Description",
+            "Link-state Request",
+            "Link-state Update",
+            "Hello Message",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "Which OSPF packet type (Type 2) allows a newly joined router to acquire the full LSDB?",
+          opts: [
+            "Hello Message",
+            "Link-state Request",
+            "Database Description",
+            "Link-state Acknowledgment",
+          ],
+          ans: 2,
+        },
+        {
+          section: "OSPF",
+          q: "Which OSPF packet type (Type 3) is sent when a router needs information about a specific link state?",
+          opts: [
+            "Hello Message",
+            "Link-state Request",
+            "Link-state Update",
+            "Database Description",
+          ],
+          ans: 1,
+        },
+        {
+          section: "OSPF",
+          q: "Which OSPF packet type (Type 4) is the main message used for building the LSDB?",
+          opts: [
+            "Hello Message",
+            "Database Description",
+            "Link-state Acknowledgment",
+            "Link-state Update",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "Which OSPF packet type (Type 5) is used to create reliability by acknowledging received updates?",
+          opts: [
+            "Hello Message",
+            "Link-state Request",
+            "Link-state Update",
+            "Link-state Acknowledgment",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "In OSPF, a point-to-point link connects:",
+          opts: [
+            "A network with several routers attached",
+            "A network connected to only one router",
+            "Two routers without any other host or router in between",
+            "Two routers through a longer virtual path",
+          ],
+          ans: 2,
+        },
+        {
+          section: "OSPF",
+          q: "In OSPF, a transient link is:",
+          opts: [
+            "A network connected to only one router",
+            "A network with several routers attached where data can enter/leave through any router",
+            "A direct connection between exactly two routers",
+            "A virtual connection through several routers",
+          ],
+          ans: 1,
+        },
+        {
+          section: "OSPF",
+          q: "In OSPF, a stub link is:",
+          opts: [
+            "A network with several routers attached",
+            "A direct connection between two routers",
+            "A virtual link through multiple routers",
+            "A network connected to only one router — data enters and leaves through the same router",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "In OSPF, a virtual link is created when:",
+          opts: [
+            "A network has only one attached router",
+            "Two routers are connected directly",
+            "Backbone area needs expansion",
+            "The link between two routers is broken, using a longer path through several routers",
+          ],
+          ans: 3,
+        },
+        {
+          section: "OSPF",
+          q: "In the OSPF link type table, a Transient link is identified by:",
+          opts: [
+            "Address of neighbor router",
+            "Network address",
+            "Router address",
+            "Address of the designated router",
+          ],
+          ans: 3,
+        },
+
+        // ── SECTION 6: RIP ──
+        {
+          section: "RIP",
+          q: "What metric does RIP use to determine the best path?",
+          opts: ["Bandwidth", "Delay", "Cost", "Hop count"],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "What is the maximum number of hops allowed in RIP?",
+          opts: ["16", "255", "30", "15"],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "In RIP, a hop count of 16 indicates:",
+          opts: [
+            "The route is optimal",
+            "The route requires reconfiguration",
+            "The destination is unreachable (infinite distance)",
+            "The route needs verification",
+          ],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "RIP uses which transport protocol and reserved port number?",
+          opts: [
+            "TCP, port 179",
+            "TCP, port 520",
+            "UDP, port 179",
+            "UDP, port 520",
+          ],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "How frequently does RIP transmit full routing table updates?",
+          opts: [
+            "Every 10 seconds",
+            "Every 30 seconds",
+            "Every 60 seconds",
+            "Every 180 seconds",
+          ],
+          ans: 1,
+        },
+        {
+          section: "RIP",
+          q: "What is the RIP Invalid timer?",
+          opts: ["30 seconds", "120 seconds", "180 seconds", "240 seconds"],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "What is the RIP Holddown timer?",
+          opts: ["30 seconds", "120 seconds", "180 seconds", "240 seconds"],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "What is the RIP Flush timer (time before a route is actually removed)?",
+          opts: ["180 seconds", "200 seconds", "210 seconds", "240 seconds"],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "RIP uses which algorithm for computing routes?",
+          opts: [
+            "Dijkstra's algorithm",
+            "Floyd-Warshall algorithm",
+            "Prim's algorithm",
+            "Bellman-Ford algorithm",
+          ],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "RIPv1 sends updates using:",
+          opts: [
+            "Multicast (224.0.0.9)",
+            "Unicast",
+            "Anycast",
+            "Broadcast (255.255.255.255)",
+          ],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "RIPv2 sends updates to which multicast address?",
+          opts: ["255.255.255.255", "224.0.0.5", "192.168.1.255", "224.0.0.9"],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "Which feature does RIPv2 support that RIPv1 does NOT?",
+          opts: [
+            "Hop count metric",
+            "Distance vector algorithm",
+            "UDP transport",
+            "Classless addressing with subnet mask support",
+          ],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "RIPv1 was introduced in which year?",
+          opts: ["1983", "1993", "1998", "1988"],
+          ans: 3,
+        },
+        {
+          section: "RIP",
+          q: "RIPv2 was introduced in which year?",
+          opts: ["1988", "1990", "1993", "2000"],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "How many versions of RIP exist in total?",
+          opts: ["2", "3", "4", "5"],
+          ans: 1,
+        },
+        {
+          section: "RIP",
+          q: "Which is a known limitation of RIP?",
+          opts: [
+            "It uses TCP which adds overhead",
+            "It doesn't support UDP",
+            "Hop count cannot exceed 15, limiting network size",
+            "It supports too many routing metrics",
+          ],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "RIP is classified as which type of routing protocol?",
+          opts: [
+            "Link-State IGP",
+            "Path-Vector EGP",
+            "Distance-Vector IGP",
+            "Link-State EGP",
+          ],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "RIPv1 uses which type of addressing?",
+          opts: [
+            "Classless (includes subnet info)",
+            "Variable-length subnet masking",
+            "Classful (no subnet information)",
+            "CIDR-based",
+          ],
+          ans: 2,
+        },
+        {
+          section: "RIP",
+          q: "The correct command to display RIP routing updates is:",
+          opts: [
+            "Show IP route",
+            "Show protocols",
+            "Debug IP route",
+            "Debug IP rip",
+          ],
+          ans: 3,
+        },
+
+        // ── SECTION 7: EIGRP ──
+        {
+          section: "EIGRP",
+          q: "EIGRP was developed by which company?",
+          opts: ["Juniper Networks", "IBM", "Microsoft", "Cisco"],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "EIGRP uses which protocol number?",
+          opts: ["89", "520", "179", "88"],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "EIGRP operates at which layer of the OSI model?",
+          opts: [
+            "Data Link Layer (Layer 2)",
+            "Transport Layer (Layer 4)",
+            "Application Layer (Layer 7)",
+            "Network Layer (Layer 3)",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "By default, EIGRP uses which two metrics?",
+          opts: [
+            "Load and Reliability",
+            "Hop count and Bandwidth",
+            "Delay and Reliability",
+            "Bandwidth and Delay",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "In EIGRP's composite metric, K1 represents:",
+          opts: ["Delay", "Load", "Reliability", "Bandwidth"],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "In EIGRP's composite metric, K3 represents:",
+          opts: ["Bandwidth", "Load", "Delay", "Reliability"],
+          ans: 2,
+        },
+        {
+          section: "EIGRP",
+          q: "What is the valid range for an EIGRP Autonomous System number?",
+          opts: ["1 to 255", "1 to 1024", "0 to 65535", "1 to 65535"],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "In EIGRP, a reliability value of 255 means:",
+          opts: [
+            "Totally unreliable",
+            "Partially reliable",
+            "Maximum load",
+            "Totally reliable",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "What does EIGRP's Bounded Updates feature do?",
+          opts: [
+            "Sends full routing table to all routers every 30 seconds",
+            "Limits hop count to 15",
+            "Broadcasts updates to all subnets",
+            "Propagates partial updates only to routers affected by the change",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "How often does EIGRP send hello messages on a LAN?",
+          opts: [
+            "Every 30 seconds",
+            "Every 60 seconds",
+            "Every 10 seconds",
+            "Every 5 seconds",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "EIGRP is considered a hybrid routing protocol because:",
+          opts: [
+            "It supports both IPv4 and IPv6",
+            "It can route between both internal and external ASs",
+            "It supports both static and dynamic routing simultaneously",
+            "It uses characteristics of both distance-vector and link-state protocols",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "In the EIGRP metric formula, if K1=K3=1 and K2=K4=K5=0, the metric equals:",
+          opts: [
+            "256 × (delay only)",
+            "256 × (bandwidth × delay)",
+            "256 × (bandwidth + delay)",
+            "256 × (load + reliability)",
+          ],
+          ans: 2,
+        },
+        {
+          section: "EIGRP",
+          q: "For bandwidth metric calculation in EIGRP, which bandwidth value is used along the path?",
+          opts: [
+            "Average bandwidth",
+            "Highest bandwidth",
+            "Sum of all bandwidths",
+            "Lowest bandwidth value",
+          ],
+          ans: 3,
+        },
+        {
+          section: "EIGRP",
+          q: "EIGRP can support which network layer protocols?",
+          opts: [
+            "IP only",
+            "IP and IPX only",
+            "IP, IPX, and Appletalk",
+            "IPv4 only",
+          ],
+          ans: 2,
+        },
+        {
+          section: "EIGRP",
+          q: "Which EIGRP benefit involves sending updates only about route changes rather than the entire routing table?",
+          opts: [
+            "Bounded Updates",
+            "Equal Cost Load Balancing",
+            "Neighbor Adjacency",
+            "Partial Updates",
+          ],
+          ans: 3,
+        },
+
+        // ── SECTION 8: BGP ──
+        {
+          section: "BGP",
+          q: "BGP is used for which type of routing?",
+          opts: [
+            "Intradomain routing only",
+            "Distance vector intradomain routing",
+            "Interdomain routing using path vector",
+            "Link-state intradomain routing",
+          ],
+          ans: 2,
+        },
+        {
+          section: "BGP",
+          q: "BGP uses which transport protocol and port number?",
+          opts: [
+            "UDP, port 520",
+            "UDP, port 179",
+            "TCP, port 89",
+            "TCP, port 179",
+          ],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "BGP first appeared in which year?",
+          opts: ["1985", "1993", "1996", "1989"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "In path vector routing, which node acts on behalf of the entire autonomous system?",
+          opts: [
+            "Backbone router",
+            "Border router",
+            "Designated router",
+            "Speaker node",
+          ],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "How many types of BGP messages are there?",
+          opts: ["2", "3", "4", "5"],
+          ans: 2,
+        },
+        {
+          section: "BGP",
+          q: "Which BGP message type is used to create a neighborhood relationship?",
+          opts: ["Update", "Keepalive", "Notification", "Open"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "Which BGP message is considered the 'heart' of the BGP protocol, used to advertise or withdraw routes?",
+          opts: ["Open", "Keepalive", "Notification", "Update"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "Which BGP message type is exchanged regularly to confirm that peers are still alive?",
+          opts: ["Open", "Update", "Notification", "Keepalive"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "Which BGP message is sent when an error condition is detected or a router wants to close the session?",
+          opts: ["Open", "Update", "Keepalive", "Notification"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "Which routing protocol supports classless addressing and CIDR?",
+          opts: ["RIPv1", "IGRP", "Static routing", "BGP"],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "In BGP, what is advertised between speaker nodes (unlike distance vector which shares metrics)?",
+          opts: [
+            "Hop counts",
+            "Bandwidth values",
+            "Delay metrics",
+            "The path (list of ASs) to reach destinations",
+          ],
+          ans: 3,
+        },
+        {
+          section: "BGP",
+          q: "Which two components are used to identify a neighbor in BGP configuration?",
+          opts: [
+            "Version number and Router ID",
+            "Subnet mask and IP address",
+            "Autonomous System number and IP address",
+            "Autonomous System number and version number",
+          ],
+          ans: 2,
+        },
+        {
+          section: "BGP",
+          q: "The command to verify that a BGP connection to a remote device is established is:",
+          opts: [
+            "Show ip bgp paths",
+            "Show ip community-list",
+            "Show ip route",
+            "Show ip bgp summary",
+          ],
+          ans: 3,
+        },
+
+        // ── SECTION 9: ADMINISTRATIVE DISTANCE ──
+        {
+          section: "Administrative Distance",
+          q: "What is the administrative distance of a directly connected interface?",
+          opts: ["1", "5", "10", "0"],
+          ans: 3,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of a static route?",
+          opts: ["0", "5", "20", "1"],
+          ans: 3,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of Internal EIGRP?",
+          opts: ["5", "20", "90", "110"],
+          ans: 2,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of OSPF?",
+          opts: ["90", "100", "110", "120"],
+          ans: 2,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of RIP?",
+          opts: ["100", "110", "115", "120"],
+          ans: 3,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of Internal BGP?",
+          opts: ["20", "170", "200", "255"],
+          ans: 2,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of External BGP?",
+          opts: ["5", "20", "90", "110"],
+          ans: 1,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the default administrative distance of IGRP?",
+          opts: ["90", "100", "110", "120"],
+          ans: 1,
+        },
+        {
+          section: "Administrative Distance",
+          q: "If a router receives the same route from OSPF (AD 110) and EIGRP (AD 90), which is preferred?",
+          opts: [
+            "OSPF, because it has higher value indicating better reliability",
+            "Both are used simultaneously for load balancing",
+            "Neither; static route is preferred",
+            "EIGRP, because lower administrative distance = more reliable",
+          ],
+          ans: 3,
+        },
+        {
+          section: "Administrative Distance",
+          q: "Administrative distance is used by a router to:",
+          opts: [
+            "Calculate the hop count metric",
+            "Determine which encryption method to use",
+            "Determine which protocol to use when two protocols provide route info for the same destination",
+            "Measure the bandwidth of a link",
+          ],
+          ans: 2,
+        },
+        {
+          section: "Administrative Distance",
+          q: "An unknown route source has an administrative distance of:",
+          opts: ["0", "100", "200", "255"],
+          ans: 3,
+        },
+        {
+          section: "Administrative Distance",
+          q: "What is the administrative distance of an EIGRP Summary route?",
+          opts: ["1", "5", "20", "90"],
+          ans: 1,
+        },
+      ];
+
+      // ── STATE ──
+      let mode = "learning";
+      let questions = [];
+      let current = 0;
+      let answered = {}; // index → { chosen, correct }
+      let score = 0;
+      let attempted = 0;
+      let rfStreak = 0;
+      let rfStops = 0;
+      let autoTimer = null;
+      let isRetakeMode = false;
+      let originalWrong = [];
+
+      // ── INIT ──
+      document.getElementById("totalQCount").textContent = QUESTIONS.length;
+
+      function startQuiz(selectedMode) {
+        mode = selectedMode;
+        questions = [...QUESTIONS];
+        resetState();
+        showScreen("quiz");
+        setupQuizHeader();
+        renderQuestion();
+      }
+
+      function resetState() {
+        current = 0;
+        answered = {};
+        score = 0;
+        attempted = 0;
+        rfStreak = 0;
+        rfStops = 0;
+        isRetakeMode = false;
+        clearAutoTimer();
+      }
+
+      function retakeWrong() {
+        originalWrong = Object.keys(answered)
+          .filter((i) => !answered[i].correct)
+          .map((i) => questions[i]);
+        if (!originalWrong.length) return;
+        questions = originalWrong;
+        isRetakeMode = true;
+        current = 0;
+        answered = {};
+        score = 0;
+        attempted = 0;
+        rfStreak = 0;
+        rfStops = 0;
+        clearAutoTimer();
+        showScreen("quiz");
+        setupQuizHeader();
+        renderQuestion();
+      }
+
+      function restartSame() {
+        startQuiz(mode);
+      }
+
+      function goHome() {
+        clearAutoTimer();
+        resetState();
+        showScreen("welcome");
+      }
+
+      function setupQuizHeader() {
+        const pill = document.getElementById("modePill");
+        pill.textContent =
+          mode === "learning" ? "📚 Learning" : "⚡ Rapid Fire";
+        pill.className = "mode-pill " + mode;
+        document.getElementById("qTotal").textContent = questions.length;
+        document.getElementById("rfStreakRow").style.display =
+          mode === "rapidfire" ? "flex" : "none";
+      }
+
+      // ── RENDER ──
+      function renderQuestion() {
+        clearAutoTimer();
+        const q = questions[current];
+        const total = questions.length;
+
+        document.getElementById("qNum").textContent = current + 1;
+        document.getElementById("qNumSmall").textContent = `QUESTION ${String(
+          current + 1
+        ).padStart(2, "0")} — ${q.section.toUpperCase()}`;
+        document.getElementById("qText").textContent = q.q;
+        document.getElementById("sectionTag").textContent = `// ${q.section}`;
+        document.getElementById("progressBar").style.width = `${
+          ((current + 1) / total) * 100
+        }%`;
+        document.getElementById(
+          "scoreBadge"
+        ).textContent = `✓ ${score} / ${attempted}`;
+
+        if (mode === "rapidfire") {
+          document.getElementById("rfStreak").textContent = rfStreak;
+          document.getElementById("rfStops").textContent = rfStops;
+        }
+
+        const grid = document.getElementById("optionsGrid");
+        grid.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.opts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+          btn.onclick = () => handleAnswer(i);
+          grid.appendChild(btn);
+        });
+
+        // Restore state if revisiting
+        const prev = answered[current];
+        hideFeedback();
+        document.getElementById("autoBarWrap").classList.remove("show");
+        document.getElementById("btnNext").disabled = true;
+        document.getElementById("btnPrev").disabled = current === 0;
+
+        if (prev !== undefined) {
+          const btns = grid.querySelectorAll(".option-btn");
+          btns.forEach((b) => (b.disabled = true));
+          btns[prev.chosen].classList.add(prev.correct ? "correct" : "wrong");
+          if (!prev.correct) btns[q.ans].classList.add("reveal-correct");
+          showFeedback(prev.correct, q.opts[q.ans]);
+          document.getElementById("btnNext").disabled = current === total - 1;
+          if (mode === "rapidfire") {
+            document.getElementById("rfStatus").textContent = prev.correct
+              ? "✓ Correct — moving on"
+              : "✗ Wrong — click Next to continue";
+          }
+        } else {
+          if (mode === "rapidfire") {
+            document.getElementById("rfStatus").textContent =
+              "Answer to continue";
+          }
+        }
+
+        // Next always enabled in learning if answered, or if we're past current in rapid fire
+        if (mode === "learning" && prev !== undefined && current < total - 1) {
+          document.getElementById("btnNext").disabled = false;
+        }
+        if (current === total - 1 && prev !== undefined) {
+          document.getElementById("btnNext").textContent = "Finish →";
+          document.getElementById("btnNext").disabled = false;
+        } else {
+          document.getElementById("btnNext").textContent = "Next →";
+        }
+      }
+
+      function handleAnswer(chosen) {
+        if (answered[current] !== undefined) return;
+        const q = questions[current];
+        const correct = chosen === q.ans;
+
+        answered[current] = { chosen, correct };
+        attempted++;
+        if (correct) score++;
+
+        const btns = document
+          .getElementById("optionsGrid")
+          .querySelectorAll(".option-btn");
+        btns.forEach((b) => (b.disabled = true));
+        btns[chosen].classList.add(correct ? "correct" : "wrong");
+        if (!correct) btns[q.ans].classList.add("reveal-correct");
+
+        showFeedback(correct, q.opts[q.ans]);
+        document.getElementById(
+          "scoreBadge"
+        ).textContent = `✓ ${score} / ${attempted}`;
+
+        if (mode === "rapidfire") {
+          if (correct) {
+            rfStreak++;
+            document.getElementById("rfStreak").textContent = rfStreak;
+            document.getElementById("rfStatus").textContent =
+              "✓ Correct — moving on…";
+            // auto-advance after 1.2s
+            const bar = document.getElementById("autoBar");
+            const wrap = document.getElementById("autoBarWrap");
+            wrap.classList.add("show");
+            bar.style.transition = "width 1.2s linear";
+            bar.style.width = "0%";
+            void bar.offsetWidth;
+            bar.style.width = "100%";
+            // reverse: shrink to 0
+            bar.style.transition = "none";
+            bar.style.width = "100%";
+            void bar.offsetWidth;
+            bar.style.transition = "width 1.2s linear";
+            bar.style.width = "0%";
+            autoTimer = setTimeout(() => {
+              wrap.classList.remove("show");
+              navigateForward();
+            }, 1200);
+          } else {
+            rfStreak = 0;
+            rfStops++;
+            document.getElementById("rfStreak").textContent = rfStreak;
+            document.getElementById("rfStops").textContent = rfStops;
+            document.getElementById("rfStatus").textContent =
+              "✗ Wrong — click Next to continue";
+            document.getElementById("btnNext").disabled =
+              current === questions.length - 1;
+          }
+        } else {
+          // Learning mode
+          if (current < questions.length - 1) {
+            document.getElementById("btnNext").disabled = false;
+          } else {
+            document.getElementById("btnNext").textContent = "Finish →";
+            document.getElementById("btnNext").disabled = false;
+          }
+        }
+
+        if (current === questions.length - 1) {
+          document.getElementById("btnNext").textContent = "Finish →";
+          document.getElementById("btnNext").disabled = false;
+        }
+      }
+
+      function navigate(dir) {
+        clearAutoTimer();
+        if (dir === 1) navigateForward();
+        else navigateBack();
+      }
+
+      function navigateForward() {
+        if (current >= questions.length - 1) {
+          showResults();
+          return;
+        }
+        current++;
+        renderQuestion();
+      }
+
+      function navigateBack() {
+        if (current <= 0) return;
+        current--;
+        renderQuestion();
+      }
+
+      function clearAutoTimer() {
+        if (autoTimer) {
+          clearTimeout(autoTimer);
+          autoTimer = null;
+        }
+        const wrap = document.getElementById("autoBarWrap");
+        if (wrap) {
+          wrap.classList.remove("show");
+          const bar = document.getElementById("autoBar");
+          if (bar) {
+            bar.style.transition = "none";
+            bar.style.width = "100%";
+          }
+        }
+      }
+
+      // ── FEEDBACK ──
+      function showFeedback(correct, correctAns) {
+        const banner = document.getElementById("feedbackBanner");
+        const icon = document.getElementById("fbIcon");
+        const text = document.getElementById("fbText");
+        banner.className =
+          "feedback show " + (correct ? "correct-fb" : "wrong-fb");
+        icon.textContent = correct ? "✓" : "✗";
+        if (correct) {
+          text.innerHTML = "<strong>Correct!</strong> Well done.";
+        } else {
+          text.innerHTML = `<strong>Incorrect.</strong> The correct answer is: <strong>${correctAns}</strong>`;
+        }
+      }
+
+      function hideFeedback() {
+        document.getElementById("feedbackBanner").className = "feedback";
+      }
+
+      // ── RESULTS ──
+      function showResults() {
+        clearAutoTimer();
+        const total = attempted;
+        const wrong = total - score;
+        const pct = total ? Math.round((score / total) * 100) : 0;
+
+        document.getElementById("scorePct").textContent = pct + "%";
+        document.getElementById("resTotal").textContent = total;
+        document.getElementById("resCorrect").textContent = score;
+        document.getElementById("resWrong").textContent = wrong;
+
+        // Animate ring
+        const circumference = 351.86;
+        const offset = circumference - (pct / 100) * circumference;
+        setTimeout(() => {
+          document.getElementById("ringCircle").style.strokeDashoffset = offset;
+        }, 100);
+
+        // Grade
+        const grade = document.getElementById("gradeTag");
+        if (pct >= 90) {
+          grade.textContent = "🏆 Outstanding!";
+          grade.style.cssText =
+            "background:rgba(0,230,118,0.15);color:var(--correct);border:1px solid rgba(0,230,118,0.3);border-radius:6px;padding:0.5rem 1.5rem;";
+        } else if (pct >= 75) {
+          grade.textContent = "🎯 Great Work!";
+          grade.style.cssText =
+            "background:rgba(0,212,255,0.15);color:var(--accent);border:1px solid rgba(0,212,255,0.3);border-radius:6px;padding:0.5rem 1.5rem;";
+        } else if (pct >= 50) {
+          grade.textContent = "📖 Keep Practicing";
+          grade.style.cssText =
+            "background:rgba(255,165,0,0.12);color:#ffb347;border:1px solid rgba(255,165,0,0.3);border-radius:6px;padding:0.5rem 1.5rem;";
+        } else {
+          grade.textContent = "💡 Review & Retry";
+          grade.style.cssText =
+            "background:rgba(255,69,96,0.12);color:var(--wrong);border:1px solid rgba(255,69,96,0.3);border-radius:6px;padding:0.5rem 1.5rem;";
+        }
+
+        document.getElementById("resultsTitle").textContent = isRetakeMode
+          ? "Retake Complete!"
+          : "Quiz Complete!";
+
+        // Retake wrong button
+        const wrongQs = Object.keys(answered).filter(
+          (i) => !answered[i].correct
+        );
+        document.getElementById("btnRetakeWrong").disabled =
+          wrongQs.length === 0;
+        document.getElementById(
+          "btnRetakeWrong"
+        ).textContent = `🔁 Retake Wrong Only (${wrongQs.length})`;
+
+        // Review list
+        const list = document.getElementById("reviewList");
+        list.innerHTML = "";
+        Object.keys(answered).forEach((idx) => {
+          const i = parseInt(idx);
+          const a = answered[i];
+          const q = questions[i];
+          const item = document.createElement("div");
+          item.className = "review-item " + (a.correct ? "correct" : "wrong");
+          item.innerHTML = `
+      <div class="review-q">${String(i + 1).padStart(2, "0")}. ${q.q}</div>
+      <div class="review-ans ${
+        a.correct ? "review-correct-ans" : "review-wrong-ans"
+      }">
+        ${a.correct ? "✓ Correct: " : "✗ Your answer: "}<em>${
+            q.opts[a.chosen]
+          }</em>
+        ${
+          !a.correct
+            ? `<br><span style="color:var(--correct)">✓ Correct: <em>${
+                q.opts[q.ans]
+              }</em></span>`
+            : ""
+        }
+      </div>
+    `;
+          list.appendChild(item);
+        });
+
+        showScreen("results");
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+    </script>
+  </body>
+</html>
