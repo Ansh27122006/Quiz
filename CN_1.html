@@ -1,0 +1,3315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Computer Networks — MCQ Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #060b18;
+        --bg2: #0d1526;
+        --bg3: #111d35;
+        --card: #0f1c30;
+        --border: #1e3355;
+        --accent: #00e5ff;
+        --accent2: #7b2fff;
+        --accent3: #ff6b35;
+        --green: #00ff88;
+        --red: #ff3d71;
+        --yellow: #ffd600;
+        --text: #e0eeff;
+        --text-dim: #6b8fb0;
+        --text-bright: #ffffff;
+        --glow: 0 0 20px rgba(0, 229, 255, 0.3);
+        --glow-green: 0 0 20px rgba(0, 255, 136, 0.4);
+        --glow-red: 0 0 20px rgba(255, 61, 113, 0.4);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated grid background */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(0, 229, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            ellipse at 30% 20%,
+            rgba(123, 47, 255, 0.06) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 70% 80%,
+            rgba(0, 229, 255, 0.06) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .screen {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ===== HOME SCREEN ===== */
+      #home-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        animation: fadeIn 0.6s ease;
+      }
+
+      .logo-area {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .logo-chip {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+      }
+      .logo-title {
+        font-family: "Orbitron", monospace;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        background: linear-gradient(
+          135deg,
+          var(--text-bright) 0%,
+          var(--accent) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 0.05em;
+      }
+      .logo-sub {
+        font-size: 1rem;
+        color: var(--text-dim);
+        margin-top: 0.75rem;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 0.05em;
+      }
+
+      .mode-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 700px;
+        margin-bottom: 2.5rem;
+      }
+      @media (max-width: 550px) {
+        .mode-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mode-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
+        transition: opacity 0.3s;
+        opacity: 0;
+      }
+      .mode-card.learning::before {
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+      }
+      .mode-card.rapid::before {
+        background: linear-gradient(90deg, var(--accent3), var(--yellow));
+      }
+
+      .mode-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(0, 229, 255, 0.3);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-card.learning:hover {
+        border-color: rgba(123, 47, 255, 0.5);
+        box-shadow: 0 16px 40px rgba(123, 47, 255, 0.15);
+      }
+      .mode-card.rapid:hover {
+        border-color: rgba(255, 107, 53, 0.5);
+        box-shadow: 0 16px 40px rgba(255, 107, 53, 0.15);
+      }
+
+      .mode-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .mode-name {
+        font-family: "Orbitron", monospace;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-bright);
+        letter-spacing: 0.08em;
+        margin-bottom: 0.75rem;
+      }
+      .mode-desc {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        line-height: 1.6;
+      }
+      .mode-badge {
+        display: inline-block;
+        margin-top: 1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+      }
+      .mode-card.learning .mode-badge {
+        background: rgba(123, 47, 255, 0.15);
+        color: var(--accent2);
+        border: 1px solid rgba(123, 47, 255, 0.3);
+      }
+      .mode-card.rapid .mode-badge {
+        background: rgba(255, 107, 53, 0.15);
+        color: var(--accent3);
+        border: 1px solid rgba(255, 107, 53, 0.3);
+      }
+
+      .stats-bar {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--text-dim);
+      }
+      .stats-bar span {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* ===== QUIZ SCREEN ===== */
+      #quiz-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 1.5rem 1.5rem 6rem;
+        animation: fadeIn 0.4s ease;
+      }
+
+      .quiz-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .mode-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.8rem;
+        border-radius: 20px;
+      }
+      .mode-pill.learning {
+        background: rgba(123, 47, 255, 0.15);
+        color: var(--accent2);
+        border: 1px solid rgba(123, 47, 255, 0.3);
+      }
+      .mode-pill.rapid {
+        background: rgba(255, 107, 53, 0.15);
+        color: var(--accent3);
+        border: 1px solid rgba(255, 107, 53, 0.3);
+      }
+
+      .q-counter {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+      }
+      .q-counter strong {
+        color: var(--text-bright);
+        font-size: 1rem;
+      }
+
+      .score-live {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+      .score-live .sc {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .score-live .sw {
+        color: var(--red);
+        font-weight: 700;
+      }
+
+      /* Progress bar */
+      .progress-wrap {
+        height: 4px;
+        background: var(--bg3);
+        border-radius: 4px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        border-radius: 4px;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      }
+
+      /* Question card */
+      .q-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        animation: slideUp 0.35s ease;
+      }
+      .q-topic {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+      }
+      .q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.65;
+        color: var(--text-bright);
+      }
+
+      /* Options */
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+      @media (max-width: 600px) {
+        .options-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .opt-btn {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        color: var(--text);
+        font-family: "Syne", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        line-height: 1.5;
+      }
+      .opt-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: rgba(0, 229, 255, 0.06);
+        transform: translateX(2px);
+        color: var(--text-bright);
+      }
+      .opt-letter {
+        font-family: "Orbitron", monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        background: var(--border);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-dim);
+        transition: all 0.2s;
+        margin-top: 1px;
+      }
+      .opt-btn:hover:not(:disabled) .opt-letter {
+        background: var(--accent);
+        color: #000;
+      }
+
+      .opt-btn.correct {
+        background: rgba(0, 255, 136, 0.08);
+        border-color: var(--green);
+        color: var(--text-bright);
+        animation: correctPulse 0.4s ease;
+      }
+      .opt-btn.correct .opt-letter {
+        background: var(--green);
+        color: #000;
+      }
+
+      .opt-btn.wrong {
+        background: rgba(255, 61, 113, 0.08);
+        border-color: var(--red);
+        color: var(--text-dim);
+        animation: wrongShake 0.4s ease;
+      }
+      .opt-btn.wrong .opt-letter {
+        background: var(--red);
+        color: #fff;
+      }
+
+      .opt-btn.reveal-correct {
+        background: rgba(0, 255, 136, 0.05);
+        border-color: rgba(0, 255, 136, 0.4);
+        color: var(--text-dim);
+      }
+      .opt-btn.reveal-correct .opt-letter {
+        background: rgba(0, 255, 136, 0.3);
+        color: var(--green);
+      }
+
+      .opt-btn:disabled {
+        cursor: default;
+      }
+
+      /* Feedback */
+      .feedback-box {
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+      .feedback-box.correct-fb {
+        display: block;
+        background: rgba(0, 255, 136, 0.07);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        color: var(--green);
+      }
+      .feedback-box.wrong-fb {
+        display: block;
+        background: rgba(255, 61, 113, 0.07);
+        border: 1px solid rgba(255, 61, 113, 0.3);
+        color: #ff8fab;
+      }
+      .feedback-box strong {
+        color: inherit;
+        font-weight: 700;
+      }
+
+      /* Rapid fire stop banner */
+      .rapid-stop {
+        background: rgba(255, 61, 113, 0.1);
+        border: 1px solid rgba(255, 61, 113, 0.4);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        color: #ff8fab;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+      .rapid-stop.show {
+        display: block;
+      }
+      .rapid-stop strong {
+        color: var(--red);
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: 1rem;
+      }
+
+      /* Navigation */
+      .nav-row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .nav-btn {
+        font-family: "Syne", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 0.7rem 1.4rem;
+        border-radius: 8px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        letter-spacing: 0.03em;
+      }
+      .nav-btn.prev {
+        background: var(--bg3);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+      }
+      .nav-btn.prev:hover:not(:disabled) {
+        background: var(--border);
+        color: var(--text);
+      }
+      .nav-btn.next {
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+        font-weight: 800;
+      }
+      .nav-btn.next:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateX(2px);
+        box-shadow: var(--glow);
+      }
+      .nav-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+        transform: none !important;
+      }
+      .nav-btn.home {
+        background: transparent;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        margin-left: auto;
+      }
+      .nav-btn.home:hover {
+        color: var(--text);
+        border-color: var(--text-dim);
+      }
+
+      /* Rapid fire - next button appears after wrong answer */
+      #rapid-next-btn {
+        display: none !important;
+      }
+      #rapid-next-btn.show {
+        display: inline-block !important;
+      }
+
+      /* ===== END SCREEN ===== */
+      #end-screen {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        animation: fadeIn 0.6s ease;
+      }
+
+      .result-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3rem 2.5rem;
+        max-width: 540px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .result-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent2),
+          var(--accent),
+          var(--green)
+        );
+      }
+
+      .result-emoji {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .result-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--text-bright);
+        margin-bottom: 0.5rem;
+      }
+      .result-sub {
+        font-size: 0.9rem;
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+      }
+
+      .score-big {
+        font-family: "Orbitron", monospace;
+        font-size: 4rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--accent), var(--green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+      .score-detail {
+        font-size: 0.88rem;
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .score-detail .g {
+        color: var(--green);
+      }
+      .score-detail .r {
+        color: var(--red);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .stat-item {
+        background: var(--bg3);
+        border-radius: 10px;
+        padding: 1rem 0.75rem;
+        border: 1px solid var(--border);
+      }
+      .stat-val {
+        font-family: "Orbitron", monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-bright);
+        display: block;
+      }
+      .stat-lbl {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .end-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .end-btn {
+        width: 100%;
+        padding: 0.9rem;
+        border-radius: 10px;
+        font-family: "Syne", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        letter-spacing: 0.03em;
+      }
+      .end-btn.primary {
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+      }
+      .end-btn.primary:hover {
+        opacity: 0.9;
+        box-shadow: var(--glow);
+      }
+      .end-btn.wrong-only {
+        background: rgba(255, 61, 113, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(255, 61, 113, 0.3);
+      }
+      .end-btn.wrong-only:hover {
+        background: rgba(255, 61, 113, 0.18);
+      }
+      .end-btn.wrong-only:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+      .end-btn.secondary {
+        background: var(--bg3);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+      }
+      .end-btn.secondary:hover {
+        color: var(--text);
+        border-color: var(--text-dim);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes correctPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.01);
+        }
+      }
+      @keyframes wrongShake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
+        }
+      }
+      @keyframes autoAdvance {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Auto-advance bar for rapid fire correct */
+      .auto-bar-wrap {
+        height: 3px;
+        background: var(--bg3);
+        border-radius: 3px;
+        margin-top: 0.75rem;
+        display: none;
+      }
+      .auto-bar-wrap.show {
+        display: block;
+      }
+      .auto-bar {
+        height: 100%;
+        background: var(--green);
+        border-radius: 3px;
+        width: 0;
+        animation: autoAdvance 1.2s linear forwards;
+      }
+
+      /* Sticky footer nav on mobile */
+      .quiz-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(6, 11, 24, 0.95);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        z-index: 100;
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        max-width: 860px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HOME SCREEN -->
+    <div
+      id="home-screen"
+      class="screen">
+      <div class="logo-area">
+        <div class="logo-chip">MCQ Training System</div>
+        <h1 class="logo-title">Computer<br />Networks</h1>
+        <p class="logo-sub"><span id="total-count">0</span> questions loaded</p>
+      </div>
+
+      <div class="mode-grid">
+        <div
+          class="mode-card learning"
+          onclick="startQuiz('learning')">
+          <span class="mode-icon">📖</span>
+          <div class="mode-name">Learning Mode</div>
+          <p class="mode-desc">
+            Select an answer, see instant feedback with explanation. Navigate
+            freely with Prev / Next.
+          </p>
+          <span class="mode-badge">SELF-PACED</span>
+        </div>
+        <div
+          class="mode-card rapid"
+          onclick="startQuiz('rapid')">
+          <span class="mode-icon">⚡</span>
+          <div class="mode-name">Rapid Fire</div>
+          <p class="mode-desc">
+            Correct → auto-advance. Wrong → stop here, review &amp; continue
+            manually. High pressure!
+          </p>
+          <span class="mode-badge">TIMED AUTO-ADVANCE</span>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        Best Score: <span id="best-score-home">—</span> &nbsp;|&nbsp; Topics:
+        <span>12</span> &nbsp;|&nbsp; Questions:
+        <span id="total-count2">0</span>
+      </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div
+      id="quiz-screen"
+      class="screen hidden">
+      <div class="quiz-header">
+        <div
+          class="mode-pill"
+          id="mode-pill">
+          LEARNING
+        </div>
+        <div class="q-counter">
+          Question <strong id="q-num">1</strong> / <span id="q-total">80</span>
+        </div>
+        <div class="score-live">
+          ✓
+          <span
+            class="sc"
+            id="score-correct"
+            >0</span
+          >
+          &nbsp; ✗
+          <span
+            class="sw"
+            id="score-wrong"
+            >0</span
+          >
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div
+          class="progress-fill"
+          id="progress-fill"
+          style="width: 0%"></div>
+      </div>
+
+      <div
+        class="q-card"
+        id="q-card">
+        <div
+          class="q-topic"
+          id="q-topic">
+          NETWORK BASICS
+        </div>
+        <div
+          class="q-text"
+          id="q-text">
+          Question text here
+        </div>
+      </div>
+
+      <div
+        class="options-grid"
+        id="options-grid"></div>
+
+      <div
+        class="feedback-box"
+        id="feedback-box"></div>
+      <div
+        class="rapid-stop"
+        id="rapid-stop">
+        <strong>⛔ Incorrect Answer</strong>
+        Review the correct answer above, then click <b>Next</b> to continue.
+      </div>
+
+      <div
+        class="auto-bar-wrap"
+        id="auto-bar-wrap">
+        <div
+          class="auto-bar"
+          id="auto-bar"></div>
+      </div>
+
+      <div class="nav-row">
+        <button
+          class="nav-btn prev"
+          id="prev-btn"
+          onclick="navigate(-1)">
+          ← Prev
+        </button>
+        <button
+          class="nav-btn next hidden"
+          id="next-btn"
+          onclick="navigate(1)">
+          Next →
+        </button>
+        <button
+          class="nav-btn next"
+          id="rapid-next-btn"
+          onclick="navigate(1)">
+          Next →
+        </button>
+        <button
+          class="nav-btn home"
+          onclick="goHome()">
+          ⌂ Home
+        </button>
+      </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div
+      id="end-screen"
+      class="screen hidden">
+      <div class="result-card">
+        <span
+          class="result-emoji"
+          id="result-emoji"
+          >🎉</span
+        >
+        <div
+          class="result-title"
+          id="result-title">
+          Quiz Complete!
+        </div>
+        <p
+          class="result-sub"
+          id="result-sub">
+          Here's how you did
+        </p>
+        <div
+          class="score-big"
+          id="score-pct">
+          0%
+        </div>
+        <div class="score-detail">
+          <span
+            class="g"
+            id="end-correct"
+            >0</span
+          >
+          correct &nbsp;·&nbsp;
+          <span
+            class="r"
+            id="end-wrong"
+            >0</span
+          >
+          wrong &nbsp;·&nbsp; <span id="end-total">0</span> total
+        </div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span
+              class="stat-val"
+              id="s-accuracy"
+              >0%</span
+            >
+            <span class="stat-lbl">Accuracy</span>
+          </div>
+          <div class="stat-item">
+            <span
+              class="stat-val"
+              id="s-correct"
+              >0</span
+            >
+            <span class="stat-lbl">Correct</span>
+          </div>
+          <div class="stat-item">
+            <span
+              class="stat-val"
+              id="s-wrong"
+              >0</span
+            >
+            <span class="stat-lbl">Wrong</span>
+          </div>
+        </div>
+        <div class="end-btns">
+          <button
+            class="end-btn primary"
+            onclick="restartQuiz()">
+            🔁 Restart Full Quiz
+          </button>
+          <button
+            class="end-btn wrong-only"
+            id="retake-wrong-btn"
+            onclick="retakeWrong()">
+            ⚠️ Retake Wrong Questions Only
+          </button>
+          <button
+            class="end-btn secondary"
+            onclick="goHome()">
+            ⌂ Back to Home
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const QUESTIONS = [
+        // ─── NETWORK BASICS ───
+        {
+          topic: "Network Basics",
+          q: "What is the main function of an IP address in a network?",
+          opts: [
+            "To identify the physical hardware of a device",
+            "To identify the host and the network to which it is attached",
+            "To encrypt data during transmission",
+            "To connect wireless devices to the internet",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "Which type of device is classified as a 'host' in a computer network?",
+          opts: [
+            "Only servers that provide services",
+            "Only clients that request information",
+            "Any computer connected to a network that participates in communication",
+            "Only routers and switches",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Basics",
+          q: "What is the primary difference between a server and a client in a network?",
+          opts: [
+            "Servers are always faster than clients",
+            "Servers provide information/services; clients request and display information",
+            "Clients are always connected wirelessly",
+            "Servers cannot have IP addresses",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "Which of the following is an example of an intermediary device?",
+          opts: ["Laptop", "Printer", "Switch", "Smartphone"],
+          ans: 2,
+        },
+        {
+          topic: "Network Basics",
+          q: "What criteria is used when choosing network media? (select the most complete answer)",
+          opts: [
+            "Only cost and installation",
+            "Maximum distance, environment, amount of data, cost, and installation",
+            "Only speed and distance",
+            "Cable color and brand",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "What is a Network Interface Card (NIC)?",
+          opts: [
+            "Software that manages network protocols",
+            "A hardware component that enables a device to connect to a network",
+            "A type of firewall",
+            "A wireless router",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "In networking, which term refers to the connection point where a device links to a network?",
+          opts: ["Protocol", "Interface", "Domain", "Topology"],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "What does data get encoded into when transmitted over metal wire cables?",
+          opts: [
+            "Pulses of light",
+            "Electromagnetic waves",
+            "Electrical impulses",
+            "Radio signals",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Basics",
+          q: "A physical port on a networking device serves as:",
+          opts: [
+            "An IP address assignment point",
+            "The entry/exit point for cables connecting devices",
+            "A wireless transmission antenna",
+            "A firewall checkpoint",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Basics",
+          q: "In the context of networks, what is a 'channel'?",
+          opts: [
+            "A TV broadcast signal",
+            "The media that provides the pathway over which messages travel from source to destination",
+            "A type of encryption standard",
+            "A wireless frequency band",
+          ],
+          ans: 1,
+        },
+
+        // ─── NETWORK TYPES ───
+        {
+          topic: "Network Types",
+          q: "What does PAN stand for, and around what is it formed?",
+          opts: [
+            "Public Access Network — formed around a city",
+            "Personal Area Network — formed around a person",
+            "Private Area Network — formed around a building",
+            "Peripheral Access Node — formed around a printer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "Which devices are commonly associated with a PAN?",
+          opts: [
+            "Satellite dishes and fiber modems",
+            "Cordless mice, keyboards, and Bluetooth systems",
+            "Industrial routers and WAP towers",
+            "Hub switches and ethernet cables",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "What is the defining characteristic of a Local Area Network (LAN)?",
+          opts: [
+            "It spans multiple countries",
+            "Devices are connected in a limited area such as a school, lab, or office",
+            "It uses only wireless technology",
+            "It is managed by a government body",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "Which statement about LAN is TRUE?",
+          opts: [
+            "It is a public network regulated by external bodies",
+            "LAN operates at relatively higher speed compared to WAN",
+            "LAN covers very large geographical regions",
+            "External regulatory bodies always control a LAN",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "What is the approximate geographical range of a MAN?",
+          opts: ["Up to 1 km", "5 to 50 km", "100 to 500 km", "Global"],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "What medium is mostly used in MAN networks, resulting in high-speed connectivity?",
+          opts: [
+            "Twisted pair copper",
+            "Coaxial cable",
+            "Optical fibers",
+            "Radio waves",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Types",
+          q: "Which network type spans across a large geographical area?",
+          opts: ["PAN", "LAN", "MAN", "WAN"],
+          ans: 3,
+        },
+        {
+          topic: "Network Types",
+          q: "Which of the following is a DISADVANTAGE of a LAN?",
+          opts: [
+            "Higher cost compared to WAN",
+            "Covers a small geographical region and consumes a lot of power",
+            "Difficult to allow multiple users to share a printer",
+            "Cannot support high-speed data transfer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "A MAN network may use a combination of different topologies such as ring, bus, or star. This is called:",
+          opts: [
+            "Hybrid topology",
+            "Dynamic topology",
+            "Mesh topology",
+            "Layered topology",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Network Types",
+          q: "Which type of network creates a DIRECT connection between exactly two devices?",
+          opts: [
+            "Multipoint network",
+            "Broadcast network",
+            "Point-to-Point network",
+            "Peer-to-Peer network",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Types",
+          q: "In a broadcast network, data travels:",
+          opts: [
+            "Only between specific devices",
+            "In one direction from the sender to all potential receivers",
+            "Bidirectionally between all nodes",
+            "Only through routers",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Types",
+          q: "A multipoint network allows more than two devices to share a single communication link. The channel capacity is shared:",
+          opts: [
+            "Only wirelessly",
+            "Spatially (at the same time) or temporally (in turns)",
+            "Only through a dedicated switch",
+            "Via collision domains only",
+          ],
+          ans: 1,
+        },
+
+        // ─── NETWORK ARCHITECTURE ───
+        {
+          topic: "Network Architecture",
+          q: "In a Peer-to-Peer (P2P) network, each computer:",
+          opts: [
+            "Has a dedicated server role only",
+            "Has a dedicated client role only",
+            "Functions as both server and client simultaneously",
+            "Is controlled by a central domain controller",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Architecture",
+          q: "In a Client/Server network, what is the 'server'?",
+          opts: [
+            "A less powerful workstation",
+            "A centralized, powerful computer that is the hub of the network",
+            "A wireless access point",
+            "A network repeater",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Architecture",
+          q: "Which network architecture COMBINES elements of client-server AND peer-to-peer?",
+          opts: [
+            "Bus network",
+            "Hybrid network",
+            "Ring network",
+            "Broadcast network",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Architecture",
+          q: "What is an Intranet?",
+          opts: [
+            "A network accessible by anyone in the world",
+            "A private network of LANs/WANs belonging to an organization, accessible only by its members",
+            "A network connecting businesses to their suppliers only",
+            "A type of VPN used for gaming",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Architecture",
+          q: "Which of these is an example of an EXTRANET?",
+          opts: [
+            "Employees accessing internal company files on-site",
+            "A company providing secure access to outside suppliers and contractors",
+            "The public internet",
+            "A home wireless network",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Architecture",
+          q: "In the intranet/extranet model, which group has access to the EXTRANET?",
+          opts: [
+            "Only company employees",
+            "Only the public internet users",
+            "Suppliers, customers, and collaborators",
+            "Government agencies only",
+          ],
+          ans: 2,
+        },
+
+        // ─── TOPOLOGIES ───
+        {
+          topic: "Topologies",
+          q: "What is the PHYSICAL topology of a network?",
+          opts: [
+            "The logical way data accesses the medium",
+            "The actual layout of the network and its transmission media",
+            "The number of devices connected",
+            "The protocol used for data transfer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "What is the LOGICAL topology of a network?",
+          opts: [
+            "The physical cable layout",
+            "The manner in which data accesses the transmission medium and how packets are transmitted",
+            "The geographic location of devices",
+            "The number of broadcast domains",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In a mesh topology with N devices, what is the formula for the total number of dedicated links required?",
+          opts: ["N × 2", "N(N-1)/2", "N²", "N-1"],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In a mesh topology with 5 devices, how many dedicated links are needed?",
+          opts: ["5", "8", "10", "12"],
+          ans: 2,
+        },
+        {
+          topic: "Topologies",
+          q: "In a mesh topology, how many ports does each device require if N devices are connected?",
+          opts: ["N", "N+1", "N-1", "N/2"],
+          ans: 2,
+        },
+        {
+          topic: "Topologies",
+          q: "In a star topology, all devices connect to:",
+          opts: [
+            "Each other directly",
+            "A single central networking device (hub, switch, or router)",
+            "Two neighboring devices",
+            "A backbone cable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In a star topology with N devices, how many cables are needed?",
+          opts: ["N/2", "N-1", "N", "N²"],
+          ans: 2,
+        },
+        {
+          topic: "Topologies",
+          q: "What is the main DISADVANTAGE of a star topology?",
+          opts: [
+            "It requires too many cables",
+            "If the central hub fails, the whole system crashes",
+            "It cannot support multiple devices",
+            "It is too expensive to maintain",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In a bus topology, data is transmitted:",
+          opts: [
+            "Bidirectionally between all nodes",
+            "Only from one end to another in a single direction (no bidirectional feature)",
+            "In a ring pattern through each device",
+            "Via a central switch to each device",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In a bus topology with N devices, how many backbone cables are needed?",
+          opts: ["N", "N-1", "1", "2"],
+          ans: 2,
+        },
+        {
+          topic: "Topologies",
+          q: "What is a security drawback of bus topology?",
+          opts: [
+            "High cost of installation",
+            "Difficult to add new devices",
+            "Security is very low",
+            "Too many cables required",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Topologies",
+          q: "In ring topology, each device connects to exactly:",
+          opts: [
+            "One neighboring device",
+            "Two neighboring devices",
+            "All other devices",
+            "The central hub",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In ring topology, one station is known as the ______ station which manages all operations.",
+          opts: ["Master", "Monitor", "Primary", "Gateway"],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In ring topology, 'Early token release' releases the token:",
+          opts: [
+            "After the acknowledgment is received from the receiver",
+            "Just after transmitting the data",
+            "When a collision is detected",
+            "When the ring is idle for 1 second",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "In ring topology, when is 'Delay token release' used?",
+          opts: [
+            "The token is released just after transmitting data",
+            "The token is released after acknowledgment is received from the receiver",
+            "The token is released after a fixed timer",
+            "The token is never released automatically",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "Tree topology is a variation of which other topology?",
+          opts: [
+            "Mesh topology",
+            "Bus topology",
+            "Ring topology",
+            "Star topology",
+          ],
+          ans: 3,
+        },
+        {
+          topic: "Topologies",
+          q: "In tree topology, the data flow is described as:",
+          opts: [
+            "Bidirectional simultaneously",
+            "Hierarchical — from central hub to secondary hub to devices, or vice versa",
+            "Random between any two devices",
+            "Point-to-point only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Topologies",
+          q: "What is the main disadvantage of tree topology?",
+          opts: [
+            "It only supports 5 devices",
+            "If the central hub fails, the entire system fails; cabling cost is high",
+            "Data travels too slowly",
+            "It cannot support internet connectivity",
+          ],
+          ans: 1,
+        },
+
+        // ─── COLLISION & BROADCAST DOMAINS ───
+        {
+          topic: "Domains",
+          q: "When do collisions occur in an Ethernet network?",
+          opts: [
+            "When two devices simultaneously try to send data on shared media",
+            "When a router receives too many packets",
+            "When DNS lookup fails",
+            "When a switch has too many MAC addresses",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Domains",
+          q: "A Collision Domain is:",
+          opts: [
+            "Any segment where broadcasts are forwarded",
+            "Any network segment in which collisions can happen",
+            "A router table for collision prevention",
+            "A type of security boundary",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Domains",
+          q: "A Broadcast Domain consists of:",
+          opts: [
+            "All devices connected to the internet",
+            "All devices that will receive any broadcast packet from any device in the network segment",
+            "Only devices with the same IP subnet",
+            "Only devices connected to the same router",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Domains",
+          q: "What happens when a router receives a broadcast packet?",
+          opts: [
+            "It forwards it to all connected networks",
+            "It drops it and sends an error message",
+            "It does NOT forward it to the next network segment",
+            "It converts it to a unicast packet",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Domains",
+          q: "Which device BREAKS collision domains but does NOT break broadcast domains?",
+          opts: ["Router", "Repeater", "Switch", "Hub"],
+          ans: 2,
+        },
+        {
+          topic: "Domains",
+          q: "Which device breaks BOTH collision domains AND broadcast domains?",
+          opts: ["Hub", "Switch", "Repeater", "Router"],
+          ans: 3,
+        },
+        {
+          topic: "Domains",
+          q: "As the number of devices in a broadcast domain increases:",
+          opts: [
+            "Network performance improves",
+            "The number of broadcasts increases and network quality decreases",
+            "Collisions decrease",
+            "Bandwidth automatically increases",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Domains",
+          q: "In a collision domain, every port on a router is in:",
+          opts: [
+            "The same broadcast domain",
+            "A separate collision domain but same broadcast domain",
+            "A separate broadcast domain",
+            "A shared collision domain",
+          ],
+          ans: 2,
+        },
+
+        // ─── OSI MODEL ───
+        {
+          topic: "OSI Model",
+          q: "OSI stands for:",
+          opts: [
+            "Open Source Interface",
+            "Open Systems Interconnection",
+            "Operational Systems Integration",
+            "Optical Signals Interface",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which organization developed the OSI model?",
+          opts: [
+            "IEEE",
+            "IETF",
+            "ISO (International Organization for Standardization)",
+            "ITU-T",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The OSI model was first introduced in:",
+          opts: ["Early 1960s", "Late 1970s", "Mid 1990s", "Early 2000s"],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "The OSI model was specified in ISO standard number:",
+          opts: ["7498", "8802", "9001", "802.3"],
+          ans: 0,
+        },
+        {
+          topic: "OSI Model",
+          q: "First ISO certification adapted to OSI was given in year:",
+          opts: ["1975", "1980", "1984", "1990"],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "How many layers does the OSI model have?",
+          opts: ["4", "5", "6", "7"],
+          ans: 3,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which layer is known as the 'Heart of OSI'?",
+          opts: [
+            "Network Layer",
+            "Session Layer",
+            "Transport Layer",
+            "Application Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "Layer 1 of OSI is responsible for:",
+          opts: [
+            "Moving frames from hop to hop",
+            "Moving individual bits from one node to the next",
+            "Delivering packets from source to destination",
+            "Process-to-process delivery",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Data Link Layer (Layer 2) is responsible for:",
+          opts: [
+            "Moving individual bits",
+            "Moving frames from one hop (node) to the next",
+            "Delivering packets source-to-destination",
+            "Providing services to the user",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Network Layer (Layer 3) is responsible for:",
+          opts: [
+            "Moving frames hop-to-hop",
+            "Moving bits over a physical medium",
+            "Delivery of individual packets from source host to destination host",
+            "Process-to-process message delivery",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Transport Layer (Layer 4) tasks include: (pick the most complete answer)",
+          opts: [
+            "Moving bits between hops",
+            "Identifying services, segmentation, sequencing, reassembly, error correction, flow control",
+            "Encrypting and compressing data",
+            "Managing file transfers between applications",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Session Layer (Layer 5) is responsible for:",
+          opts: [
+            "Data encryption and translation",
+            "Moving packets from source to destination",
+            "Dialog control and synchronization; establishing, maintaining, and terminating sessions",
+            "Providing services to end users",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Presentation Layer (Layer 6) is responsible for:",
+          opts: [
+            "Physical bit transmission",
+            "Hop-to-hop frame delivery",
+            "Translation, compression, and encryption of data",
+            "Dialog control and token management",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Application Layer (Layer 7) is responsible for:",
+          opts: [
+            "Data encoding into electrical signals",
+            "Providing services to the user",
+            "Moving packets between networks",
+            "Segmenting large data streams",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which layer is responsible for 'Source-to-destination delivery' (end-to-end)?",
+          opts: [
+            "Physical Layer",
+            "Data Link Layer",
+            "Network Layer",
+            "Transport Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which OSI layer's PDU (Protocol Data Unit) is called a 'Segment' (for TCP)?",
+          opts: ["Physical", "Data Link", "Network", "Transport"],
+          ans: 3,
+        },
+        {
+          topic: "OSI Model",
+          q: "The PDU at the Network layer is called:",
+          opts: ["Bits", "Frames", "Packets", "Segments"],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The PDU at the Data Link layer is called:",
+          opts: ["Bits", "Frames", "Packets", "Segments"],
+          ans: 1,
+        },
+        {
+          topic: "OSI Model",
+          q: "At the Physical layer, data is added as what header during encapsulation?",
+          opts: ["IP Header", "MAC Header", "TCP Header", "Converted to bits"],
+          ans: 3,
+        },
+        {
+          topic: "OSI Model",
+          q: "Examples of Session Layer protocols include:",
+          opts: [
+            "TCP, UDP",
+            "TLS, SSL, MIME",
+            "RPC, SQL, NFS, NetBIOS",
+            "FTP, SMTP, DNS",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "The Presentation layer protocol used for audio/video compression is:",
+          opts: ["FTP", "SSL", "MPEG", "DNS"],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which layer handles 'Segmentation and Reassembly' of data?",
+          opts: [
+            "Network Layer",
+            "Session Layer",
+            "Transport Layer",
+            "Presentation Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "Which layers of the OSI model are considered 'Upper/Software layers'?",
+          opts: ["Layers 1-3", "Layers 1-4", "Layers 5-7", "Layers 2-6"],
+          ans: 2,
+        },
+        {
+          topic: "OSI Model",
+          q: "Layers 1-4 of the OSI model relate to:",
+          opts: [
+            "User applications",
+            "Communications technology",
+            "Security protocols",
+            "Routing algorithms",
+          ],
+          ans: 1,
+        },
+
+        // ─── PROTOCOLS ───
+        {
+          topic: "Protocols",
+          q: "What is the port number for TELNET?",
+          opts: ["21", "23", "25", "80"],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "FTP uses which port numbers for data and control respectively?",
+          opts: [
+            "21 data, 20 control",
+            "20 data, 21 control",
+            "22 data, 23 control",
+            "69 data, 70 control",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "What is the port number for TFTP?",
+          opts: ["21", "23", "53", "69"],
+          ans: 3,
+        },
+        {
+          topic: "Protocols",
+          q: "SMTP (Simple Mail Transfer Protocol) uses port number:",
+          opts: ["25", "53", "110", "143"],
+          ans: 0,
+        },
+        {
+          topic: "Protocols",
+          q: "SNMP uses port numbers:",
+          opts: [
+            "53 and 67",
+            "80 and 443",
+            "161 (TCP) and 162 (UDP)",
+            "23 and 25",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "DNS (Domain Name System) uses port number:",
+          opts: ["25", "53", "67", "80"],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "DHCP uses port numbers:",
+          opts: ["25 and 26", "53 and 54", "67 and 68", "80 and 443"],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "What does DHCP do?",
+          opts: [
+            "Translates domain names to IP addresses",
+            "Assigns IP addresses to hosts dynamically",
+            "Manages file transfers",
+            "Handles email routing",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "What does DNS translate?",
+          opts: [
+            "IP addresses to MAC addresses",
+            "Domain names to corresponding IP addresses",
+            "Data packets to frames",
+            "Port numbers to protocols",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "TCP is described as:",
+          opts: [
+            "Connectionless and unreliable",
+            "Connection-oriented, ensuring reliable transmission of packets",
+            "Only used for video streaming",
+            "A physical layer protocol",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "UDP (User Datagram Protocol) is described as:",
+          opts: [
+            "Connection-oriented and reliable",
+            "Connectionless — facilitates exchange of messages without guaranteed delivery",
+            "Only used for file transfers",
+            "A network layer protocol",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "ARP (Address Resolution Protocol) is used to:",
+          opts: [
+            "Assign IP addresses to devices",
+            "Associate IP addresses to MAC addresses",
+            "Resolve domain names",
+            "Route packets between networks",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "What does ICMP do?",
+          opts: [
+            "Assign dynamic IP addresses",
+            "Route traffic using shortest path labels",
+            "Communicate information about network connectivity issues back to the source",
+            "Manage email delivery",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "MPLS routes traffic using:",
+          opts: [
+            "IP addresses",
+            "MAC addresses",
+            "Labels, rather than network addresses",
+            "Domain names",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "SSL and TLS are used for:",
+          opts: [
+            "Routing between networks",
+            "Email formatting",
+            "Web communications integrity and security (cryptographic protocols)",
+            "Dynamic IP assignment",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "TELNET is primarily used for:",
+          opts: [
+            "File transfers",
+            "Terminal emulation and managing files/devices on the internet; initial setup of switches",
+            "Email delivery",
+            "DNS resolution",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "Which protocol is the 'stripped-down version of FTP' that is used when you know exactly what file you want?",
+          opts: ["SMTP", "SNMP", "TFTP", "HTTP"],
+          ans: 2,
+        },
+        {
+          topic: "Protocols",
+          q: "SMTP uses a process called ______ to move email across networks.",
+          opts: [
+            "Store and forward",
+            "Packet switching",
+            "Token passing",
+            "Circuit switching",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Protocols",
+          q: "SNMP gathers data by:",
+          opts: [
+            "Using static configuration files",
+            "Polling devices on the network from a management station at fixed or random intervals",
+            "Broadcasting data requests to all devices",
+            "Connecting directly to each device manually",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Protocols",
+          q: "Which protocol suite is preferred over OSI in real-world networks because it is simpler and practical?",
+          opts: ["NetBIOS", "TCP/IP", "MPLS", "NetBEUI"],
+          ans: 1,
+        },
+
+        // ─── TCP/IP MODEL ───
+        {
+          topic: "TCP/IP Model",
+          q: "TCP/IP was developed by (its roots are with):",
+          opts: [
+            "ISO (International Standards Organization)",
+            "IEEE (Institute of Electrical and Electronics Engineers)",
+            "US Department of Defense (DoD)",
+            "European Union Telecom Standards Body",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "The original TCP/IP model has how many layers?",
+          opts: ["3", "4", "5", "7"],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "When compared to OSI, the updated TCP/IP model has how many layers?",
+          opts: ["4", "5", "6", "7"],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "Which layer in TCP/IP corresponds to both Session AND Presentation layers of OSI?",
+          opts: [
+            "Transport Layer",
+            "Internet Layer",
+            "Application Layer",
+            "Network Access Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "In TCP/IP, which layer handles IP, ICMP, IGMP, ARP?",
+          opts: [
+            "Application Layer",
+            "Transport Layer",
+            "Internet (Network) Layer",
+            "Network Access Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "TCP/IP follows which approach when compared to OSI?",
+          opts: [
+            "Vertical approach",
+            "Horizontal approach",
+            "Hierarchical approach",
+            "Layered security approach",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "In the TCP/IP model, the Transport layer provides:",
+          opts: [
+            "Only connection-oriented services",
+            "Only connectionless services",
+            "Both TCP (connection-oriented) and UDP (connectionless) services",
+            "Routing between networks",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "Which statement about OSI vs TCP/IP is TRUE?",
+          opts: [
+            "TCP/IP is less reliable than OSI",
+            "OSI is the model used on the internet today",
+            "TCP/IP protocols cannot be replaced easily; OSI protocols are easier to replace with technology changes",
+            "TCP/IP has strict layer boundaries like OSI",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "In which TCP/IP model address type are 'Port addresses' used?",
+          opts: [
+            "Application layer",
+            "Transport layer (Segment)",
+            "Network layer (Datagram)",
+            "Data link layer (Frame)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "The Internet Society (ISOC), IAB, IETF, and IRTF are organizations involved in:",
+          opts: [
+            "Manufacturing networking hardware",
+            "Promoting and creating standards for the internet and TCP/IP protocol",
+            "Managing commercial internet service providers",
+            "Regulating broadcast television",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "Which standards organization is responsible for standards for electrical wiring, connectors, and 19-inch racks?",
+          opts: [
+            "IEEE",
+            "EIA (Electronic Industries Alliance)",
+            "TIA",
+            "ITU-T",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "Which standards body develops communication standards for radio equipment, VoIP devices, and satellite communications?",
+          opts: [
+            "IEEE",
+            "EIA",
+            "TIA (Telecommunications Industry Association)",
+            "ITU-T",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "IEEE stands for:",
+          opts: [
+            "International Electrical and Electronics Engineers",
+            "Institute of Electrical and Electronics Engineers",
+            "International Engineering and Electronics Exchange",
+            "Integrated Electrical Engineering Entity",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "TCP/IP Model",
+          q: "The ITU-T (International Telecommunications Union — Telecom Standardization) defines standards for:",
+          opts: [
+            "Wireless LAN security only",
+            "Video compression, IPTV, and broadband communications like DSL",
+            "Network operating systems",
+            "Internet DNS infrastructure",
+          ],
+          ans: 1,
+        },
+
+        // ─── TRANSMISSION MEDIA ───
+        {
+          topic: "Transmission Media",
+          q: "Guided (wired) media is also referred to as:",
+          opts: [
+            "Unbounded transmission media",
+            "Wireless transmission media",
+            "Bounded transmission media",
+            "Free space media",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which of the following is NOT a type of guided media?",
+          opts: [
+            "Twisted Pair Cable",
+            "Coaxial Cable",
+            "Optical Fiber Cable",
+            "Infrared waves",
+          ],
+          ans: 3,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Twisted pair cable consists of:",
+          opts: [
+            "A single conductor surrounded by insulation",
+            "Two separately insulated conductor wires wound about each other",
+            "A hollow copper tube with an inner conductor",
+            "Glass fibers surrounded by cladding",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "UTP (Unshielded Twisted Pair) is LEAST expensive and used for:",
+          opts: [
+            "Fiber optic backbone networks",
+            "Telephonic applications and short-distance transmission",
+            "Long-haul trunks",
+            "Satellite communication",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "What is a KEY DISADVANTAGE of UTP compared to STP?",
+          opts: [
+            "More expensive",
+            "Harder to install",
+            "Susceptible to external interference; lower capacity and performance",
+            "Only supports very low data rates",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "STP (Shielded Twisted Pair) has a special jacket made of copper braid or foil shield to:",
+          opts: [
+            "Increase cable length",
+            "Block external interference",
+            "Reduce cable weight",
+            "Improve optical clarity",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which cable type is used to connect a computer to a switch?",
+          opts: [
+            "Crossover cable",
+            "Fiber optic cable",
+            "Straight-through cable",
+            "Coaxial cable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which cable type is used to connect two computers directly to each other?",
+          opts: [
+            "Straight-through cable",
+            "Crossover cable",
+            "Fiber optic cable",
+            "Rollover cable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "A crossover cable is needed when connecting two devices that use:",
+          opts: [
+            "Different pin configurations",
+            "The same wires to send and receive data",
+            "Different protocols",
+            "Different IP address ranges",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Coaxial cable transmits information in which two modes?",
+          opts: [
+            "Unicast and multicast",
+            "Simplex and duplex",
+            "Baseband (dedicated bandwidth) and Broadband (split bandwidth)",
+            "Guided and unguided",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Optical fiber uses the concept of:",
+          opts: [
+            "Electrical impedance",
+            "Magnetic induction",
+            "Reflection of light through a glass or plastic core",
+            "Electromagnetic field propagation",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "In an optical fiber cable, what is the 'cladding'?",
+          opts: [
+            "The outer plastic jacket protecting the fiber",
+            "The concentric layer of glass surrounding the core that produces lower refractive index to cause reflection",
+            "The connector at the end of the fiber",
+            "The transmission protocol used",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which of these is an ADVANTAGE of optical fiber cable?",
+          opts: [
+            "Lower cost than copper",
+            "Susceptible to electromagnetic interference",
+            "Greater capacity (hundreds of Gbps), smaller size, lower attenuation, greater repeater spacing",
+            "Easier to install than twisted pair",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "What does WDM stand for in the context of optical fiber?",
+          opts: [
+            "Wired Data Multiplexer",
+            "Wavelength Division Multiplexer",
+            "Wide Data Management",
+            "Wireless Data Module",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Unguided media is also referred to as:",
+          opts: [
+            "Bounded transmission media",
+            "Guided transmission media",
+            "Wireless or Unbounded transmission media",
+            "Coaxial transmission media",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "The frequency range of INFRARED waves is:",
+          opts: [
+            "3KHz – 1GHz",
+            "1GHz – 300GHz",
+            "300GHz – 400THz",
+            "400THz – 900THz",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "What is a key LIMITATION of infrared waves?",
+          opts: [
+            "Too expensive to deploy",
+            "They cannot penetrate obstacles like walls and can only be used for short range",
+            "They cause electromagnetic interference",
+            "They have too low a frequency for data transmission",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "RADIO WAVES have a frequency range of:",
+          opts: [
+            "3KHz – 1GHz",
+            "1GHz – 300GHz",
+            "300GHz – 400THz",
+            "Below 3KHz",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which type of wireless signal CAN penetrate buildings and travel large distances?",
+          opts: ["Infrared", "Microwaves", "Radio waves", "Ultraviolet light"],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "MICROWAVES are described as 'line-of-sight' transmission, meaning:",
+          opts: [
+            "They can penetrate any obstacle",
+            "Both sending and receiving antennas must be properly aligned",
+            "They travel in all directions like radio waves",
+            "They operate at very low frequencies",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Microwaves have a frequency range of:",
+          opts: [
+            "3KHz – 1GHz",
+            "1GHz – 300GHz",
+            "300GHz – 400THz",
+            "Below 1GHz",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Unlike radio waves, microwaves are:",
+          opts: [
+            "Omnidirectional (all directions)",
+            "Bidirectional",
+            "Unidirectional (one direction) — used for unicast communication like radar and satellite",
+            "Broadcast to all receivers",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Microwaves can carry how many voice channels simultaneously?",
+          opts: ["100", "1,000", "25,000", "1,000,000"],
+          ans: 2,
+        },
+        {
+          topic: "Transmission Media",
+          q: "Which wireless medium is used for TV remotes, mobile phones, and personal computers?",
+          opts: ["Microwaves", "Radio waves", "Infrared", "Bluetooth only"],
+          ans: 2,
+        },
+
+        // ─── ETHERNET ───
+        {
+          topic: "Ethernet",
+          q: "Ethernet is defined under which IEEE standard?",
+          opts: ["IEEE 802.11", "IEEE 802.3", "IEEE 802.15", "IEEE 802.1Q"],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "Ethernet operates at which OSI layers?",
+          opts: [
+            "Physical and Network layers",
+            "Session and Transport layers",
+            "Data Link layer and Physical layer",
+            "Application and Presentation layers",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "Standard Ethernet transfers data at:",
+          opts: ["1 Mbps", "10 Mbps", "100 Mbps", "1000 Mbps"],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "Fast Ethernet transfers data at:",
+          opts: ["10 Mbps", "100 Mbps", "1000 Mbps", "10,000 Mbps"],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "Gigabit Ethernet transfers data at:",
+          opts: ["100 Mbps", "1 Gbps (1000 Mbps)", "10 Gbps", "100 Gbps"],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "Ten-Gigabit Ethernet is generally used for:",
+          opts: [
+            "Home networks",
+            "Backbones in high-end applications requiring high data rates",
+            "Simple peer-to-peer connections",
+            "Wireless mobile networks",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "In Ethernet cable naming (e.g., 1000Base-T), what does 'Base' refer to?",
+          opts: [
+            "The speed in Mbps",
+            "Baseband signaling — signals transmitted without modulation",
+            "The base layer of the OSI model",
+            "The base price of the cable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "In Ethernet cable naming, what does 'T' typically stand for?",
+          opts: [
+            "Transfer rate",
+            "Transmission power",
+            "Twisted-pair copper cabling",
+            "Termination point",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "1000Base-SX uses fiber with a wavelength of:",
+          opts: ["1310 nm", "1550 nm", "850 nm", "630 nm"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "1000Base-LX uses a wavelength of ______ for single-mode fiber.",
+          opts: ["850 nm", "1310 nm", "1550 nm", "630 nm"],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "CSMA/CD stands for:",
+          opts: [
+            "Carrier Sense Multiple Access / Collision Detection",
+            "Circuit Switching Multiple Access / Connection Detection",
+            "Controlled Signal Multiple Access / Channel Detection",
+            "Carrier Signal Modulation Access / Collision Delay",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Ethernet",
+          q: "CSMA/CD is used in:",
+          opts: [
+            "Full-duplex Ethernet with switches",
+            "Half-duplex, shared medium Ethernet (hubs/bus topology)",
+            "Fiber optic connections only",
+            "Token ring networks",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "Full-duplex Ethernet communications with switches:",
+          opts: [
+            "Still require CSMA/CD",
+            "Do NOT require CSMA/CD for access control",
+            "Require token passing",
+            "Only work over coaxial cable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "What is the MINIMUM Ethernet frame size?",
+          opts: ["32 bytes", "46 bytes", "64 bytes", "128 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "What is the MAXIMUM standard Ethernet frame size (excluding preamble)?",
+          opts: ["512 bytes", "1000 bytes", "1518 bytes", "9000 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "A frame less than 64 bytes is called:",
+          opts: [
+            "Jumbo frame",
+            "Baby giant frame",
+            "Collision fragment or runt frame",
+            "Super frame",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "The Preamble field in an Ethernet frame is used for:",
+          opts: [
+            "Error detection using CRC",
+            "Synchronization between sending and receiving devices",
+            "Identifying the upper layer protocol",
+            "MAC address storage",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "The FCS (Frame Check Sequence) field uses what technique for error detection?",
+          opts: [
+            "Parity bit",
+            "Checksum",
+            "CRC (Cyclic Redundancy Check)",
+            "Hamming code",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "The Type/Length field in an Ethernet frame identifies:",
+          opts: [
+            "The frame size in bytes",
+            "The upper layer protocol encapsulated (e.g., 0x800 for IPv4)",
+            "The source MAC address",
+            "The destination IP address",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "An Ethernet MAC address consists of how many bits?",
+          opts: ["16 bits", "32 bits", "48 bits", "64 bits"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "An Ethernet MAC address is expressed as how many hexadecimal digits?",
+          opts: ["8", "10", "12", "16"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "The OUI (Organizationally Unique Identifier) in a MAC address is:",
+          opts: [
+            "The last 6 hexadecimal digits assigned by the device",
+            "The first 6 hexadecimal digits (24 bits) identifying the manufacturer",
+            "The middle 4 hex digits",
+            "The full 48-bit address",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "A MAC address is sometimes called a 'burned-in address (BIA)' because:",
+          opts: [
+            "It can never be changed under any circumstances",
+            "It is hard coded into ROM on the NIC",
+            "It gets physically engraved on the chip",
+            "It burns the network signal",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "The broadcast MAC address is:",
+          opts: [
+            "00:00:00:00:00:00",
+            "01:00:5E:xx:xx:xx",
+            "FF:FF:FF:FF:FF:FF",
+            "AA:BB:CC:DD:EE:FF",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "To determine if a MAC address is unicast or multicast, you check:",
+          opts: [
+            "The last hexadecimal digit",
+            "The 8th bit (I/G bit) of the first octet",
+            "The total length of the address",
+            "The OUI portion of the address",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "If the I/G bit (8th bit of first octet) is 0, the MAC address is:",
+          opts: ["Broadcast", "Multicast", "Unicast", "Reserved"],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "The MAC address 47:20:1B:2E:08:EE is what type? (7 in binary is 0111)",
+          opts: [
+            "Unicast (even second digit)",
+            "Multicast (odd second digit)",
+            "Broadcast",
+            "Cannot be determined",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "The LLC sublayer of the Data Link layer (IEEE 802.2):",
+          opts: [
+            "Manages physical bit transmission",
+            "Provides a single data link control protocol for all IEEE LANs, making MAC transparent",
+            "Handles routing between networks",
+            "Manages IP address assignment",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "The MAC sublayer is responsible for:",
+          opts: [
+            "Routing packets between networks",
+            "Data encapsulation and media access control",
+            "Session establishment",
+            "DNS resolution",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Ethernet",
+          q: "ARP and DHCP are protocols that depend on ______ to function.",
+          opts: [
+            "Unicast communication",
+            "Point-to-point links",
+            "Broadcast communication",
+            "Multicast groups",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Ethernet",
+          q: "The Data field in an Ethernet frame can hold:",
+          opts: [
+            "Fixed 512 bytes",
+            "46 to 1500 bytes of encapsulated higher-layer data",
+            "Exactly 64 bytes",
+            "Unlimited data",
+          ],
+          ans: 1,
+        },
+
+        // ─── CONNECTING DEVICES ───
+        {
+          topic: "Connecting Devices",
+          q: "A REPEATER operates at which OSI layer?",
+          opts: [
+            "Data Link Layer",
+            "Network Layer",
+            "Physical Layer",
+            "Transport Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What does a repeater do to a signal?",
+          opts: [
+            "Amplifies whatever comes in (including noise)",
+            "Regenerates the signal bit-by-bit at original strength (does NOT amplify)",
+            "Filters out bad frames",
+            "Routes packets to destinations",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "For Ethernet 10Base5, the maximum segment length is ______ and using 4 repeaters extends it to ______.",
+          opts: ["185m / 925m", "500m / 2500m", "100m / 500m", "1000m / 5000m"],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A HUB is also known as:",
+          opts: [
+            "Multiport bridge",
+            "Multiport router",
+            "Multiport repeater",
+            "Layer 3 switch",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What does a hub do when it receives a bit on one port?",
+          opts: [
+            "Forwards it only to the intended destination",
+            "Drops it if no address match",
+            "Broadcasts it to ALL other ports without filtering",
+            "Stores it in a forwarding table",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What type of hub ONLY connects wires without regenerating the signal?",
+          opts: ["Active hub", "Smart hub", "Passive hub", "Managed hub"],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "An entire hub forms:",
+          opts: [
+            "Multiple separate collision domains",
+            "Multiple separate broadcast domains",
+            "A single collision domain AND a single broadcast domain",
+            "A VLAN",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What is a disadvantage of using hubs?",
+          opts: [
+            "Too expensive for small networks",
+            "Bandwidth is shared by all hosts; individual segment collision domains become one large collision domain",
+            "Cannot connect devices within 100 meters",
+            "Hubs cannot support twisted pair cables",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A BRIDGE operates at which OSI layer?",
+          opts: [
+            "Physical Layer",
+            "Data Link Layer (MAC Address Level)",
+            "Network Layer",
+            "Transport Layer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What key capability does a bridge have that a repeater does NOT?",
+          opts: [
+            "Signal regeneration",
+            "Wireless connectivity",
+            "Filtering (checking destination address to forward or drop frames)",
+            "IP routing",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A bridge table (forwarding table) entry contains:",
+          opts: [
+            "IP address, interface, TTL",
+            "Node MAC address, bridge interface, and record creation time",
+            "Domain name, IP address, VLAN ID",
+            "Protocol type, port number, timestamp",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A 'Transparent Bridge' is also called:",
+          opts: [
+            "Source Routing Bridge",
+            "Learning Bridge",
+            "Token Bridge",
+            "Active Bridge",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "Source Routing Bridges are used in which type of network?",
+          opts: [
+            "Ethernet networks",
+            "Bus topology networks",
+            "Token Ring networks",
+            "Wi-Fi networks",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A SWITCH is also known as:",
+          opts: [
+            "Multiport repeater",
+            "Multiport hub",
+            "Multiport bridge",
+            "Multiport router",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "Switches operate at which OSI layer?",
+          opts: [
+            "Physical Layer (Layer 1)",
+            "Data Link Layer (Layer 2)",
+            "Network Layer (Layer 3)",
+            "Transport Layer (Layer 4)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "How does a switch differ from a hub in forwarding data?",
+          opts: [
+            "A switch broadcasts to all ports",
+            "A switch forwards data ONLY to the port that connects to the destination device using MAC addresses",
+            "A switch uses IP addresses for forwarding",
+            "A switch cannot connect multiple devices",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A ROUTER operates at which OSI layer?",
+          opts: [
+            "Physical Layer",
+            "Data Link Layer",
+            "Network Layer",
+            "Transport Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "Routers isolate:",
+          opts: [
+            "Collision domains only",
+            "Broadcast domains only",
+            "Both collision domains AND broadcast domains",
+            "Neither collision nor broadcast domains",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "Which address type do routers deal with (global address)?",
+          opts: [
+            "MAC address (local address)",
+            "IP address (network layer address)",
+            "Port number",
+            "VLAN ID",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "What does a GATEWAY do?",
+          opts: [
+            "Connects two networks with the SAME transmission protocols",
+            "Connects two networks with DIFFERENT transmission protocols",
+            "Acts as a multiport repeater",
+            "Provides DHCP services",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A NIC (Network Interface Card) is:",
+          opts: [
+            "Only a software component",
+            "Only a wireless component",
+            "A hardware component (circuit board) providing a dedicated network connection to the computer",
+            "A type of router card",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A NIC operates at which OSI layers?",
+          opts: [
+            "Only Physical Layer",
+            "Only Data Link Layer",
+            "Both Physical Layer and Data Link Layer",
+            "Network Layer only",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A Wireless Access Point (WAP) connects:",
+          opts: [
+            "Two routers together",
+            "Wired networks to wireless clients, projecting a Wi-Fi signal",
+            "Only wired devices",
+            "Two different internet service providers",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "A MODEM is a combination of 'modulate' and 'demodulate'. It:",
+          opts: [
+            "Only converts digital signals to analog",
+            "Only converts analog signals to digital",
+            "Both modulates and demodulates analog carrier signals for encoding/decoding digital information",
+            "Only provides routing between networks",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Connecting Devices",
+          q: "For 10BaseT and 100BaseT, the maximum connection length between an adapter and a hub is:",
+          opts: ["50 meters", "100 meters", "200 meters", "500 meters"],
+          ans: 1,
+        },
+
+        // ─── CISCO PACKET TRACER ───
+        {
+          topic: "Cisco Packet Tracer",
+          q: "What is Cisco Packet Tracer?",
+          opts: [
+            "A real network router from Cisco",
+            "A powerful network simulation program that allows experimenting with network behavior",
+            "A cable crimping tool",
+            "An Ethernet frame analyzer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Cisco Packet Tracer",
+          q: "In a Peer-to-Peer connectivity setup in Packet Tracer, what type of cable connects two PCs directly?",
+          opts: [
+            "Straight-through cable",
+            "Fiber optic cable",
+            "Copper Cross-Over Cable",
+            "Coaxial cable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Cisco Packet Tracer",
+          q: "In Cisco Packet Tracer, how do you verify connectivity between two PCs?",
+          opts: [
+            "Using a physical cable tester",
+            "Using the ping command from one PC's command prompt to the other PC's IP address",
+            "Checking the LED indicators on the switch",
+            "Reading the routing table",
+          ],
+          ans: 1,
+        },
+
+        // ─── OPERATING SYSTEMS ───
+        {
+          topic: "Operating Systems",
+          q: "Which part of the OS interfaces with applications and the user (CLI or GUI)?",
+          opts: ["Kernel", "Shell", "Hardware", "Firmware"],
+          ans: 1,
+        },
+        {
+          topic: "Operating Systems",
+          q: "The KERNEL of an OS:",
+          opts: [
+            "Provides the user interface",
+            "Interacts directly with computer hardware and manages hardware resource usage",
+            "Handles network packet routing",
+            "Manages GUI elements",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Operating Systems",
+          q: "The OS on home routers is usually called:",
+          opts: ["BIOS", "Kernel", "Firmware", "Shell"],
+          ans: 2,
+        },
+        {
+          topic: "Operating Systems",
+          q: "The most common method for configuring a home router is:",
+          opts: [
+            "Using a CLI via TELNET",
+            "Using a web browser-based GUI",
+            "Using a dedicated mobile app only",
+            "Directly editing configuration files",
+          ],
+          ans: 1,
+        },
+      ];
+
+      // ─── STATE ─────────────────────────────────────────────────────────
+      let state = {
+        mode: "learning",
+        questions: [],
+        currentIdx: 0,
+        answers: [], // null | index of chosen option
+        correctFlags: [], // bool
+        wrongIndices: [], // original indices of wrong answers
+        autoTimer: null,
+        isRetakeMode: false,
+      };
+
+      // Show total count on home screen
+      document.getElementById("total-count").textContent = QUESTIONS.length;
+      document.getElementById("total-count2").textContent = QUESTIONS.length;
+
+      // Load best score
+      function loadBest() {
+        const b = localStorage.getItem("cn_best");
+        document.getElementById("best-score-home").textContent = b
+          ? b + "%"
+          : "—";
+      }
+      loadBest();
+
+      // ─── SCREENS ──────────────────────────────────────────────────────
+      function show(id) {
+        ["home-screen", "quiz-screen", "end-screen"].forEach((s) => {
+          document.getElementById(s).classList.toggle("hidden", s !== id);
+        });
+      }
+
+      function goHome() {
+        clearTimer();
+        show("home-screen");
+        loadBest();
+      }
+
+      // ─── START ────────────────────────────────────────────────────────
+      function startQuiz(mode, questionsArr) {
+        clearTimer();
+        state.mode = mode;
+        state.questions = questionsArr ? questionsArr : shuffle([...QUESTIONS]);
+        state.currentIdx = 0;
+        state.answers = new Array(state.questions.length).fill(null);
+        state.correctFlags = new Array(state.questions.length).fill(null);
+        state.wrongIndices = [];
+
+        const pill = document.getElementById("mode-pill");
+        pill.textContent = mode === "rapid" ? "RAPID FIRE" : "LEARNING";
+        pill.className = "mode-pill " + mode;
+
+        document.getElementById("q-total").textContent = state.questions.length;
+        show("quiz-screen");
+        renderQuestion();
+      }
+
+      function retakeWrong() {
+        if (!state.wrongIndices.length) return;
+        const wrongs = state.wrongIndices.map((i) => QUESTIONS[i]);
+        state.isRetakeMode = true;
+        startQuiz(state.mode, shuffle(wrongs));
+      }
+
+      function restartQuiz() {
+        state.isRetakeMode = false;
+        startQuiz(state.mode);
+      }
+
+      // ─── SHUFFLE ──────────────────────────────────────────────────────
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ─── RENDER QUESTION ──────────────────────────────────────────────
+      function renderQuestion() {
+        const q = state.questions[state.currentIdx];
+        const total = state.questions.length;
+        const idx = state.currentIdx;
+        const answered = state.answers[idx] !== null;
+
+        // Header
+        document.getElementById("q-num").textContent = idx + 1;
+        document.getElementById("progress-fill").style.width =
+          ((idx + 1) / total) * 100 + "%";
+
+        // Score live
+        let cor = state.correctFlags.filter((x) => x === true).length;
+        let wrg = state.correctFlags.filter((x) => x === false).length;
+        document.getElementById("score-correct").textContent = cor;
+        document.getElementById("score-wrong").textContent = wrg;
+
+        // Question
+        document.getElementById("q-topic").textContent = q.topic.toUpperCase();
+        document.getElementById("q-text").textContent = q.q;
+
+        // Animate card
+        const card = document.getElementById("q-card");
+        card.style.animation = "none";
+        card.offsetHeight;
+        card.style.animation = "slideUp 0.35s ease";
+
+        // Options
+        const grid = document.getElementById("options-grid");
+        grid.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.opts.forEach((opt, oi) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.disabled = answered;
+          btn.onclick = () => selectAnswer(oi);
+
+          let cls = "";
+          if (answered) {
+            if (oi === q.ans)
+              cls = oi === state.answers[idx] ? "correct" : "reveal-correct";
+            else if (oi === state.answers[idx]) cls = "wrong";
+          }
+          if (cls) btn.classList.add(cls);
+
+          btn.innerHTML = `<span class="opt-letter">${letters[oi]}</span><span>${opt}</span>`;
+          grid.appendChild(btn);
+        });
+
+        // Feedback
+        const fb = document.getElementById("feedback-box");
+        const rs = document.getElementById("rapid-stop");
+        const aw = document.getElementById("auto-bar-wrap");
+        fb.className = "feedback-box";
+        rs.classList.remove("show");
+        aw.classList.remove("show");
+
+        if (answered) {
+          const isCorrect = state.correctFlags[idx];
+          if (state.mode === "learning") {
+            if (isCorrect) {
+              fb.className = "feedback-box correct-fb";
+              fb.innerHTML = `<strong>✓ Correct!</strong> ${
+                q.opts[q.ans]
+              } is the right answer.`;
+            } else {
+              fb.className = "feedback-box wrong-fb";
+              fb.innerHTML = `<strong>✗ Incorrect.</strong> The correct answer is: <strong>${
+                q.opts[q.ans]
+              }</strong>`;
+            }
+          } else {
+            // Rapid fire
+            if (!isCorrect) {
+              rs.classList.add("show");
+              document.getElementById("rapid-next-btn").classList.add("show");
+            }
+          }
+        }
+
+        // Navigation buttons
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const rapidNext = document.getElementById("rapid-next-btn");
+
+        prevBtn.disabled = idx === 0;
+
+        if (state.mode === "learning") {
+          nextBtn.classList.remove("hidden");
+          rapidNext.classList.remove("show"); // hide rapid-next in learning mode
+          nextBtn.disabled = !answered || idx === total - 1;
+          if (answered && idx === total - 1) {
+            nextBtn.textContent = "Finish →";
+            nextBtn.disabled = false;
+            nextBtn.onclick = finishQuiz;
+          } else {
+            nextBtn.textContent = "Next →";
+            nextBtn.onclick = () => navigate(1);
+          }
+        } else {
+          // Rapid fire — hide the regular next, show rapid-next only when wrong
+          nextBtn.classList.add("hidden");
+          rapidNext.classList.remove("show"); // reset first
+          if (answered) {
+            const isCorrect = state.correctFlags[idx];
+            if (!isCorrect) {
+              rapidNext.classList.add("show"); // show Next button on wrong answer
+              if (idx === total - 1) {
+                rapidNext.textContent = "Finish →";
+                rapidNext.onclick = finishQuiz;
+              } else {
+                rapidNext.textContent = "Next →";
+                rapidNext.onclick = () => navigate(1);
+              }
+            }
+          }
+        }
+      }
+
+      // ─── SELECT ANSWER ────────────────────────────────────────────────
+      function selectAnswer(chosenIdx) {
+        const q = state.questions[state.currentIdx];
+        const isCorrect = chosenIdx === q.ans;
+
+        state.answers[state.currentIdx] = chosenIdx;
+        state.correctFlags[state.currentIdx] = isCorrect;
+
+        // Track wrong for original QUESTIONS index (only if not retake mode)
+        if (!state.isRetakeMode && !isCorrect) {
+          const origIdx = QUESTIONS.indexOf(q);
+          if (origIdx !== -1 && !state.wrongIndices.includes(origIdx)) {
+            state.wrongIndices.push(origIdx);
+          }
+        }
+
+        if (state.mode === "rapid") {
+          if (isCorrect) {
+            // Auto-advance after delay
+            const aw = document.getElementById("auto-bar-wrap");
+            const ab = document.getElementById("auto-bar");
+            aw.classList.add("show");
+            ab.style.animation = "none";
+            ab.offsetHeight;
+            ab.style.animation = "autoAdvance 1.2s linear forwards";
+
+            clearTimer();
+            state.autoTimer = setTimeout(() => {
+              if (state.currentIdx >= state.questions.length - 1) {
+                finishQuiz();
+              } else {
+                navigate(1);
+              }
+            }, 1200);
+          }
+        }
+
+        renderQuestion();
+      }
+
+      // ─── NAVIGATE ─────────────────────────────────────────────────────
+      function navigate(dir) {
+        clearTimer();
+        const newIdx = state.currentIdx + dir;
+        if (newIdx < 0 || newIdx >= state.questions.length) {
+          if (newIdx >= state.questions.length) finishQuiz();
+          return;
+        }
+        state.currentIdx = newIdx;
+        renderQuestion();
+      }
+
+      function clearTimer() {
+        if (state.autoTimer) {
+          clearTimeout(state.autoTimer);
+          state.autoTimer = null;
+        }
+      }
+
+      // ─── FINISH ───────────────────────────────────────────────────────
+      function finishQuiz() {
+        clearTimer();
+        const total = state.questions.length;
+        const cor = state.correctFlags.filter((x) => x === true).length;
+        const wrg = state.correctFlags.filter((x) => x === false).length;
+        const pct = Math.round((cor / total) * 100);
+
+        // Save best score
+        const prev = parseInt(localStorage.getItem("cn_best") || "0");
+        if (pct > prev) localStorage.setItem("cn_best", pct);
+
+        const emoji =
+          pct >= 90
+            ? "🏆"
+            : pct >= 75
+            ? "🎉"
+            : pct >= 60
+            ? "👍"
+            : pct >= 40
+            ? "📚"
+            : "💪";
+        const title =
+          pct >= 90
+            ? "Outstanding!"
+            : pct >= 75
+            ? "Well Done!"
+            : pct >= 60
+            ? "Good Job!"
+            : pct >= 40
+            ? "Keep Studying!"
+            : "Never Give Up!";
+
+        document.getElementById("result-emoji").textContent = emoji;
+        document.getElementById("result-title").textContent = title;
+        document.getElementById(
+          "result-sub"
+        ).textContent = `You completed the ${
+          state.mode === "rapid" ? "Rapid Fire" : "Learning Mode"
+        } quiz`;
+        document.getElementById("score-pct").textContent = pct + "%";
+        document.getElementById("end-correct").textContent = cor;
+        document.getElementById("end-wrong").textContent = wrg;
+        document.getElementById("end-total").textContent = total;
+        document.getElementById("s-accuracy").textContent = pct + "%";
+        document.getElementById("s-correct").textContent = cor;
+        document.getElementById("s-wrong").textContent = wrg;
+
+        const retakeBtn = document.getElementById("retake-wrong-btn");
+        retakeBtn.disabled = state.wrongIndices.length === 0;
+        retakeBtn.textContent =
+          state.wrongIndices.length > 0
+            ? `⚠️ Retake ${state.wrongIndices.length} Wrong Question${
+                state.wrongIndices.length > 1 ? "s" : ""
+              }`
+            : "✓ No wrong questions!";
+
+        show("end-screen");
+      }
+    </script>
+  </body>
+</html>

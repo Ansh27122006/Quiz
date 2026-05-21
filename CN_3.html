@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>3CN — Network Layer Quiz</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #050c14;
+        --surface: #0b1825;
+        --surface2: #0f2035;
+        --border: #1a3a5c;
+        --accent: #00d4ff;
+        --accent2: #0086cc;
+        --green: #00ff9d;
+        --red: #ff3e6c;
+        --yellow: #ffd060;
+        --text: #c8dff0;
+        --muted: #5a7a96;
+        --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+        --glow-g: 0 0 20px rgba(0, 255, 157, 0.3);
+        --glow-r: 0 0 20px rgba(255, 62, 108, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Exo 2", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* Animated grid background */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(0, 212, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            ellipse at 70% 20%,
+            rgba(0, 134, 204, 0.07) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 20% 80%,
+            rgba(0, 212, 255, 0.05) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      #app {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ---- HEADER ---- */
+      header {
+        text-align: center;
+        padding: 40px 20px 30px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(
+          180deg,
+          rgba(0, 212, 255, 0.05) 0%,
+          transparent 100%
+        );
+      }
+      header .label {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 6px;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      header h1 {
+        font-size: clamp(28px, 5vw, 46px);
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -1px;
+        text-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+      }
+      header h1 span {
+        color: var(--accent);
+      }
+      header p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 300;
+      }
+
+      /* ---- MODE SELECT ---- */
+      #mode-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        gap: 30px;
+      }
+
+      .mode-title {
+        font-size: 18px;
+        color: var(--muted);
+        font-weight: 300;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .mode-cards {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .mode-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 36px 40px;
+        width: 280px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 212, 255, 0.05) 0%,
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .mode-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: var(--glow);
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+
+      .mode-card .icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+        filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+      }
+      .mode-card h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .mode-card p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .mode-card.rapid {
+        border-color: #2a1a40;
+      }
+      .mode-card.rapid:hover {
+        border-color: var(--yellow);
+        box-shadow: 0 0 20px rgba(255, 208, 96, 0.25);
+      }
+      .mode-card.rapid .icon {
+        filter: drop-shadow(0 0 10px rgba(255, 208, 96, 0.5));
+      }
+
+      /* ---- QUIZ SCREEN ---- */
+      #quiz-screen {
+        display: none;
+        padding: 20px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .quiz-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .quiz-topbar .mode-badge {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 11px;
+        padding: 5px 14px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .mode-badge.learning {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      }
+      .mode-badge.rapidfire {
+        background: rgba(255, 208, 96, 0.1);
+        color: var(--yellow);
+        border: 1px solid rgba(255, 208, 96, 0.3);
+      }
+
+      .progress-info {
+        font-size: 13px;
+        color: var(--muted);
+        font-family: "Share Tech Mono", monospace;
+      }
+      .progress-info span {
+        color: var(--accent);
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .score-display {
+        display: flex;
+        gap: 16px;
+      }
+      .score-item {
+        text-align: center;
+      }
+      .score-item .val {
+        display: block;
+        font-size: 18px;
+        font-weight: 700;
+        font-family: "Share Tech Mono", monospace;
+      }
+      .score-item .lbl {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .val.correct-val {
+        color: var(--green);
+      }
+      .val.wrong-val {
+        color: var(--red);
+      }
+
+      /* Progress bar */
+      .progress-bar-wrap {
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 4px;
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        border-radius: 4px;
+        transition: width 0.4s ease;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      }
+
+      /* Question card */
+      .question-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 20px;
+        position: relative;
+        transition: border-color 0.3s;
+      }
+      .question-card.correct-card {
+        border-color: var(--green);
+        box-shadow: var(--glow-g);
+      }
+      .question-card.wrong-card {
+        border-color: var(--red);
+        box-shadow: var(--glow-r);
+      }
+
+      .q-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .q-num {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 1px;
+      }
+      .q-topic {
+        font-size: 11px;
+        padding: 3px 12px;
+        border-radius: 20px;
+        background: rgba(0, 212, 255, 0.07);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 1px;
+      }
+
+      .q-text {
+        font-size: 17px;
+        font-weight: 600;
+        line-height: 1.6;
+        color: #e8f4ff;
+        margin-bottom: 26px;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .option {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 15px;
+        color: var(--text);
+        position: relative;
+      }
+      .option:hover:not(.disabled) {
+        border-color: var(--accent);
+        background: rgba(0, 212, 255, 0.05);
+        transform: translateX(4px);
+      }
+      .option-letter {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 13px;
+        color: var(--accent);
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .option.selected {
+        border-color: var(--accent);
+        background: rgba(0, 212, 255, 0.08);
+      }
+      .option.selected .option-letter {
+        background: var(--accent);
+        color: #000;
+        border-color: var(--accent);
+      }
+      .option.correct-opt {
+        border-color: var(--green);
+        background: rgba(0, 255, 157, 0.08);
+        color: #fff;
+      }
+      .option.correct-opt .option-letter {
+        background: var(--green);
+        color: #000;
+        border-color: var(--green);
+      }
+      .option.wrong-opt {
+        border-color: var(--red);
+        background: rgba(255, 62, 108, 0.08);
+        color: var(--muted);
+      }
+      .option.wrong-opt .option-letter {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+      }
+      .option.disabled {
+        cursor: default;
+      }
+
+      /* Feedback */
+      .feedback {
+        display: none;
+        margin-top: 20px;
+        padding: 16px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        line-height: 1.6;
+        animation: fadeIn 0.3s ease;
+      }
+      .feedback.correct {
+        background: rgba(0, 255, 157, 0.07);
+        border: 1px solid rgba(0, 255, 157, 0.3);
+        color: var(--green);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .feedback.wrong {
+        background: rgba(255, 62, 108, 0.07);
+        border: 1px solid rgba(255, 62, 108, 0.3);
+        color: #ff8fab;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .feedback .fb-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .feedback .fb-text strong {
+        color: #fff;
+      }
+
+      /* Rapid fire countdown */
+      .countdown-bar {
+        display: none;
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 4px;
+        margin-top: 14px;
+        overflow: hidden;
+      }
+      .countdown-bar .fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--yellow), #ff8c00);
+        border-radius: 4px;
+        width: 100%;
+        transition: width linear;
+        box-shadow: 0 0 8px rgba(255, 208, 96, 0.6);
+      }
+
+      /* Navigation buttons */
+      .nav-buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 12px 26px;
+        border-radius: 10px;
+        font-family: "Exo 2", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+      .btn-prev {
+        background: var(--surface2);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .btn-prev:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-next {
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+      }
+      .btn-next:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+      }
+      .btn-quit {
+        background: transparent;
+        color: var(--muted);
+        border: 1px solid transparent;
+        font-size: 13px;
+        margin-left: auto;
+      }
+      .btn-quit:hover {
+        color: var(--red);
+      }
+
+      /* ---- RESULTS SCREEN ---- */
+      #results-screen {
+        display: none;
+        padding: 40px 20px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .results-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .results-header .big-score {
+        font-size: 72px;
+        font-weight: 800;
+        font-family: "Share Tech Mono", monospace;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .results-header .score-label {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+      .results-header .msg {
+        font-size: 18px;
+        margin-top: 16px;
+        font-weight: 300;
+      }
+
+      .results-stats {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .stat-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 28px;
+        text-align: center;
+        min-width: 120px;
+      }
+      .stat-box .n {
+        font-size: 32px;
+        font-weight: 800;
+        font-family: "Share Tech Mono", monospace;
+        display: block;
+      }
+      .stat-box .l {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 4px;
+      }
+      .stat-box.s-correct .n {
+        color: var(--green);
+      }
+      .stat-box.s-wrong .n {
+        color: var(--red);
+      }
+      .stat-box.s-total .n {
+        color: var(--accent);
+      }
+      .stat-box.s-pct .n {
+        color: var(--yellow);
+      }
+
+      .wrong-list-title {
+        font-size: 14px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+        font-family: "Share Tech Mono", monospace;
+      }
+
+      .wrong-item {
+        background: var(--surface);
+        border: 1px solid rgba(255, 62, 108, 0.2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .wrong-item .wi-q {
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .wrong-item .wi-a {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .wrong-item .wi-a span {
+        color: var(--green);
+      }
+
+      .results-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+      }
+
+      .btn-retake {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 62, 108, 0.8),
+          rgba(255, 62, 108, 0.6)
+        );
+        color: #fff;
+        padding: 14px 32px;
+        box-shadow: 0 4px 15px rgba(255, 62, 108, 0.3);
+      }
+      .btn-retake:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 62, 108, 0.5);
+      }
+
+      .btn-restart {
+        background: linear-gradient(135deg, var(--accent2), var(--accent));
+        color: #000;
+        padding: 14px 32px;
+        box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        font-weight: 700;
+      }
+      .btn-restart:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Rapid fire stop screen */
+      .rapid-stop {
+        background: rgba(255, 62, 108, 0.07);
+        border: 1px solid rgba(255, 62, 108, 0.25);
+        border-radius: 14px;
+        padding: 28px;
+        text-align: center;
+        margin-bottom: 24px;
+        display: none;
+      }
+      .rapid-stop h3 {
+        color: var(--red);
+        font-size: 22px;
+        margin-bottom: 8px;
+      }
+      .rapid-stop p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .rapid-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 12px;
+        color: var(--yellow);
+      }
+      .rapid-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--yellow);
+        animation: pulse 1s infinite;
+      }
+
+      /* retake mode banner */
+      .retake-banner {
+        background: rgba(255, 62, 108, 0.08);
+        border: 1px solid rgba(255, 62, 108, 0.25);
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #ff8fab;
+        text-align: center;
+        margin-bottom: 16px;
+        display: none;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 30px 0;
+      }
+
+      .emoji-grade {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 600px) {
+        .question-card {
+          padding: 20px;
+        }
+        .q-text {
+          font-size: 15px;
+        }
+        .mode-card {
+          width: 100%;
+          max-width: 320px;
+        }
+        .btn {
+          padding: 10px 18px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="label">Computer Networks · Unit 3</div>
+        <h1>Network <span>Layer</span> Quiz</h1>
+        <p>
+          100 Questions · Covers OSI Layer 3, IPv4/IPv6, Routing, Addressing,
+          Protocols
+        </p>
+      </header>
+
+      <!-- MODE SELECT -->
+      <div id="mode-screen">
+        <p class="mode-title">Choose your mode</p>
+        <div class="mode-cards">
+          <div
+            class="mode-card"
+            onclick="startQuiz('learning')">
+            <span class="icon">📖</span>
+            <h2>Learning</h2>
+            <p>
+              Select an answer and instantly see if you're right. Move at your
+              own pace with Previous & Next controls.
+            </p>
+          </div>
+          <div
+            class="mode-card rapid"
+            onclick="startQuiz('rapidfire')">
+            <span class="icon">⚡</span>
+            <h2>Rapid Fire</h2>
+            <p>
+              Correct answers auto-advance. A wrong answer stops the streak —
+              fix it manually to keep going.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ SCREEN -->
+      <div id="quiz-screen">
+        <div
+          class="retake-banner"
+          id="retake-banner">
+          🔁 Retake Mode — Only showing questions you got wrong
+        </div>
+        <div class="quiz-topbar">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span
+              class="mode-badge"
+              id="mode-badge"
+              >Learning</span
+            >
+            <div
+              class="rapid-indicator"
+              id="rapid-indicator">
+              <span class="rapid-dot"></span> RAPID FIRE
+            </div>
+          </div>
+          <div class="progress-info">
+            Q <span id="q-current">1</span> of <span id="q-total">100</span>
+          </div>
+          <div class="score-display">
+            <div class="score-item">
+              <span
+                class="val correct-val"
+                id="score-correct"
+                >0</span
+              ><span class="lbl">✓ Correct</span>
+            </div>
+            <div class="score-item">
+              <span
+                class="val wrong-val"
+                id="score-wrong"
+                >0</span
+              ><span class="lbl">✗ Wrong</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div
+            class="progress-bar"
+            id="progress-bar"
+            style="width: 0%"></div>
+        </div>
+
+        <div
+          class="question-card"
+          id="question-card">
+          <div class="q-meta">
+            <span
+              class="q-num"
+              id="q-num"
+              >Q001</span
+            >
+            <span
+              class="q-topic"
+              id="q-topic"
+              >Topic</span
+            >
+          </div>
+          <div
+            class="q-text"
+            id="q-text">
+            Question
+          </div>
+          <div
+            class="options"
+            id="options-container"></div>
+          <div
+            class="feedback"
+            id="feedback">
+            <span class="fb-icon"></span>
+            <div class="fb-text"></div>
+          </div>
+          <div
+            class="countdown-bar"
+            id="countdown-bar">
+            <div
+              class="fill"
+              id="countdown-fill"></div>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <button
+            class="btn btn-prev"
+            id="btn-prev"
+            onclick="navigate(-1)">
+            ← Prev
+          </button>
+          <button
+            class="btn btn-next"
+            id="btn-next"
+            onclick="navigate(1)">
+            Next →
+          </button>
+          <button
+            class="btn btn-quit"
+            onclick="showResults()">
+            End Quiz
+          </button>
+        </div>
+      </div>
+
+      <!-- RESULTS SCREEN -->
+      <div id="results-screen">
+        <div class="results-header">
+          <span
+            class="emoji-grade"
+            id="result-emoji"
+            >🎉</span
+          >
+          <div
+            class="big-score"
+            id="result-score">
+            0%
+          </div>
+          <div class="score-label">Final Score</div>
+          <div
+            class="msg"
+            id="result-msg">
+            Well done!
+          </div>
+        </div>
+
+        <div class="results-stats">
+          <div class="stat-box s-total">
+            <span
+              class="n"
+              id="rs-total"
+              >0</span
+            ><span class="l">Attempted</span>
+          </div>
+          <div class="stat-box s-correct">
+            <span
+              class="n"
+              id="rs-correct"
+              >0</span
+            ><span class="l">Correct</span>
+          </div>
+          <div class="stat-box s-wrong">
+            <span
+              class="n"
+              id="rs-wrong"
+              >0</span
+            ><span class="l">Wrong</span>
+          </div>
+          <div class="stat-box s-pct">
+            <span
+              class="n"
+              id="rs-pct"
+              >0%</span
+            ><span class="l">Accuracy</span>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button
+            class="btn btn-restart"
+            onclick="goHome()">
+            🏠 Home
+          </button>
+          <button
+            class="btn btn-restart"
+            onclick="restartFull()">
+            🔄 Restart All
+          </button>
+          <button
+            class="btn btn-retake"
+            id="btn-retake"
+            onclick="retakeWrong()"
+            style="display: none">
+            🎯 Retake Wrong Questions
+          </button>
+        </div>
+
+        <hr class="section-divider" />
+        <div id="wrong-section"></div>
+      </div>
+    </div>
+
+    <script>
+      const QUESTIONS = [
+        // ===================== NETWORK LAYER BASICS =====================
+        {
+          topic: "Network Layer",
+          q: "Which layer of the OSI model is the Network Layer?",
+          opts: [
+            "Layer 1 — Physical",
+            "Layer 2 — Data Link",
+            "Layer 3 — Network",
+            "Layer 4 — Transport",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Layer",
+          q: "What is the primary role of the Network Layer?",
+          opts: [
+            "Managing process-to-process communication",
+            "Moving packets from sending host to receiving host",
+            "Controlling physical medium access",
+            "Handling error detection in frames",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Layer",
+          q: "What does 'packetizing' mean at the Network Layer?",
+          opts: [
+            "Compressing data for transmission",
+            "Encapsulating payload in a network-layer packet at source and decapsulating at destination",
+            "Breaking data into bits for the physical layer",
+            "Adding MAC addresses to data frames",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Layer",
+          q: "Which of the following is NOT a basic operation of the Network Layer?",
+          opts: [
+            "Addressing end devices",
+            "Encapsulation",
+            "Error correction",
+            "Routing",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Layer",
+          q: "Which protocol at the Network Layer translates logical addresses into physical addresses?",
+          opts: ["ICMP", "IP", "ARP", "OSPF"],
+          ans: 2,
+        },
+        {
+          topic: "Network Layer",
+          q: "Routers in the path of a packet are NOT allowed to do which of the following?",
+          opts: [
+            "Inspect destination address for forwarding",
+            "Forward the packet to the next network",
+            "Change the source or destination IP addresses",
+            "Drop packets when TTL expires",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Layer",
+          q: "The Network Layer translates which type of addresses into physical addresses?",
+          opts: [
+            "Port addresses",
+            "Logical (IP) addresses",
+            "Domain names",
+            "MAC addresses",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Layer",
+          q: "Each router a packet crosses to reach the destination is called a ____.",
+          opts: ["Segment", "Hop", "Frame", "Node"],
+          ans: 1,
+        },
+
+        // ===================== IP ENCAPSULATION / CHARACTERISTICS =====================
+        {
+          topic: "IP Characteristics",
+          q: "Which characteristic of IPv4 means no connection is established before sending data?",
+          opts: [
+            "Media Independent",
+            "Best Effort",
+            "Connectionless",
+            "Reliable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IP Characteristics",
+          q: "What does 'best effort' delivery mean in IPv4?",
+          opts: [
+            "IPv4 guarantees delivery of all packets",
+            "IPv4 packets can be lost, corrupted, delayed, or arrive out of order",
+            "IPv4 always delivers packets in order",
+            "IPv4 uses acknowledgments for every packet",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IP Characteristics",
+          q: "Which characteristic of IPv4 means it operates independently of the physical medium?",
+          opts: [
+            "Connectionless",
+            "Best Effort",
+            "Media Independent",
+            "Unreliable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IP Characteristics",
+          q: "If IPv4 reliability is required, it must be paired with which transport-layer protocol?",
+          opts: ["UDP", "ICMP", "ARP", "TCP"],
+          ans: 3,
+        },
+        {
+          topic: "IP Characteristics",
+          q: "What does IP encapsulation add to the transport layer segment?",
+          opts: [
+            "MAC address header",
+            "IP header",
+            "Physical layer preamble",
+            "Frame checksum",
+          ],
+          ans: 1,
+        },
+
+        // ===================== IPv4 PACKET HEADER =====================
+        {
+          topic: "IPv4 Header",
+          q: "How many bits is the VERSION field in the IPv4 header?",
+          opts: ["2 bits", "4 bits", "8 bits", "16 bits"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What is the size of the IPv4 datagram header?",
+          opts: [
+            "Fixed 20 bytes",
+            "20 to 60 bytes",
+            "40 bytes fixed",
+            "8 to 20 bytes",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What is the minimum value of the HLEN (Internet Header Length) field?",
+          opts: ["1", "5", "10", "20"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What is the maximum total length of an IPv4 datagram?",
+          opts: ["1,500 bytes", "32,767 bytes", "65,535 bytes", "4,096 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "Which IPv4 header field uniquely identifies all fragments belonging to the same original datagram?",
+          opts: ["Fragment Offset", "Flags", "Identification", "TTL"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "The Flags field in IPv4 header contains how many bits?",
+          opts: ["1", "2", "3", "4"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What does the DF flag in the IPv4 header indicate when set to 1?",
+          opts: [
+            "More fragments follow",
+            "Do Not Fragment",
+            "Destination field valid",
+            "Duplicate fragment",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What does MF flag = 1 indicate?",
+          opts: [
+            "This is the last fragment",
+            "More fragments follow",
+            "The packet must not be fragmented",
+            "Maximum fragmentation allowed",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "The Fragment Offset field is measured in units of ____.",
+          opts: ["1 byte", "4 bytes", "8 bytes", "16 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "What is the purpose of the Time to Live (TTL) field?",
+          opts: [
+            "Track packet creation time",
+            "Prevent datagrams from looping through the network indefinitely",
+            "Specify guaranteed delivery time",
+            "Measure round-trip delay",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "The Header Checksum field in IPv4 checks errors in ____.",
+          opts: [
+            "The entire packet including payload",
+            "Only the datagram header",
+            "The payload only",
+            "The MAC frame",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "How many bits is the Source IP address field in the IPv4 header?",
+          opts: ["8 bits", "16 bits", "32 bits", "64 bits"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "Which field in the IPv4 header specifies the protocol to which the data should be passed?",
+          opts: ["Version", "Type of Service", "Protocol", "Header Checksum"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Header",
+          q: "The Type of Service field in IPv4 is how many bits wide?",
+          opts: ["4 bits", "8 bits", "16 bits", "32 bits"],
+          ans: 1,
+        },
+
+        // ===================== IPv4 FRAGMENTATION =====================
+        {
+          topic: "IPv4 Fragmentation",
+          q: "What happens when the DF flag is set and the packet is too large for the MTU?",
+          opts: [
+            "The packet is fragmented normally",
+            "The packet is queued until MTU is larger",
+            "The packet is dropped and an ICMP error is sent",
+            "The packet is sent without the header",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Fragmentation",
+          q: "For a 4000-byte packet with an MTU of 1500 bytes, how many fragments are created? (IPv4 header = 20 bytes)",
+          opts: ["2 fragments", "3 fragments", "4 fragments", "5 fragments"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Fragmentation",
+          q: "Who is responsible for reassembling fragmented IP packets?",
+          opts: [
+            "The router that fragmented them",
+            "Any intermediate router",
+            "The destination host",
+            "The source host",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Fragmentation",
+          q: "What is the maximum data size per fragment when MTU is 1500 bytes (IPv4 header 20 bytes)?",
+          opts: ["1500 bytes", "1480 bytes", "1460 bytes", "1440 bytes"],
+          ans: 1,
+        },
+
+        // ===================== HOST ROUTING =====================
+        {
+          topic: "Host Routing",
+          q: "What special IPv4 address is used by a host to test its own TCP/IP protocol stack?",
+          opts: ["0.0.0.0", "255.255.255.255", "192.168.0.1", "127.0.0.1"],
+          ans: 3,
+        },
+        {
+          topic: "Host Routing",
+          q: "Which Windows command displays the host routing table?",
+          opts: ["ipconfig /all", "route print", "netstat /r", "arp -a"],
+          ans: 1,
+        },
+        {
+          topic: "Host Routing",
+          q: "When source and destination hosts share the same network address, the destination is called a ____.",
+          opts: ["Remote host", "Loopback host", "Local host", "Gateway host"],
+          ans: 2,
+        },
+        {
+          topic: "Host Routing",
+          q: "The loopback interface in IPv6 is represented as ____.",
+          opts: ["::0/128", "::1", "FE80::1", "FF00::1"],
+          ans: 1,
+        },
+        {
+          topic: "Host Routing",
+          q: "Pinging 127.0.0.1 tests which component?",
+          opts: [
+            "The physical NIC",
+            "The default gateway",
+            "The TCP/IP protocol stack on the host",
+            "Remote server availability",
+          ],
+          ans: 2,
+        },
+
+        // ===================== ROUTING TYPES & PROTOCOLS =====================
+        {
+          topic: "Routing",
+          q: "Which type of routing must be configured manually by a network administrator?",
+          opts: [
+            "Dynamic routing",
+            "Static routing",
+            "Link state routing",
+            "OSPF routing",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Routing",
+          q: "Which dynamic routing protocols are examples given in the document?",
+          opts: [
+            "RIP and BGP",
+            "OSPF and EIGRP",
+            "IS-IS and RIP",
+            "BGP and IGRP",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Routing",
+          q: "Which routing protocol category does RIP belong to?",
+          opts: [
+            "Link state — Intradomain",
+            "Distance vector — Intradomain",
+            "Path vector — Interdomain",
+            "Link state — Interdomain",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Routing",
+          q: "Which routing protocol category does BGP belong to?",
+          opts: [
+            "Distance vector — Intradomain",
+            "Link state — Intradomain",
+            "Path vector — Interdomain",
+            "Distance vector — Interdomain",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Routing",
+          q: "Which routing protocol category does OSPF belong to?",
+          opts: [
+            "Distance vector — Intradomain",
+            "Link state — Intradomain",
+            "Path vector — Interdomain",
+            "Distance vector — Interdomain",
+          ],
+          ans: 1,
+        },
+
+        // ===================== DISTANCE VECTOR ROUTING =====================
+        {
+          topic: "Distance Vector",
+          q: "What algorithm does Distance Vector Routing use?",
+          opts: [
+            "Dijkstra's algorithm",
+            "Bellman-Ford algorithm",
+            "Prim's algorithm",
+            "Floyd-Warshall algorithm",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "In Distance Vector Routing, routing tables are shared with ____.",
+          opts: [
+            "All routers in the network",
+            "Only immediate neighbors",
+            "Only the designated router",
+            "The source host only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "How often does a node send periodic updates in Distance Vector Routing?",
+          opts: [
+            "Every 10 seconds",
+            "Every 30 seconds",
+            "Every 60 seconds",
+            "Every 5 minutes",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "What is a 'triggered update' in Distance Vector Routing?",
+          opts: [
+            "Update sent every 30 seconds",
+            "Update sent when the router boots",
+            "Update sent whenever the routing table changes",
+            "Update sent only when the topology is stable",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Distance Vector",
+          q: "The formula for Distance Vector update is: Dxy = min{Dxy, ____}.",
+          opts: ["cxz + Dzy", "cxy + Dyz", "Dxz + czy", "Dxy + czx"],
+          ans: 0,
+        },
+        {
+          topic: "Distance Vector",
+          q: "How many columns does a node share with its neighbors in Distance Vector Routing?",
+          opts: [
+            "All three columns (destination, cost, next hop)",
+            "Only the first column (destination)",
+            "The first two columns (destination + cost)",
+            "Four columns",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Distance Vector",
+          q: "In Distance Vector routing, what is the 'count to infinity' problem?",
+          opts: [
+            "A router has too many routes",
+            "Bad news (link failure) propagates slowly, causing routers to increment costs indefinitely",
+            "A router counts infinite packets per second",
+            "A routing loop causes infinite bandwidth consumption",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "In Distance Vector routing, which spreads faster?",
+          opts: [
+            "Good news (cost decrease) spreads faster",
+            "Bad news (cost increase) spreads faster",
+            "Both spread at the same speed",
+            "Neither propagates automatically",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Distance Vector",
+          q: "Which strategy can help avoid two-node instability?",
+          opts: [
+            "Flooding",
+            "Split horizon with poison reverse",
+            "Dijkstra's algorithm",
+            "Path vector routing",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "Can split horizon with poison reverse fully fix three-node instability?",
+          opts: [
+            "Yes, always",
+            "No — stability cannot be guaranteed for three-node instability",
+            "Yes, with additional configuration",
+            "No, only OSPF can fix it",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Distance Vector",
+          q: "Two-node instability occurs when a router updates a broken link's cost based on ____.",
+          opts: [
+            "Its own direct measurement",
+            "Outdated information from a neighbor that still thinks the route is valid",
+            "A flooding broadcast",
+            "The Dijkstra computation",
+          ],
+          ans: 1,
+        },
+
+        // ===================== LINK STATE ROUTING =====================
+        {
+          topic: "Link State Routing",
+          q: "In Link State Routing, each router maintains knowledge of ____.",
+          opts: [
+            "Only its neighbors",
+            "Only directly connected links",
+            "The entire network topology",
+            "Its own routing table only",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Link State Routing",
+          q: "What packet does a router send to discover its neighbors in Link State Routing (Step 1)?",
+          opts: ["ECHO packet", "HELLO packet", "PING packet", "ARP packet"],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "What is used to measure line cost in Link State Routing (Step 2)?",
+          opts: [
+            "HELLO packets",
+            "ECHO packet round-trip delay",
+            "LSP flooding",
+            "ARP request",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "What method is used to distribute Link State Packets (LSPs) — Step 4?",
+          opts: ["Unicast", "Multicast", "Flooding", "Polling"],
+          ans: 2,
+        },
+        {
+          topic: "Link State Routing",
+          q: "What algorithm does Link State Routing use to compute shortest paths (Step 5)?",
+          opts: [
+            "Bellman-Ford",
+            "Dijkstra's algorithm",
+            "Prim's algorithm",
+            "DFS",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "A Link State Packet (LSP) contains which key fields?",
+          opts: [
+            "Only source IP and destination IP",
+            "Node identity, list of links, sequence number, and age",
+            "Routing tables from all neighbors",
+            "Dijkstra's computed paths only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "In Link State Routing, what is the sequence number in an LSP used for?",
+          opts: [
+            "Identifying fragments",
+            "Facilitating flooding and distinguishing new LSPs from old ones",
+            "Specifying the TTL",
+            "Indicating payload length",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "In Dijkstra's algorithm, nodes with the shortest path are moved to which list?",
+          opts: [
+            "Tentative list",
+            "Permanent list",
+            "Active list",
+            "Stable list",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "Which two protocols are practical implementations of Link State routing?",
+          opts: [
+            "RIP and IGRP",
+            "BGP and EIGRP",
+            "OSPF and IS-IS",
+            "RIP and OSPF",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Link State Routing",
+          q: "Compared to Distance Vector, Link State routing converges ____.",
+          opts: [
+            "Slower",
+            "Faster",
+            "At the same speed",
+            "Only when topology is stable",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Link State Routing",
+          q: "Link State routing requires more bandwidth than Distance Vector because of ____.",
+          opts: [
+            "Using Bellman-Ford",
+            "Sharing tables only with neighbors",
+            "Flooding and sending large link state packets",
+            "Having fewer routes",
+          ],
+          ans: 2,
+        },
+
+        // ===================== DV vs LS COMPARISON =====================
+        {
+          topic: "DV vs Link State",
+          q: "Which routing type is based on 'global knowledge' of the network?",
+          opts: [
+            "Distance Vector",
+            "Link State",
+            "Static Routing",
+            "Path Vector",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "DV vs Link State",
+          q: "Which routing type is known for the 'count to infinity' problem?",
+          opts: ["Link State", "OSPF", "Distance Vector", "IS-IS"],
+          ans: 2,
+        },
+        {
+          topic: "DV vs Link State",
+          q: "Which routing type uses less bandwidth due to local sharing and no flooding?",
+          opts: ["Link State", "Distance Vector", "BGP", "OSPF"],
+          ans: 1,
+        },
+        {
+          topic: "DV vs Link State",
+          q: "Which routing protocol is a practical implementation of Distance Vector routing?",
+          opts: ["OSPF", "IS-IS", "RIP", "BGP"],
+          ans: 2,
+        },
+
+        // ===================== LOGICAL / IPv4 ADDRESSING =====================
+        {
+          topic: "IPv4 Addressing",
+          q: "How many bits is an IPv4 address?",
+          opts: ["16 bits", "32 bits", "64 bits", "128 bits"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Addressing",
+          q: "What notation is used to represent IPv4 addresses?",
+          opts: [
+            "Binary notation",
+            "Hexadecimal notation",
+            "Dotted-decimal notation",
+            "Octal notation",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Addressing",
+          q: "What is the total address space of IPv4?",
+          opts: ["2^16 (~65,536)", "2^32 (~4.3 billion)", "2^64", "2^128"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Addressing",
+          q: "A device with 'm' connections to the Internet needs ____.",
+          opts: [
+            "1 IP address",
+            "m IP addresses",
+            "m+1 IP addresses",
+            "2 IP addresses",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Addressing",
+          q: "In classful IPv4 addressing, which two parts does an IP address consist of?",
+          opts: [
+            "Network ID and Host ID",
+            "Subnet ID and CIDR prefix",
+            "Source ID and Destination ID",
+            "Domain name and host name",
+          ],
+          ans: 0,
+        },
+
+        // ===================== CLASSFUL ADDRESSING =====================
+        {
+          topic: "Classful Addressing",
+          q: "In Class A, how many bits are used for the Host ID?",
+          opts: ["8 bits", "16 bits", "24 bits", "28 bits"],
+          ans: 2,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "In Class A, the first bit of the first octet is always ____.",
+          opts: ["1", "0", "10", "110"],
+          ans: 1,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "What is the range of the first byte for Class B addresses?",
+          opts: ["0–127", "128–191", "192–223", "224–239"],
+          ans: 1,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "What is the maximum number of hosts per network in Class B?",
+          opts: ["16,777,214", "65,534", "254", "16,384"],
+          ans: 1,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "What is Class D used for?",
+          opts: [
+            "Reserved for research",
+            "Loopback testing",
+            "Multicast addresses",
+            "Broadcast-only",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "What is Class E used for?",
+          opts: [
+            "Large enterprise networks",
+            "Multicast",
+            "Future use / research and development",
+            "Loopback",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "How many total networks exist in Class A?",
+          opts: ["64", "128", "256", "16,384"],
+          ans: 1,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "What is the range of the first byte for Class C addresses?",
+          opts: ["0–127", "128–191", "192–223", "224–239"],
+          ans: 2,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "The maximum number of hosts per network in Class C is ____.",
+          opts: ["254", "256", "65,534", "16,777,214"],
+          ans: 0,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "The binary prefix for Class C addresses starts with ____.",
+          opts: ["0", "10", "110", "1110"],
+          ans: 2,
+        },
+        {
+          topic: "Classful Addressing",
+          q: "In Class B, how many bits define the Network ID?",
+          opts: ["7", "8", "14", "16"],
+          ans: 3,
+        },
+
+        // ===================== NETWORK MASKS / CIDR =====================
+        {
+          topic: "Network Masks",
+          q: "What is the default subnet mask for Class A in CIDR notation?",
+          opts: ["/24", "/8", "/16", "/4"],
+          ans: 1,
+        },
+        {
+          topic: "Network Masks",
+          q: "What is the default subnet mask for Class C in dotted-decimal?",
+          opts: [
+            "255.0.0.0",
+            "255.255.0.0",
+            "255.255.255.0",
+            "255.255.255.128",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Masks",
+          q: "What does CIDR stand for?",
+          opts: [
+            "Classless Inter-Domain Routing",
+            "Classful Inter-Domain Routing",
+            "Classless Inter-Device Routing",
+            "Centralized Internet Domain Routing",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Network Masks",
+          q: "To identify the Network ID from an IP address, you perform ____.",
+          opts: [
+            "OR of IP address with subnet mask",
+            "AND of IP address with subnet mask",
+            "XOR of IP address with subnet mask",
+            "NOT of subnet mask",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Network Masks",
+          q: "To identify the broadcast (last) address of a block, you perform ____.",
+          opts: [
+            "AND of IP address with subnet mask",
+            "AND of IP address with NOT of subnet mask",
+            "OR of IP address with NOT of subnet mask",
+            "XOR of IP address and subnet mask",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "Network Masks",
+          q: "For IP address 10.20.15.1 with mask 255.0.0.0, what is the network address?",
+          opts: ["10.0.0.1", "10.0.0.0", "10.20.0.0", "10.255.255.255"],
+          ans: 1,
+        },
+
+        // ===================== CLASSLESS ADDRESSING =====================
+        {
+          topic: "Classless Addressing",
+          q: "In classless addressing, the block size must be ____.",
+          opts: [
+            "A multiple of 8",
+            "A power of 2",
+            "A multiple of 4",
+            "Any integer",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "In classless addressing, the first address of a block must be ____.",
+          opts: [
+            "Any address",
+            "Divisible by the number of addresses in the block",
+            "Always ending in .0",
+            "Always the network broadcast address",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "For block 205.16.37.39/28, what is the number of addresses in this block?",
+          opts: ["8", "16", "32", "64"],
+          ans: 1,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "For block /28, what is the formula for number of addresses?",
+          opts: ["2^28", "2^(32-28)", "2^(28-24)", "2^16"],
+          ans: 1,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "For block 205.16.37.39/28, what is the first (network) address?",
+          opts: ["205.16.37.39", "205.16.37.32", "205.16.37.48", "205.16.37.0"],
+          ans: 1,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "Which of these can be the beginning address of a block containing 16 addresses?",
+          opts: ["190.16.42.44", "123.45.24.52", "205.16.37.32", "17.17.33.81"],
+          ans: 2,
+        },
+        {
+          topic: "Classless Addressing",
+          q: "Classless addressing was introduced primarily to overcome ____.",
+          opts: [
+            "Slow routing convergence",
+            "IPv4 address depletion",
+            "Lack of broadcast support",
+            "ICMP limitations",
+          ],
+          ans: 1,
+        },
+
+        // ===================== SUBNETTING & SUPERNETTING =====================
+        {
+          topic: "Subnetting",
+          q: "Subnetting _____ the number of 1s in the subnet mask.",
+          opts: ["Decreases", "Increases", "Does not change", "Removes"],
+          ans: 1,
+        },
+        {
+          topic: "Subnetting",
+          q: "To divide a network into 4 subnets, how many bits must be borrowed from the host ID?",
+          opts: ["1 bit", "2 bits", "3 bits", "4 bits"],
+          ans: 1,
+        },
+        {
+          topic: "Subnetting",
+          q: "As the number of subnets increases, the number of usable hosts per subnet ____.",
+          opts: ["Increases", "Stays the same", "Decreases", "Doubles"],
+          ans: 2,
+        },
+        {
+          topic: "Subnetting",
+          q: "Supernetting _____ the number of 1s in the subnet mask.",
+          opts: ["Increases", "Decreases", "Does not change", "Removes all"],
+          ans: 1,
+        },
+        {
+          topic: "Subnetting",
+          q: "Supernetting allows an organization to combine several Class C blocks to create ____.",
+          opts: [
+            "More subnets",
+            "A larger range of addresses",
+            "Fewer IP addresses",
+            "A Class A block",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "Subnetting",
+          q: "If an organization is given four Class C blocks and combines them, the mask changes from /24 to ____.",
+          opts: ["/22", "/20", "/26", "/28"],
+          ans: 0,
+        },
+
+        // ===================== NETWORK LAYER PROTOCOLS =====================
+        {
+          topic: "Network Protocols",
+          q: "Which of the following is NOT listed as a Network Layer protocol?",
+          opts: ["ARP", "RARP", "ICMP", "TCP"],
+          ans: 3,
+        },
+        {
+          topic: "Network Protocols",
+          q: "IPv6 provides how many bits for addressing?",
+          opts: ["32 bits", "64 bits", "128 bits", "256 bits"],
+          ans: 2,
+        },
+        {
+          topic: "Network Protocols",
+          q: "ARP (Address Resolution Protocol) converts ____.",
+          opts: [
+            "IP address → MAC address",
+            "MAC address → IP address",
+            "Domain name → IP address",
+            "IP address → port number",
+          ],
+          ans: 0,
+        },
+        {
+          topic: "Network Protocols",
+          q: "RARP (Reverse ARP) converts ____.",
+          opts: [
+            "IP address → MAC address",
+            "MAC address → IP address",
+            "Domain name → IP address",
+            "IP address → port number",
+          ],
+          ans: 1,
+        },
+
+        // ===================== ICMP =====================
+        {
+          topic: "ICMP",
+          q: "What does ICMP stand for?",
+          opts: [
+            "Internet Control Management Protocol",
+            "Internet Control Message Protocol",
+            "Internal Control Message Protocol",
+            "Internet Communication Message Protocol",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "ICMP belongs to which layer?",
+          opts: [
+            "Transport Layer",
+            "Data Link Layer",
+            "Network Layer",
+            "Application Layer",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "ICMP",
+          q: "What are the two broad categories of ICMP messages?",
+          opts: [
+            "Request and response messages",
+            "Error reporting and query messages",
+            "Broadcast and unicast messages",
+            "Fragmented and complete messages",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "ICMP does NOT correct errors; it only ____.",
+          opts: [
+            "Prevents errors",
+            "Reports them",
+            "Logs them to a server",
+            "Retransmits packets",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "Which ICMP type represents 'Destination Unreachable'?",
+          opts: ["Type 5", "Type 11", "Type 4", "Type 3"],
+          ans: 3,
+        },
+        {
+          topic: "ICMP",
+          q: "What ICMP message is used for host reachability testing (ping)?",
+          opts: [
+            "Source quench",
+            "Echo request and reply",
+            "Redirect",
+            "Time exceeded",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "Which ICMP message informs the sender about network congestion?",
+          opts: [
+            "Redirection message (Type 5)",
+            "Source quench (Type 4)",
+            "Time exceeded (Type 11)",
+            "Parameter problem (Type 12)",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "Which ICMP type represents 'Time Exceeded'?",
+          opts: ["Type 3", "Type 12", "Type 11", "Type 5"],
+          ans: 2,
+        },
+        {
+          topic: "ICMP",
+          q: "What is the total size of the ICMP header?",
+          opts: ["4 bytes", "6 bytes", "8 bytes", "20 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "ICMP",
+          q: "An ICMP error message is NOT generated in response to a packet carrying ____.",
+          opts: [
+            "A unicast datagram",
+            "A fragmented datagram that is not the first fragment",
+            "A packet with TTL > 1",
+            "A packet with a valid header",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "No ICMP error message is generated for a datagram with which special address?",
+          opts: ["192.168.0.1", "10.0.0.1", "127.0.0.0", "172.16.0.1"],
+          ans: 2,
+        },
+        {
+          topic: "ICMP",
+          q: "The Redirection ICMP message (type 5) is used when ____.",
+          opts: [
+            "The TTL expires",
+            "The source uses a wrong router to send its message",
+            "The destination is unreachable",
+            "Congestion occurs at the router",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "ICMP is a _____ protocol (like UDP, not TCP).",
+          opts: [
+            "Connection-oriented",
+            "Connectionless",
+            "Reliable",
+            "Acknowledged",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "ICMP messages are transmitted ____.",
+          opts: [
+            "Directly over Ethernet",
+            "Inside IP datagrams",
+            "Inside TCP segments",
+            "Inside UDP datagrams",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ICMP",
+          q: "IPv6 uses which field instead of TTL to determine if a packet has expired?",
+          opts: ["Flow Label", "Payload Length", "Hop Limit", "Next Header"],
+          ans: 2,
+        },
+
+        // ===================== IGMP =====================
+        {
+          topic: "IGMP",
+          q: "What does IGMP stand for?",
+          opts: [
+            "Internal Group Management Protocol",
+            "Internet Group Management Protocol",
+            "Internet General Message Protocol",
+            "Inter-Group Multicast Protocol",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IGMP",
+          q: "IGMP is used to manage ____.",
+          opts: [
+            "Unicast routing tables",
+            "Multicast group memberships in IPv4 networks",
+            "Error reporting in IPv6",
+            "Address resolution on a LAN",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IGMP",
+          q: "What are the three types of IGMP messages?",
+          opts: [
+            "Request, response, error",
+            "Query, membership report, leave report",
+            "Hello, LSP, ACK",
+            "Unicast, multicast, broadcast",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IGMP",
+          q: "IGMP query messages are sent by ____.",
+          opts: [
+            "Hosts to routers to report group membership",
+            "Routers to all hosts on the LAN to determine which multicast groups are joined",
+            "Hosts to join a multicast group",
+            "Hosts to leave a multicast group",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IGMP",
+          q: "There are two types of IGMP query messages: ____.",
+          opts: [
+            "Static and dynamic",
+            "General and special",
+            "Unicast and multicast",
+            "Error and informational",
+          ],
+          ans: 1,
+        },
+
+        // ===================== IPv4 COMMUNICATION =====================
+        {
+          topic: "IPv4 Communication",
+          q: "What type of IPv4 communication is one-to-one?",
+          opts: ["Broadcasting", "Multicasting", "Unicasting", "Anycasting"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Communication",
+          q: "What type of IPv4 communication is one-to-many?",
+          opts: ["Unicasting", "Multicasting", "Broadcasting", "Anycasting"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Communication",
+          q: "IPv6 does NOT support which type of communication that IPv4 does?",
+          opts: ["Unicast", "Multicast", "Broadcast", "Anycast"],
+          ans: 2,
+        },
+        {
+          topic: "IPv4 Communication",
+          q: "Link-local addresses (169.254.x.x) are used for ____.",
+          opts: [
+            "Loopback testing",
+            "Self-configured addressing when no DHCP server is available",
+            "VPN tunneling",
+            "Multicast routing",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 Communication",
+          q: "The loopback block 127.0.0.0/8 is reserved for ____.",
+          opts: [
+            "Multicast",
+            "Loopback functions",
+            "Private addressing",
+            "APIPA",
+          ],
+          ans: 1,
+        },
+
+        // ===================== IPv6 =====================
+        {
+          topic: "IPv6",
+          q: "How many bits is an IPv6 address?",
+          opts: ["32 bits", "64 bits", "128 bits", "256 bits"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "IPv6 addresses are written in which format?",
+          opts: [
+            "Dotted-decimal",
+            "Binary",
+            "Hexadecimal separated by colons",
+            "Octal",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "The rule about '::' in IPv6 abbreviation is ____.",
+          opts: [
+            "It can be used as many times as needed",
+            "It can be used only once per address",
+            "It can only replace a single group of zeros",
+            "It cannot be used in global unicast addresses",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv6",
+          q: "IPv6 was developed by which organization?",
+          opts: ["IEEE", "ISO", "IETF", "IANA"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "What is the address space of IPv6?",
+          opts: ["2^32", "2^64", "2^128", "2^256"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "How many bytes long is the IPv6 fixed header?",
+          opts: ["20 bytes", "32 bytes", "40 bytes", "60 bytes"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "The Hop Limit field in IPv6 is equivalent to which IPv4 field?",
+          opts: [
+            "Protocol field",
+            "Header Checksum",
+            "Time to Live (TTL)",
+            "Identification",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "The Flow Label field in IPv6 is used for ____.",
+          opts: [
+            "Indicating protocol version",
+            "Labeling packets in the same flow for special handling by routers",
+            "Identifying the next header type",
+            "Specifying payload length",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv6",
+          q: "What is the IPv6 loopback address?",
+          opts: ["::0/128", "::1/128", "FF00::1/128", "FE80::1/64"],
+          ans: 1,
+        },
+        {
+          topic: "IPv6",
+          q: "What is the default route in IPv6?",
+          opts: ["::1/128", "::/0", "::/128", "FF00::/8"],
+          ans: 1,
+        },
+        {
+          topic: "IPv6",
+          q: "IPv6 multicast addresses start with the prefix ____.",
+          opts: ["FE80::/10", "FC00::/7", "FF00::/8", "2000::/3"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "Which IPv6 address type is delivered to the closest interface in a group?",
+          opts: ["Unicast", "Multicast", "Anycast", "Broadcast"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "Which IPv6 address type replaces IPv4 broadcast?",
+          opts: ["Unicast", "Anycast", "Multicast", "Loopback"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "How many bits is the Traffic Class (PRI) field in IPv6?",
+          opts: ["4 bits", "8 bits", "16 bits", "20 bits"],
+          ans: 1,
+        },
+        {
+          topic: "IPv6",
+          q: "How many bits is the Flow Label in the IPv6 header?",
+          opts: ["8 bits", "16 bits", "20 bits", "32 bits"],
+          ans: 2,
+        },
+        {
+          topic: "IPv6",
+          q: "IPv6 was deployed in which year?",
+          opts: ["1981", "1993", "1998", "2003"],
+          ans: 2,
+        },
+
+        // ===================== IPv4 vs IPv6 =====================
+        {
+          topic: "IPv4 vs IPv6",
+          q: "IPv4 was deployed in which year?",
+          opts: ["1971", "1981", "1993", "1998"],
+          ans: 1,
+        },
+        {
+          topic: "IPv4 vs IPv6",
+          q: "IPv4 uses which address notation?",
+          opts: [
+            "Hexadecimal with colons",
+            "Binary with dashes",
+            "Numeric dotted-decimal",
+            "Alphanumeric with slashes",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "IPv6 Transition",
+          q: "What is the purpose of Dual-Stack Routers in IPv6 transition?",
+          opts: [
+            "Run only IPv6",
+            "Run IPv4 and IPv6 simultaneously",
+            "Convert IPv4 to IPv6 exclusively",
+            "Use tunneling only",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv6 Transition",
+          q: "In tunneling (IPv6 transition), an IPv4 packet is ____.",
+          opts: [
+            "Converted to IPv6",
+            "Encapsulated inside an IPv6 packet to pass through IPv6 regions",
+            "Dropped and retransmitted as IPv6",
+            "Sent with a dual header",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "IPv6 Transition",
+          q: "What does NAT-PT stand for?",
+          opts: [
+            "Network Address Translation – Protocol Translation",
+            "Network Address Tunneling – Protocol Transfer",
+            "Network Assignment Table – Path Translation",
+            "New Address Type – Protocol Transition",
+          ],
+          ans: 0,
+        },
+
+        // ===================== ARP / RARP OPERATION =====================
+        {
+          topic: "ARP / RARP",
+          q: "An ARP request is sent as a ____.",
+          opts: ["Unicast", "Multicast", "Broadcast", "Anycast"],
+          ans: 2,
+        },
+        {
+          topic: "ARP / RARP",
+          q: "An ARP reply is sent as a ____.",
+          opts: ["Broadcast", "Unicast", "Multicast", "Anycast"],
+          ans: 1,
+        },
+        {
+          topic: "ARP / RARP",
+          q: "RARP allows a host to get its IP address when it only knows its ____.",
+          opts: [
+            "Domain name",
+            "IP address",
+            "Physical (MAC) address",
+            "Default gateway",
+          ],
+          ans: 2,
+        },
+        {
+          topic: "ARP / RARP",
+          q: "In an ARP exchange, which system sends back the ARP reply?",
+          opts: [
+            "All systems on the network",
+            "Only the system whose IP address matches the request",
+            "The default gateway",
+            "The DNS server",
+          ],
+          ans: 1,
+        },
+        {
+          topic: "ARP / RARP",
+          q: "RARP requires a machine running which program on the local network?",
+          opts: ["ARP client", "DNS server", "RARP server", "DHCP client"],
+          ans: 2,
+        },
+      ];
+
+      // ===================== STATE =====================
+      let mode = "learning";
+      let questions = [];
+      let current = 0;
+      let answered = {}; // index → { selected, correct }
+      let correctCount = 0;
+      let wrongCount = 0;
+      let isRetake = false;
+      let retakeIndices = [];
+      let countdownTimer = null;
+
+      // ===================== INIT =====================
+      function startQuiz(selectedMode) {
+        mode = selectedMode;
+        isRetake = false;
+        questions = shuffle([
+          ...QUESTIONS.map((q, i) => ({ ...q, originalIndex: i })),
+        ]);
+        current = 0;
+        answered = {};
+        correctCount = 0;
+        wrongCount = 0;
+
+        document.getElementById("mode-screen").style.display = "none";
+        document.getElementById("results-screen").style.display = "none";
+        document.getElementById("quiz-screen").style.display = "block";
+        document.getElementById("retake-banner").style.display = "none";
+
+        const badge = document.getElementById("mode-badge");
+        const ri = document.getElementById("rapid-indicator");
+        if (mode === "learning") {
+          badge.textContent = "Learning";
+          badge.className = "mode-badge learning";
+          ri.style.display = "none";
+        } else {
+          badge.textContent = "Rapid Fire";
+          badge.className = "mode-badge rapidfire";
+          ri.style.display = "flex";
+        }
+
+        updateScore();
+        renderQuestion();
+      }
+
+      function goHome() {
+        clearCountdown();
+        document.getElementById("results-screen").style.display = "none";
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("mode-screen").style.display = "flex";
+      }
+
+      function restartFull() {
+        startQuiz(mode);
+      }
+
+      function retakeWrong() {
+        const wrongOnes = questions.filter(
+          (q, i) => answered[i] && !answered[i].correct
+        );
+        if (wrongOnes.length === 0) return;
+        isRetake = true;
+        questions = shuffle(wrongOnes);
+        current = 0;
+        answered = {};
+        correctCount = 0;
+        wrongCount = 0;
+
+        document.getElementById("results-screen").style.display = "none";
+        document.getElementById("quiz-screen").style.display = "block";
+        document.getElementById("retake-banner").style.display = "block";
+        updateScore();
+        renderQuestion();
+      }
+
+      // ===================== RENDER =====================
+      function renderQuestion() {
+        clearCountdown();
+        const q = questions[current];
+        const total = questions.length;
+        const isAnswered = answered[current] !== undefined;
+
+        document.getElementById("q-current").textContent = current + 1;
+        document.getElementById("q-total").textContent = total;
+        document.getElementById("q-num").textContent =
+          "Q" + String(current + 1).padStart(3, "0");
+        document.getElementById("q-topic").textContent = q.topic;
+        document.getElementById("q-text").textContent = q.q;
+
+        const pct = (current / total) * 100;
+        document.getElementById("progress-bar").style.width = pct + "%";
+
+        const card = document.getElementById("question-card");
+        card.className = "question-card";
+        if (isAnswered) {
+          card.classList.add(
+            answered[current].correct ? "correct-card" : "wrong-card"
+          );
+        }
+
+        // Options
+        const container = document.getElementById("options-container");
+        container.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.opts.forEach((opt, i) => {
+          const div = document.createElement("div");
+          div.className = "option" + (isAnswered ? " disabled" : "");
+
+          if (isAnswered) {
+            if (i === q.ans) div.classList.add("correct-opt");
+            else if (
+              i === answered[current].selected &&
+              !answered[current].correct
+            )
+              div.classList.add("wrong-opt");
+          }
+
+          div.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+          if (!isAnswered) div.onclick = () => selectAnswer(i);
+          container.appendChild(div);
+        });
+
+        // Feedback
+        const fb = document.getElementById("feedback");
+        const cdb = document.getElementById("countdown-bar");
+        fb.style.display = "none";
+        cdb.style.display = "none";
+
+        if (isAnswered) {
+          const correct = answered[current].correct;
+          fb.className = "feedback " + (correct ? "correct" : "wrong");
+          fb.style.display = "flex";
+          fb.querySelector(".fb-icon").textContent = correct ? "✅" : "❌";
+          fb.querySelector(".fb-text").innerHTML = correct
+            ? "<strong>Correct!</strong> Great job!"
+            : `<strong>Incorrect.</strong> The correct answer is: <strong>${
+                q.opts[q.ans]
+              }</strong>`;
+        }
+
+        // Buttons
+        document.getElementById("btn-prev").disabled = current === 0;
+        const nextBtn = document.getElementById("btn-next");
+        const isLast = current === total - 1;
+
+        if (isLast && isAnswered) {
+          nextBtn.textContent = "🏁 See Results";
+          nextBtn.onclick = showResults;
+        } else {
+          nextBtn.textContent = isLast ? "🏁 Finish" : "Next →";
+          nextBtn.onclick = () => navigate(1);
+          nextBtn.disabled = !isAnswered && mode === "learning";
+          if (mode === "rapidfire" && !isAnswered) nextBtn.disabled = true;
+        }
+      }
+
+      function selectAnswer(i) {
+        if (answered[current] !== undefined) return;
+        const q = questions[current];
+        const correct = i === q.ans;
+        answered[current] = { selected: i, correct };
+
+        if (correct) correctCount++;
+        else wrongCount++;
+
+        updateScore();
+
+        // Highlight options
+        const opts = document.querySelectorAll(".option");
+        opts.forEach((opt, idx) => {
+          opt.classList.add("disabled");
+          if (idx === q.ans) opt.classList.add("correct-opt");
+          else if (idx === i && !correct) opt.classList.add("wrong-opt");
+        });
+
+        const card = document.getElementById("question-card");
+        card.classList.add(correct ? "correct-card" : "wrong-card");
+
+        // Feedback
+        const fb = document.getElementById("feedback");
+        fb.className = "feedback " + (correct ? "correct" : "wrong");
+        fb.style.display = "flex";
+        fb.querySelector(".fb-icon").textContent = correct ? "✅" : "❌";
+        fb.querySelector(".fb-text").innerHTML = correct
+          ? "<strong>Correct!</strong> Great job!"
+          : `<strong>Incorrect.</strong> The correct answer is: <strong>${
+              q.opts[q.ans]
+            }</strong>`;
+
+        const isLast = current === questions.length - 1;
+
+        if (mode === "rapidfire") {
+          if (correct && !isLast) {
+            // Auto-advance after 1.2 seconds
+            const cdb = document.getElementById("countdown-bar");
+            const fill = document.getElementById("countdown-fill");
+            cdb.style.display = "block";
+            fill.style.transition = "none";
+            fill.style.width = "100%";
+            setTimeout(() => {
+              fill.style.transition = "width 1.2s linear";
+              fill.style.width = "0%";
+            }, 30);
+            countdownTimer = setTimeout(() => {
+              navigate(1);
+            }, 1300);
+          } else {
+            // Wrong or last — show next button
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.disabled = false;
+            nextBtn.textContent = isLast ? "🏁 See Results" : "Next →";
+            nextBtn.onclick = isLast ? showResults : () => navigate(1);
+          }
+        } else {
+          // Learning — enable next button
+          const nextBtn = document.getElementById("btn-next");
+          nextBtn.disabled = false;
+          nextBtn.textContent = isLast ? "🏁 See Results" : "Next →";
+          nextBtn.onclick = isLast ? showResults : () => navigate(1);
+        }
+      }
+
+      function navigate(dir) {
+        clearCountdown();
+        const newIdx = current + dir;
+        if (newIdx < 0 || newIdx >= questions.length) return;
+        current = newIdx;
+        renderQuestion();
+      }
+
+      function clearCountdown() {
+        if (countdownTimer) {
+          clearTimeout(countdownTimer);
+          countdownTimer = null;
+        }
+      }
+
+      function updateScore() {
+        document.getElementById("score-correct").textContent = correctCount;
+        document.getElementById("score-wrong").textContent = wrongCount;
+      }
+
+      // ===================== RESULTS =====================
+      function showResults() {
+        clearCountdown();
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("results-screen").style.display = "block";
+
+        const total = Object.keys(answered).length;
+        const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+        document.getElementById("rs-total").textContent = total;
+        document.getElementById("rs-correct").textContent = correctCount;
+        document.getElementById("rs-wrong").textContent = wrongCount;
+        document.getElementById("rs-pct").textContent = pct + "%";
+        document.getElementById("result-score").textContent = pct + "%";
+
+        let emoji, msg;
+        if (pct >= 90) {
+          emoji = "🏆";
+          msg = "Outstanding! Network Layer master!";
+        } else if (pct >= 75) {
+          emoji = "🎯";
+          msg = "Great work! You know this material well.";
+        } else if (pct >= 60) {
+          emoji = "📚";
+          msg = "Good effort! A bit more review will help.";
+        } else if (pct >= 40) {
+          emoji = "💪";
+          msg = "Keep going! Practice makes perfect.";
+        } else {
+          emoji = "🔁";
+          msg = "Time to review the material and try again!";
+        }
+
+        document.getElementById("result-emoji").textContent = emoji;
+        document.getElementById("result-msg").textContent = msg;
+        document.getElementById("result-score").style.color =
+          pct >= 75
+            ? "var(--green)"
+            : pct >= 50
+            ? "var(--yellow)"
+            : "var(--red)";
+
+        // Wrong questions list
+        const wrongs = questions
+          .map((q, i) => ({ q, i }))
+          .filter(({ i }) => answered[i] && !answered[i].correct);
+        const sec = document.getElementById("wrong-section");
+
+        if (wrongs.length > 0) {
+          document.getElementById("btn-retake").style.display = "inline-flex";
+          sec.innerHTML = `<p class="wrong-list-title">// Wrong Answers (${wrongs.length})</p>`;
+          wrongs.forEach(({ q, i }) => {
+            const sel = answered[i].selected;
+            const div = document.createElement("div");
+            div.className = "wrong-item";
+            div.innerHTML = `
+        <div class="wi-q">${q.q}</div>
+        <div class="wi-a">Your answer: ${
+          q.opts[sel]
+        } &nbsp;|&nbsp; Correct: <span>${q.opts[q.ans]}</span></div>`;
+            sec.appendChild(div);
+          });
+        } else {
+          document.getElementById("btn-retake").style.display = "none";
+          sec.innerHTML =
+            '<p style="text-align:center;color:var(--green);font-size:16px;">🎉 No wrong answers!</p>';
+        }
+      }
+
+      // ===================== UTILS =====================
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Computer Networks Quiz – Data Link Layer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #070b12;
+        --surface: #0d1421;
+        --surface2: #111c2e;
+        --border: #1a2e4a;
+        --accent: #00d4ff;
+        --accent2: #00ff9d;
+        --danger: #ff3d6b;
+        --warning: #ffb300;
+        --text: #ccd6f6;
+        --text-dim: #5a7699;
+        --correct: #00ff9d;
+        --wrong: #ff3d6b;
+        --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+        --glow-g: 0 0 20px rgba(0, 255, 157, 0.3);
+        --glow-r: 0 0 20px rgba(255, 61, 107, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background-image: radial-gradient(
+            ellipse at 20% 50%,
+            rgba(0, 40, 80, 0.3) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 20%,
+            rgba(0, 80, 60, 0.2) 0%,
+            transparent 50%
+          );
+      }
+
+      /* Grid overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(0, 212, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* ===================== SCREENS ===================== */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+
+      /* ===================== HOME ===================== */
+      .home-header {
+        text-align: center;
+        padding: 50px 20px 30px;
+      }
+      .home-header .tag {
+        font-family: "Share Tech Mono", monospace;
+        color: var(--accent);
+        font-size: 0.8rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .home-header h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(1.5rem, 4vw, 2.8rem);
+        font-weight: 900;
+        color: #fff;
+        text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+      .home-header h1 span {
+        color: var(--accent);
+      }
+      .home-header p {
+        color: var(--text-dim);
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+      .home-header .stat-row {
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .stat-pill {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        padding: 6px 16px;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--accent);
+      }
+      .stat-pill span {
+        color: var(--text-dim);
+      }
+
+      .mode-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 40px 0;
+      }
+      @media (max-width: 520px) {
+        .mode-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mode-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px 28px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.3s;
+        border-radius: 16px;
+      }
+      .mode-card.learn::before {
+        background: radial-gradient(
+          ellipse at 30% 50%,
+          rgba(0, 212, 255, 0.08),
+          transparent
+        );
+      }
+      .mode-card.rapid::before {
+        background: radial-gradient(
+          ellipse at 30% 50%,
+          rgba(255, 179, 0, 0.08),
+          transparent
+        );
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--glow);
+        border-color: var(--accent);
+      }
+      .mode-card.rapid:hover {
+        box-shadow: 0 0 20px rgba(255, 179, 0, 0.3);
+        border-color: var(--warning);
+      }
+
+      .mode-icon {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .mode-card h2 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .mode-card.learn h2 {
+        color: var(--accent);
+      }
+      .mode-card.rapid h2 {
+        color: var(--warning);
+      }
+      .mode-card p {
+        font-size: 0.9rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+      }
+      .mode-card .badge {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-family: "Share Tech Mono", monospace;
+        letter-spacing: 1px;
+      }
+      .mode-card.learn .badge {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      }
+      .mode-card.rapid .badge {
+        background: rgba(255, 179, 0, 0.1);
+        color: var(--warning);
+        border: 1px solid rgba(255, 179, 0, 0.3);
+      }
+
+      /* ===================== QUIZ SCREEN ===================== */
+      .quiz-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0 14px;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .mode-badge {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        letter-spacing: 2px;
+      }
+      .mode-badge.learn {
+        background: rgba(0, 212, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      }
+      .mode-badge.rapid {
+        background: rgba(255, 179, 0, 0.1);
+        color: var(--warning);
+        border: 1px solid rgba(255, 179, 0, 0.3);
+      }
+      .mode-badge.retake {
+        background: rgba(0, 255, 157, 0.1);
+        color: var(--accent2);
+        border: 1px solid rgba(0, 255, 157, 0.3);
+      }
+
+      .score-display {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+      }
+      .score-display .sc {
+        color: var(--accent2);
+        font-size: 1rem;
+      }
+
+      .progress-wrap {
+        width: 100%;
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 4px;
+        margin-bottom: 8px;
+      }
+      .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        transition: width 0.4s ease;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      }
+      .progress-text {
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        text-align: right;
+        margin-bottom: 20px;
+      }
+
+      .topic-chip {
+        display: inline-block;
+        padding: 3px 10px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-family: "Share Tech Mono", monospace;
+        color: var(--accent);
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+
+      .question-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .question-num {
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        letter-spacing: 3px;
+        margin-bottom: 12px;
+      }
+      .question-text {
+        font-size: 1.15rem;
+        font-weight: 600;
+        line-height: 1.6;
+        color: #e8f0fe;
+      }
+
+      .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .option-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 20px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        position: relative;
+        overflow: hidden;
+      }
+      .option-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: var(--surface2);
+        color: #fff;
+        transform: translateX(4px);
+      }
+      .option-btn:disabled {
+        cursor: default;
+      }
+
+      .option-letter {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .option-btn:hover:not(:disabled) .option-letter {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .option-btn.correct {
+        background: rgba(0, 255, 157, 0.08);
+        border-color: var(--correct);
+        color: var(--correct);
+        box-shadow: var(--glow-g);
+      }
+      .option-btn.correct .option-letter {
+        background: var(--correct);
+        color: #000;
+        border-color: var(--correct);
+      }
+
+      .option-btn.wrong {
+        background: rgba(255, 61, 107, 0.08);
+        border-color: var(--wrong);
+        color: var(--wrong);
+        box-shadow: var(--glow-r);
+      }
+      .option-btn.wrong .option-letter {
+        background: var(--wrong);
+        color: #fff;
+        border-color: var(--wrong);
+      }
+
+      /* Rapid fire pulse animation */
+      @keyframes pulse-in {
+        0% {
+          transform: scale(0.97);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .question-card.entering {
+        animation: pulse-in 0.3s ease;
+      }
+
+      .feedback-box {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      .feedback-box.show {
+        display: block;
+      }
+      .feedback-box.correct {
+        background: rgba(0, 255, 157, 0.08);
+        border: 1px solid rgba(0, 255, 157, 0.3);
+        color: var(--correct);
+      }
+      .feedback-box.wrong {
+        background: rgba(255, 61, 107, 0.08);
+        border: 1px solid rgba(255, 61, 107, 0.3);
+        color: var(--wrong);
+      }
+
+      .rapid-timer {
+        display: none;
+        text-align: center;
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--accent);
+        margin-bottom: 10px;
+      }
+      .rapid-timer.show {
+        display: block;
+      }
+      .timer-bar-wrap {
+        height: 3px;
+        background: var(--surface2);
+        border-radius: 3px;
+        margin-top: 6px;
+      }
+      .timer-bar {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 3px;
+        transition: width 0.1s linear;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 11px 24px;
+        border-radius: 8px;
+        border: 1px solid;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+      }
+      .btn-primary {
+        background: rgba(0, 212, 255, 0.1);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-primary:hover {
+        background: var(--accent);
+        color: #000;
+        box-shadow: var(--glow);
+      }
+      .btn-secondary {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--text-dim);
+      }
+      .btn-secondary:hover {
+        border-color: var(--text-dim);
+        color: var(--text);
+      }
+      .btn-danger {
+        background: rgba(255, 61, 107, 0.1);
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+
+      .btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .btn:disabled:hover {
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+      }
+
+      /* ===================== RESULTS SCREEN ===================== */
+      .results-header {
+        text-align: center;
+        padding: 40px 20px 30px;
+      }
+      .results-header h2 {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(1.3rem, 3vw, 2rem);
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .big-score {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(3rem, 8vw, 5rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin: 16px 0;
+      }
+      .score-label {
+        font-size: 0.9rem;
+        color: var(--text-dim);
+      }
+
+      .stats-row {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin: 24px 0;
+        flex-wrap: wrap;
+      }
+      .stat-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 24px;
+        text-align: center;
+        min-width: 100px;
+      }
+      .stat-box .val {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      .stat-box.correct-s .val {
+        color: var(--correct);
+      }
+      .stat-box.wrong-s .val {
+        color: var(--wrong);
+      }
+      .stat-box.skip-s .val {
+        color: var(--text-dim);
+      }
+      .stat-box .lbl {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        margin-top: 4px;
+        font-family: "Share Tech Mono", monospace;
+      }
+
+      .wrong-list {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+      .wrong-list h3 {
+        padding: 14px 20px;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.8rem;
+        color: var(--wrong);
+        border-bottom: 1px solid var(--border);
+        letter-spacing: 1px;
+      }
+      .wrong-item {
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9rem;
+        display: flex;
+        gap: 10px;
+      }
+      .wrong-item:last-child {
+        border-bottom: none;
+      }
+      .wrong-item .wi-num {
+        color: var(--text-dim);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        min-width: 28px;
+      }
+      .wrong-item .wi-q {
+        color: var(--text);
+        flex: 1;
+      }
+      .wrong-item .wi-a {
+        color: var(--correct);
+        font-size: 0.85rem;
+        margin-top: 4px;
+      }
+
+      .results-actions {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding-bottom: 40px;
+      }
+
+      /* Auto-advance overlay */
+      .auto-advance-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        pointer-events: none;
+        animation: flash-green 0.5s ease forwards;
+      }
+      .auto-advance-overlay.show {
+        display: block;
+      }
+      @keyframes flash-green {
+        0% {
+          background: rgba(0, 255, 157, 0.15);
+        }
+        100% {
+          background: transparent;
+        }
+      }
+
+      /* Scrollable wrong answers in results */
+      .wrong-list-scroll {
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      .wrong-list-scroll::-webkit-scrollbar {
+        width: 4px;
+      }
+      .wrong-list-scroll::-webkit-scrollbar-track {
+        background: var(--surface);
+      }
+      .wrong-list-scroll::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+      }
+
+      /* Home back button */
+      .back-btn {
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 0;
+        transition: color 0.2s;
+      }
+      .back-btn:hover {
+        color: var(--accent);
+      }
+
+      /* Decorative corner */
+      .corner-deco {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 20px;
+        height: 20px;
+        border-top: 1px solid var(--accent);
+        border-right: 1px solid var(--accent);
+        opacity: 0.3;
+      }
+
+      /* Performance message */
+      .perf-msg {
+        font-size: 1.1rem;
+        color: var(--text-dim);
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .perf-msg span {
+        color: var(--accent2);
+        font-weight: 700;
+      }
+
+      /* Rapid fire warning */
+      .rf-stopped {
+        display: none;
+        text-align: center;
+        padding: 10px 16px;
+        background: rgba(255, 61, 107, 0.08);
+        border: 1px solid rgba(255, 61, 107, 0.3);
+        border-radius: 8px;
+        color: var(--wrong);
+        font-family: "Share Tech Mono", monospace;
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+      }
+      .rf-stopped.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Flash overlay for rapid fire correct -->
+    <div
+      class="auto-advance-overlay"
+      id="flashOverlay"></div>
+
+    <!-- ===== HOME SCREEN ===== -->
+    <div
+      class="screen active"
+      id="homeScreen">
+      <div class="container">
+        <div class="home-header">
+          <span class="tag">▸ Computer Networks · 24CSE0215</span>
+          <h1>Data Link Layer<br /><span>Master Quiz</span></h1>
+          <p>Errors · ALOHA · CSMA · ARQ Protocols · Channelization</p>
+          <div class="stat-row">
+            <div class="stat-pill"><span>Questions: </span>85</div>
+            <div class="stat-pill"><span>Topics: </span>14</div>
+            <div class="stat-pill"><span>Chapters: </span>All Covered</div>
+          </div>
+        </div>
+
+        <div class="mode-cards">
+          <div
+            class="mode-card learn"
+            onclick="startMode('learning')">
+            <div class="corner-deco"></div>
+            <span class="mode-icon">📖</span>
+            <h2>Learning Mode</h2>
+            <p>
+              Choose your answer, get instant feedback, and navigate freely with
+              Previous &amp; Next buttons. Learn from each mistake before moving
+              on.
+            </p>
+            <span class="badge">SELF-PACED</span>
+          </div>
+          <div
+            class="mode-card rapid"
+            onclick="startMode('rapidfire')">
+            <div
+              class="corner-deco"
+              style="border-color: var(--warning); opacity: 0.3"></div>
+            <span class="mode-icon">⚡</span>
+            <h2>Rapid Fire Mode</h2>
+            <p>
+              Correct answer → auto-advances instantly. Wrong answer → stops and
+              waits for you to manually continue. Test your speed &amp;
+              accuracy!
+            </p>
+            <span
+              class="badge"
+              style="
+                background: rgba(255, 179, 0, 0.1);
+                color: var(--warning);
+                border-color: rgba(255, 179, 0, 0.3);
+              "
+              >AUTO-ADVANCE</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== QUIZ SCREEN ===== -->
+    <div
+      class="screen"
+      id="quizScreen">
+      <div class="container">
+        <div class="quiz-header">
+          <button
+            class="back-btn"
+            onclick="goHome()">
+            ← HOME
+          </button>
+          <div
+            id="modeBadge"
+            class="mode-badge learn">
+            LEARNING
+          </div>
+          <div class="score-display">
+            Score:
+            <span
+              class="sc"
+              id="liveScore"
+              >0</span
+            >
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div
+            class="progress-bar"
+            id="progressBar"
+            style="width: 0%"></div>
+        </div>
+        <div
+          class="progress-text"
+          id="progressText">
+          Question 1 of 85
+        </div>
+
+        <div
+          class="topic-chip"
+          id="topicChip">
+          DATA LINK LAYER
+        </div>
+
+        <div
+          class="question-card"
+          id="questionCard">
+          <div class="corner-deco"></div>
+          <div
+            class="question-num"
+            id="questionNum">
+            Q01
+          </div>
+          <div
+            class="question-text"
+            id="questionText">
+            Question loads here...
+          </div>
+        </div>
+
+        <div
+          class="rf-stopped"
+          id="rfStopped">
+          ⚠ INCORRECT — Review the correct answer and press NEXT to continue
+        </div>
+
+        <div
+          class="options-grid"
+          id="optionsGrid"></div>
+
+        <div
+          class="feedback-box"
+          id="feedbackBox"></div>
+
+        <div
+          class="rapid-timer"
+          id="rapidTimer">
+          AUTO-ADVANCING IN <span id="timerCount">1</span>s
+          <div class="timer-bar-wrap">
+            <div
+              class="timer-bar"
+              id="timerBar"
+              style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button
+            class="btn btn-secondary"
+            id="prevBtn"
+            onclick="prevQuestion()">
+            ◀ PREV
+          </button>
+          <button
+            class="btn btn-primary"
+            id="nextBtn"
+            onclick="nextQuestion()"
+            disabled>
+            NEXT ▶
+          </button>
+          <button
+            class="btn btn-danger"
+            id="quitBtn"
+            onclick="finishQuiz()"
+            style="margin-left: auto">
+            FINISH
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RESULTS SCREEN ===== -->
+    <div
+      class="screen"
+      id="resultsScreen">
+      <div class="container">
+        <div class="results-header">
+          <span
+            class="tag"
+            id="resultsTag"
+            >▸ QUIZ COMPLETE</span
+          >
+          <h2 id="resultsTitle">Session Complete</h2>
+          <div
+            class="big-score"
+            id="bigScore">
+            0%
+          </div>
+          <div
+            class="score-label"
+            id="scoreLabel">
+            0 correct out of 0 questions
+          </div>
+          <div
+            class="perf-msg"
+            id="perfMsg"></div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box correct-s">
+            <div
+              class="val"
+              id="resCorrect">
+              0
+            </div>
+            <div class="lbl">CORRECT</div>
+          </div>
+          <div class="stat-box wrong-s">
+            <div
+              class="val"
+              id="resWrong">
+              0
+            </div>
+            <div class="lbl">INCORRECT</div>
+          </div>
+          <div class="stat-box skip-s">
+            <div
+              class="val"
+              id="resSkipped">
+              0
+            </div>
+            <div class="lbl">UNANSWERED</div>
+          </div>
+        </div>
+
+        <div
+          class="wrong-list"
+          id="wrongListContainer"
+          style="display: none">
+          <h3>✗ QUESTIONS YOU GOT WRONG</h3>
+          <div
+            class="wrong-list-scroll"
+            id="wrongListBody"></div>
+        </div>
+
+        <div class="results-actions">
+          <button
+            class="btn btn-primary"
+            id="retakeWrongBtn"
+            onclick="retakeWrong()"
+            style="display: none">
+            🔁 RETAKE WRONG QUESTIONS
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="startMode('learning')">
+            📖 LEARNING MODE
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="startMode('rapidfire')">
+            ⚡ RAPID FIRE
+          </button>
+          <button
+            class="btn btn-danger"
+            onclick="goHome()">
+            HOME
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const ALL_QUESTIONS = [
+        // ── DATA LINK LAYER INTRO ──
+        {
+          q: "Which layer of the OSI model is the Data Link Layer?",
+          opts: ["First layer", "Second layer", "Third layer", "Fourth layer"],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "What type of delivery does the Data Link Layer provide?",
+          opts: [
+            "End-to-end delivery",
+            "Node-to-node delivery",
+            "Hop-to-hop delivery",
+            "Segment delivery",
+          ],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "The Data Link Layer acts as an interface between which two layers?",
+          opts: [
+            "Application and Transport",
+            "Network and Transport",
+            "Physical Layer and Network Layer",
+            "Physical Layer and Transport Layer",
+          ],
+          ans: 2,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "The Physical Layer only transmits — which of the following is NOT guaranteed by it?",
+          opts: [
+            "Bit transmission",
+            "Voltage representation",
+            "Error-free transmission",
+            "Signal propagation",
+          ],
+          ans: 2,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "Which Data Link Layer function divides data into manageable frames?",
+          opts: [
+            "Physical Addressing",
+            "Error Control",
+            "Framing",
+            "Flow Control",
+          ],
+          ans: 2,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "Which Data Link Layer function adds MAC addresses to data?",
+          opts: [
+            "Framing",
+            "Physical Addressing",
+            "Access Control",
+            "Error Control",
+          ],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "What identifier uniquely identifies an Ethernet device at the Data Link Layer?",
+          opts: [
+            "IP address",
+            "MAC address",
+            "Sequence number",
+            "TCP port number",
+          ],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "Which physical topology requires every node to be attached to every other node?",
+          opts: ["Bus", "Star", "Ring", "Mesh"],
+          ans: 3,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "Which two organizations define open standards for the Data Link Layer? (Best answer)",
+          opts: [
+            "IANA and ISOC",
+            "ISO and ITU",
+            "EIA and IANA",
+            "ISOC and ITU",
+          ],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+        {
+          q: "Logical topologies refer to:",
+          opts: [
+            "The physical layout of cables",
+            "How a network transfers data between devices",
+            "The IP addressing scheme",
+            "The hardware placement of nodes",
+          ],
+          ans: 1,
+          topic: "Data Link Layer",
+        },
+
+        // ── TYPES OF ERRORS ──
+        {
+          q: "What type of error affects ONLY one bit in the data unit?",
+          opts: [
+            "Burst error",
+            "Multi-bit error",
+            "Single-bit error",
+            "Parity error",
+          ],
+          ans: 2,
+          topic: "Error Types",
+        },
+        {
+          q: "A burst error is defined as one where:",
+          opts: [
+            "Exactly one bit is changed",
+            "Only even-position bits are changed",
+            "Two or more bits in the data unit have changed",
+            "All bits are corrupted",
+          ],
+          ans: 2,
+          topic: "Error Types",
+        },
+        {
+          q: "The length of a burst error is measured from:",
+          opts: [
+            "Start of transmission to last corrupted bit",
+            "First corrupted bit to the last corrupted bit",
+            "First bit to the middle corrupted bit",
+            "Middle of frame to end of frame",
+          ],
+          ans: 1,
+          topic: "Error Types",
+        },
+        {
+          q: "Why are single-bit errors least likely in serial data transmission?",
+          opts: [
+            "Serial channels have more bandwidth",
+            "Noise must have a very short duration, which is very rare",
+            "Single-bit errors cancel each other out",
+            "Serial uses forward error correction by default",
+          ],
+          ans: 1,
+          topic: "Error Types",
+        },
+        {
+          q: "If data is sent at 1 Mbps, how long does each bit last?",
+          opts: ["1 ms", "1 ns", "1 μs", "1 second"],
+          ans: 2,
+          topic: "Error Types",
+        },
+        {
+          q: "Burst errors are MOST likely to happen in which type of transmission?",
+          opts: [
+            "Parallel transmission",
+            "Serial transmission",
+            "Wireless-only transmission",
+            "Fiber optic only",
+          ],
+          ans: 1,
+          topic: "Error Types",
+        },
+        {
+          q: "If data rate = 1 Kbps and noise duration = 1/100 sec, how many bits are affected?",
+          opts: ["1 bit", "100 bits", "10 bits", "1000 bits"],
+          ans: 2,
+          topic: "Error Types",
+        },
+
+        // ── ERROR DETECTION & REDUNDANCY ──
+        {
+          q: "Error detection uses which concept to check received data without the original?",
+          opts: ["Encryption", "Redundancy", "Compression", "Hashing"],
+          ans: 1,
+          topic: "Error Detection",
+        },
+        {
+          q: "Which of the following is NOT one of the four standard redundancy checks?",
+          opts: ["VRC", "LRC", "CRC", "HRC"],
+          ans: 3,
+          topic: "Error Detection",
+        },
+        {
+          q: "The four types of redundancy checks are:",
+          opts: [
+            "VRC, LRC, CRC, Checksum",
+            "VRC, CRC, HEC, Checksum",
+            "LRC, CRC, Checksum, Hamming",
+            "VRC, LRC, XOR, Checksum",
+          ],
+          ans: 0,
+          topic: "Error Detection",
+        },
+
+        // ── VRC / LRC ──
+        {
+          q: "VRC (Vertical Redundancy Check) is also known as:",
+          opts: [
+            "Longitudinal parity",
+            "Parity Check",
+            "Cyclic check",
+            "Hamming check",
+          ],
+          ans: 1,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "VRC is described as the _______ mechanism for error detection.",
+          opts: [
+            "Most complex",
+            "Most reliable",
+            "Least expensive",
+            "Most expensive",
+          ],
+          ans: 2,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "In even-parity VRC, the parity bit is set so that the total number of 1s (including parity) is:",
+          opts: ["Odd", "Even", "Zero", "Equal to data bits"],
+          ans: 1,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "VRC can detect which type of errors?",
+          opts: [
+            "Burst errors only",
+            "All multi-bit errors",
+            "Single-bit errors",
+            "Any even number of corrupted bits",
+          ],
+          ans: 2,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "LRC is also known as:",
+          opts: [
+            "1D parity checker",
+            "2D parity checker",
+            "3D parity checker",
+            "Cyclic parity checker",
+          ],
+          ans: 1,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "In LRC, what is appended to the entire block of data?",
+          opts: [
+            "A redundant bit per character",
+            "A redundant row of bits for the whole block",
+            "A CRC polynomial result",
+            "A checksum value only",
+          ],
+          ans: 1,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "LRC can detect which type of errors?",
+          opts: [
+            "Only single-bit errors",
+            "Only multi-bit errors at even positions",
+            "Burst errors",
+            "No errors",
+          ],
+          ans: 2,
+          topic: "VRC & LRC",
+        },
+        {
+          q: "A key limitation of LRC is:",
+          opts: [
+            "It cannot detect single-bit errors",
+            "If two bits in same position across two different data units are both damaged, it may not detect the error",
+            "It requires polynomials",
+            "It only works for ASCII data",
+          ],
+          ans: 1,
+          topic: "VRC & LRC",
+        },
+
+        // ── CRC ──
+        {
+          q: "In CRC, the polynomial x³ + x² + 1 represents which binary key?",
+          opts: ["1011", "1101", "1110", "1001"],
+          ans: 1,
+          topic: "CRC",
+        },
+        {
+          q: "In CRC, the polynomial x² + 1 represents which key?",
+          opts: ["101", "011", "110", "100"],
+          ans: 0,
+          topic: "CRC",
+        },
+        {
+          q: "In CRC, before performing division, the data is augmented by appending:",
+          opts: ["k zeros", "k–1 zeros", "k+1 zeros", "n zeros"],
+          ans: 1,
+          topic: "CRC",
+        },
+        {
+          q: "CRC uses which type of division to find the remainder?",
+          opts: [
+            "Binary long division with subtraction",
+            "Decimal division",
+            "Modulo-2 binary division using XOR",
+            "One's complement division",
+          ],
+          ans: 2,
+          topic: "CRC",
+        },
+        {
+          q: "At the CRC receiver, if the remainder of division is all zeros, it means:",
+          opts: [
+            "Data is corrupted; discard it",
+            "Data has no error; accept it",
+            "Retransmission is needed",
+            "The key was wrong",
+          ],
+          ans: 1,
+          topic: "CRC",
+        },
+        {
+          q: "For data word 100100 with key 1101, what is sent by the sender (data + remainder)?",
+          opts: ["100100001", "100100011", "100100101", "100100010"],
+          ans: 0,
+          topic: "CRC",
+        },
+
+        // ── CHECKSUM ──
+        {
+          q: "In the Checksum method, the checksum sent is:",
+          opts: [
+            "The sum of all sections",
+            "The complement of the sum of all sections",
+            "The XOR of all sections",
+            "The square root of the sum",
+          ],
+          ans: 1,
+          topic: "Checksum",
+        },
+        {
+          q: "At the Checksum receiver, if the complement of the final sum is all 0s:",
+          opts: [
+            "Data is corrupted — reject",
+            "Data is accepted — no error",
+            "Retransmit is triggered",
+            "Another checksum is computed",
+          ],
+          ans: 1,
+          topic: "Checksum",
+        },
+        {
+          q: "The Checksum method uses which arithmetic for addition?",
+          opts: [
+            "Two's complement",
+            "One's complement",
+            "Regular unsigned binary",
+            "BCD arithmetic",
+          ],
+          ans: 1,
+          topic: "Checksum",
+        },
+        {
+          q: "In the Checksum method, the sender divides the unit into k sections each of n bits, then:",
+          opts: [
+            "XORs all sections",
+            "Multiplies each section",
+            "Adds all sections using one's complement",
+            "Concatenates and hashes all sections",
+          ],
+          ans: 2,
+          topic: "Checksum",
+        },
+
+        // ── HAMMING CODE ──
+        {
+          q: "The formula for the minimum number of redundancy bits in Hamming code is:",
+          opts: [
+            "2^r ≥ m + r",
+            "2^r ≥ m + r + 1",
+            "r ≥ m + 1",
+            "2r ≥ m + r + 1",
+          ],
+          ans: 1,
+          topic: "Hamming Code",
+        },
+        {
+          q: "In Hamming code, parity bits are placed at positions that are:",
+          opts: [
+            "Multiples of 3",
+            "Powers of 2 (1, 2, 4, 8 ...)",
+            "Prime numbers (2, 3, 5 ...)",
+            "Even-numbered positions",
+          ],
+          ans: 1,
+          topic: "Hamming Code",
+        },
+        {
+          q: "Parity bit r1 (position 1) in Hamming code covers which bit positions?",
+          opts: [
+            "2, 3, 6, 7, 10, 11 ...",
+            "4, 5, 6, 7, 12, 13 ...",
+            "1, 3, 5, 7, 9, 11 ...",
+            "8, 9, 10, 11 ...",
+          ],
+          ans: 2,
+          topic: "Hamming Code",
+        },
+        {
+          q: "How many redundancy bits are required for 7 data bits in Hamming code?",
+          opts: ["2", "3", "4", "5"],
+          ans: 2,
+          topic: "Hamming Code",
+        },
+        {
+          q: "In Hamming code with m = 4 data bits, the minimum total bits (m + r) is:",
+          opts: ["6", "7", "8", "9"],
+          ans: 1,
+          topic: "Hamming Code",
+        },
+        {
+          q: "For even parity in Hamming code, a parity bit is set to 1 when:",
+          opts: [
+            "Total number of 1s in covered positions is even",
+            "Total number of 1s in covered positions is odd",
+            "The parity position is an even number",
+            "The data bit at that position is 0",
+          ],
+          ans: 1,
+          topic: "Hamming Code",
+        },
+
+        // ── MULTIPLE ACCESS PROTOCOLS ──
+        {
+          q: "Which are the three main categories of multiple access protocols?",
+          opts: [
+            "Random, Fixed, Dynamic",
+            "Random, Controlled, Channelization",
+            "Token, ALOHA, CSMA",
+            "FDMA, TDMA, CDMA only",
+          ],
+          ans: 1,
+          topic: "Multiple Access",
+        },
+        {
+          q: "In Random Access, which statement is correct?",
+          opts: [
+            "A controller decides who transmits",
+            "No station is superior; each decides independently using protocol rules",
+            "Stations take turns with a token",
+            "Each station has a pre-assigned time slot",
+          ],
+          ans: 1,
+          topic: "Multiple Access",
+        },
+        {
+          q: "Which of the following is a Controlled Access protocol?",
+          opts: ["FDMA", "TDMA", "Reservation", "CSMA/CD"],
+          ans: 2,
+          topic: "Multiple Access",
+        },
+        {
+          q: "Which protocol uses 'Authorization from other stations' before transmitting?",
+          opts: [
+            "Random access protocol",
+            "Controlled access protocol",
+            "Channelization protocol",
+            "ALOHA",
+          ],
+          ans: 1,
+          topic: "Multiple Access",
+        },
+        {
+          q: "The three types of Random Access protocols are:",
+          opts: [
+            "FDMA, TDMA, CDMA",
+            "ALOHA, CSMA, CSMA/CD, CSMA/CA",
+            "Reservation, Polling, Token Passing",
+            "None of these",
+          ],
+          ans: 1,
+          topic: "Multiple Access",
+        },
+
+        // ── ALOHA ──
+        {
+          q: "In Pure ALOHA, a station transmits:",
+          opts: [
+            "Only at the beginning of a synchronized time slot",
+            "Whenever it has data to send",
+            "Only after receiving explicit permission",
+            "When it detects the channel idle for IFS time",
+          ],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "The maximum channel utilization of Pure ALOHA is:",
+          opts: ["36.8%", "50%", "18.4%", "100%"],
+          ans: 2,
+          topic: "ALOHA",
+        },
+        {
+          q: "The maximum throughput of Pure ALOHA (Smax = 0.184) occurs when G =",
+          opts: ["G = 1", "G = 2", "G = 1/2", "G = 1/4"],
+          ans: 2,
+          topic: "ALOHA",
+        },
+        {
+          q: "The vulnerable time for Pure ALOHA is:",
+          opts: ["Tfr", "2 × Tfr", "Tp", "2 × Tp"],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "The throughput formula for Pure ALOHA is:",
+          opts: [
+            "S = G × e^(−G)",
+            "S = G × e^(−2G)",
+            "S = G / (1 + G)",
+            "S = 2G × e^(−G)",
+          ],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "The maximum channel utilization of Slotted ALOHA is:",
+          opts: ["18.4%", "50%", "36.8%", "90%"],
+          ans: 2,
+          topic: "ALOHA",
+        },
+        {
+          q: "In Slotted ALOHA, stations can only transmit:",
+          opts: [
+            "At any random moment",
+            "At the beginning of a synchronized time slot",
+            "After receiving an ACK",
+            "During contention window only",
+          ],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "The vulnerable time for Slotted ALOHA is:",
+          opts: ["2 × Tfr", "Tp", "Tfr", "2 × Tp"],
+          ans: 2,
+          topic: "ALOHA",
+        },
+        {
+          q: "Slotted ALOHA improves efficiency over Pure ALOHA by approximately:",
+          opts: [
+            "Tripling the throughput",
+            "Doubling the throughput (halving collisions)",
+            "Quadrupling the throughput",
+            "10% improvement only",
+          ],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "In Pure ALOHA, why does a station wait a random back-off time after a collision?",
+          opts: [
+            "To prevent other stations from transmitting",
+            "To avoid more collisions",
+            "To detect other collisions",
+            "To get acknowledgment from receiver",
+          ],
+          ans: 1,
+          topic: "ALOHA",
+        },
+        {
+          q: "A pure ALOHA network with 200-bit frames on a 200 kbps channel: Tfr =?",
+          opts: ["0.1 ms", "1 ms", "10 ms", "2 ms"],
+          ans: 1,
+          topic: "ALOHA",
+        },
+
+        // ── CSMA ──
+        {
+          q: "The vulnerable time in CSMA is equal to:",
+          opts: [
+            "Frame transmission time",
+            "Maximum propagation time (τ)",
+            "2 × propagation time",
+            "Round-trip time",
+          ],
+          ans: 1,
+          topic: "CSMA",
+        },
+        {
+          q: "In 1-persistent CSMA, if the channel is found busy, the station:",
+          opts: [
+            "Waits a random time, then senses again",
+            "Transmits immediately anyway",
+            "Keeps sensing until idle, then transmits immediately",
+            "Waits for a token",
+          ],
+          ans: 2,
+          topic: "CSMA",
+        },
+        {
+          q: "In Non-persistent CSMA, if the channel is busy, the station:",
+          opts: [
+            "Keeps sensing until channel becomes idle",
+            "Waits a random amount of time before sensing again",
+            "Transmits with probability p",
+            "Gives up permanently",
+          ],
+          ans: 1,
+          topic: "CSMA",
+        },
+        {
+          q: "In P-persistent CSMA, if the channel is idle, the station transmits with probability:",
+          opts: ["1 always", "0 always", "p", "1 − p"],
+          ans: 2,
+          topic: "CSMA",
+        },
+        {
+          q: "Which CSMA method reduces collision chance compared to 1-persistent but may increase delay?",
+          opts: [
+            "1-persistent",
+            "Non-persistent",
+            "P-persistent",
+            "T-persistent",
+          ],
+          ans: 1,
+          topic: "CSMA",
+        },
+
+        // ── CSMA/CD ──
+        {
+          q: "In CSMA/CD, the minimum frame transmission time must be at least:",
+          opts: ["Tp", "2 × Tp", "4 × Tp", "Tp / 2"],
+          ans: 1,
+          topic: "CSMA/CD",
+        },
+        {
+          q: "A CSMA/CD network has bandwidth 10 Mbps and max propagation time 25.6 μs. Minimum frame size is:",
+          opts: [
+            "256 bits (32 bytes)",
+            "512 bits (64 bytes)",
+            "1024 bits (128 bytes)",
+            "128 bits (16 bytes)",
+          ],
+          ans: 1,
+          topic: "CSMA/CD",
+        },
+        {
+          q: "What is a jamming signal in CSMA/CD?",
+          opts: [
+            "An ACK confirming successful delivery",
+            "A short signal sent to enforce the collision so all stations know it occurred",
+            "A signal requesting retransmission",
+            "A synchronization signal between sender and receiver",
+          ],
+          ans: 1,
+          topic: "CSMA/CD",
+        },
+        {
+          q: "The maximum throughput for the 1-persistent CSMA/CD method is approximately:",
+          opts: ["90%", "50%", "36.8%", "18.4%"],
+          ans: 1,
+          topic: "CSMA/CD",
+        },
+        {
+          q: "The maximum throughput for the nonpersistent CSMA/CD method can reach up to:",
+          opts: ["50%", "36.8%", "90%", "18.4%"],
+          ans: 2,
+          topic: "CSMA/CD",
+        },
+        {
+          q: "In CSMA/CD, why must the sender still be transmitting after 2Tp?",
+          opts: [
+            "To allow the ACK to arrive back",
+            "So it can detect a collision that occurred at the farthest point and receive the echo back",
+            "To meet bandwidth requirements",
+            "To ensure the frame size is large enough",
+          ],
+          ans: 1,
+          topic: "CSMA/CD",
+        },
+
+        // ── CSMA/CA ──
+        {
+          q: "CSMA/CA is used to manage contention-based access on which type of network?",
+          opts: [
+            "Wired Ethernet",
+            "Wireless network",
+            "Token ring",
+            "FDMA network",
+          ],
+          ans: 1,
+          topic: "CSMA/CA",
+        },
+        {
+          q: "In CSMA/CA, IFS stands for:",
+          opts: [
+            "Interframe Synchronization",
+            "Interframe Space",
+            "Integrated Frame Signal",
+            "Internal Frame Sequence",
+          ],
+          ans: 1,
+          topic: "CSMA/CA",
+        },
+        {
+          q: "In CSMA/CA, why doesn't a station transmit immediately even when the channel is idle?",
+          opts: [
+            "It must wait for a token",
+            "It waits for IFS to allow distant station's signal to arrive first",
+            "It must complete the checksum calculation",
+            "The contention window is always 1 slot",
+          ],
+          ans: 1,
+          topic: "CSMA/CA",
+        },
+        {
+          q: "In CSMA/CA, a station with a shorter IFS has:",
+          opts: [
+            "Lower priority",
+            "Higher priority",
+            "Same priority as all others",
+            "No effect on priority",
+          ],
+          ans: 1,
+          topic: "CSMA/CA",
+        },
+        {
+          q: "In CSMA/CA, the contention window size changes according to:",
+          opts: [
+            "Fixed slot assignment",
+            "Linear backoff",
+            "Binary exponential backoff strategy",
+            "Random selection from a static table",
+          ],
+          ans: 2,
+          topic: "CSMA/CA",
+        },
+        {
+          q: "In CSMA/CA, if the channel is found busy, the contention window timer:",
+          opts: [
+            "Resets to zero and restarts from beginning",
+            "Stops and resumes from where it left off when channel becomes idle",
+            "Doubles immediately",
+            "Is discarded and a new one starts",
+          ],
+          ans: 1,
+          topic: "CSMA/CA",
+        },
+
+        // ── CONTROLLED ACCESS ──
+        {
+          q: "In controlled access, a station cannot send unless:",
+          opts: [
+            "The channel is idle",
+            "It has been authorized by other stations",
+            "A time slot is available",
+            "The propagation delay is low",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "In the Reservation method, the timeline has two parts. The Reservation Interval is:",
+          opts: [
+            "Variable length with all data",
+            "Fixed length, divided into slots (one per station)",
+            "The same as token passing round time",
+            "Only used when channel is full",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "In polling, the 'select' function means:",
+          opts: [
+            "Primary wants to receive data from secondary",
+            "Primary tells secondary to get ready to receive data",
+            "Secondary initiates a connection",
+            "A new station requests to join",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "In polling, when the addressed station has no data to send, it responds with:",
+          opts: [
+            "ACK (acknowledgement)",
+            "NAK (poll reject)",
+            "SYN signal",
+            "Nothing — stays silent",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "A disadvantage of the polling access method is:",
+          opts: [
+            "It causes too many collisions",
+            "Single point of failure at the primary controller",
+            "No priority support",
+            "Token can be lost easily",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "In Token Passing, a station can only transmit when:",
+          opts: [
+            "The channel is detected idle",
+            "It holds the token",
+            "The primary controller grants permission",
+            "It has waited its assigned time slot",
+          ],
+          ans: 1,
+          topic: "Controlled Access",
+        },
+        {
+          q: "Token Passing arranges stations in a:",
+          opts: [
+            "Physical ring only",
+            "Physical star",
+            "Logical ring (physical topology may differ)",
+            "Tree topology",
+          ],
+          ans: 2,
+          topic: "Controlled Access",
+        },
+        {
+          q: "Which controlled access method is best for real-time deterministic networks?",
+          opts: ["Polling", "Reservation", "Token Passing", "CSMA/CD"],
+          ans: 2,
+          topic: "Controlled Access",
+        },
+
+        // ── CHANNELIZATION ──
+        {
+          q: "In FDMA, the available bandwidth is divided into:",
+          opts: [
+            "Time slots",
+            "Code sequences",
+            "Frequency bands separated by guard bands",
+            "Logical rings",
+          ],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "The main problem with TDMA is:",
+          opts: [
+            "Frequency band interference",
+            "Achieving synchronization between different stations",
+            "Too much guard band overhead causing inefficiency",
+            "Cannot support more than 2 stations",
+          ],
+          ans: 1,
+          topic: "Channelization",
+        },
+        {
+          q: "In TDMA, guard times are inserted to compensate for:",
+          opts: [
+            "Frequency interference between channels",
+            "Propagation delays when stations are spread over large areas",
+            "Token loss events",
+            "Buffer overflow at receiver",
+          ],
+          ans: 1,
+          topic: "Channelization",
+        },
+        {
+          q: "In CDMA, each station is assigned a unique:",
+          opts: [
+            "Time slot",
+            "Frequency band",
+            "Chip sequence (code)",
+            "Port number",
+          ],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "In CDMA data encoding: a station sending data bit 0 encodes it as:",
+          opts: ["+1", "0", "−1", "Silence"],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "In CDMA data encoding: a station sending data bit 1 encodes it as:",
+          opts: ["−1", "0", "+1", "2"],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "In CDMA, when a station is silent (idle), it sends:",
+          opts: ["+1", "−1", "0 (nothing)", "Its chip sequence only"],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "The number of sequences in a Walsh table is given by N =",
+          opts: ["m²", "2^m", "2m", "m + 2"],
+          ans: 1,
+          topic: "Channelization",
+        },
+        {
+          q: "In CDMA, if two different stations' chip codes are multiplied together (inner product), the result is:",
+          opts: ["N (number of stations)", "1", "0", "−1"],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "To decode a sender's data in CDMA, the receiver multiplies channel data by sender's chip code, then divides by:",
+          opts: [
+            "2",
+            "Number of bits",
+            "N (number of stations)",
+            "Chip sequence length",
+          ],
+          ans: 2,
+          topic: "Channelization",
+        },
+        {
+          q: "For a network with 90 stations using CDMA, the minimum Walsh table size must be:",
+          opts: ["N = 64 (2^6)", "N = 90", "N = 128 (2^7)", "N = 100"],
+          ans: 2,
+          topic: "Channelization",
+        },
+
+        // ── PIGGYBACKING ──
+        {
+          q: "Piggybacking is a technique used to:",
+          opts: [
+            "Increase collision probability",
+            "Improve efficiency of bidirectional protocols by combining ACK with outgoing data frames",
+            "Divide the frequency spectrum",
+            "Reduce the frame size for faster transmission",
+          ],
+          ans: 1,
+          topic: "Piggybacking",
+        },
+        {
+          q: "When a frame travels from A to B carrying data, it can also carry:",
+          opts: [
+            "Data from B's send buffer",
+            "Control information (ACK/NAK) about frames received from B",
+            "The CRC of B's next outgoing frame",
+            "Nothing extra — piggybacking is one-way",
+          ],
+          ans: 1,
+          topic: "Piggybacking",
+        },
+        {
+          q: "A benefit of piggybacking is:",
+          opts: [
+            "Eliminates need for error detection",
+            "Reduced overhead and better bandwidth utilization",
+            "Prevents all collisions",
+            "Enables full-duplex at Physical layer",
+          ],
+          ans: 1,
+          topic: "Piggybacking",
+        },
+        {
+          q: "A trade-off/challenge of piggybacking is:",
+          opts: [
+            "Requires token management",
+            "ACK delays are possible if no data to send back",
+            "Requires frequency division",
+            "Station must be the primary controller",
+          ],
+          ans: 1,
+          topic: "Piggybacking",
+        },
+        {
+          q: "In Go-Back-N with piggybacking, each node has how many windows?",
+          opts: [
+            "One send window only",
+            "One receive window only",
+            "Two windows: one send and one receive",
+            "Four windows total per node",
+          ],
+          ans: 2,
+          topic: "Piggybacking",
+        },
+
+        // ── STOP AND WAIT ARQ ──
+        {
+          q: "In Stop-and-Wait ARQ, the sliding window size for both sender and receiver is:",
+          opts: ["2^m − 1", "N (any value)", "1", "Unlimited"],
+          ans: 2,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "In Stop-and-Wait ARQ, if the timer expires before an ACK arrives, the sender:",
+          opts: [
+            "Discards the packet and moves on",
+            "Resends the previous packet",
+            "Sends a NAK to the receiver",
+            "Terminates the connection",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "In Stop-and-Wait protocol, sequence numbers cycle using:",
+          opts: [
+            "Modulo-3 arithmetic",
+            "Modulo-2 arithmetic",
+            "Modulo-4 arithmetic",
+            "Unrestricted binary count",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "Timeout (TO) in Stop-and-Wait is defined as:",
+          opts: [
+            "Exactly the propagation delay",
+            "Maximum time sender waits for ACK; after this, retransmit",
+            "The frame transmission time",
+            "Round-trip time + 10%",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "A major drawback of Stop-and-Wait protocol is:",
+          opts: [
+            "Requires complex error detection mechanisms",
+            "Inefficient channel utilization due to idle waiting periods",
+            "Cannot detect lost frames",
+            "Requires large receive buffers",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "Stop-and-Wait ARQ overcomes problems of lost data and delayed frames using:",
+          opts: [
+            "VRC and LRC",
+            "Acknowledgements, sequence numbers, and timeouts",
+            "CRC and Hamming code",
+            "Token passing and polling",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+        {
+          q: "Stop-and-Wait is best suited for:",
+          opts: [
+            "High-bandwidth real-time data transfer",
+            "Noiseless channel with limited processing power",
+            "Channel with very frequent data loss",
+            "Network with unpredictable traffic patterns",
+          ],
+          ans: 1,
+          topic: "Stop-and-Wait ARQ",
+        },
+
+        // ── GO-BACK-N ──
+        {
+          q: "In Go-Back-N protocol, the receiver window size is:",
+          opts: ["2^m − 1", "2^(m−1)", "N (sender window size)", "1"],
+          ans: 3,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "In Go-Back-N, if frame 3 out of 7 sent is lost, the sender retransmits:",
+          opts: [
+            "Only frame 3",
+            "Frames 3, 4, 5, 6, 7 (all starting from lost frame)",
+            "Only frames 3 and 4",
+            "A random subset of frames",
+          ],
+          ans: 1,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "With m-bit sequence numbers, the maximum sender window size in Go-Back-N is:",
+          opts: ["2^m", "2^m − 1", "2^(m−1)", "m"],
+          ans: 1,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "In Go-Back-N, the acknowledgment number is:",
+          opts: [
+            "Individual per frame only",
+            "Cumulative — defines sequence number of next expected packet",
+            "Negative for rejected frames",
+            "Not used; only NAK is used",
+          ],
+          ans: 1,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "The minimum sequence numbers required for Go-Back-N with sender window size N is:",
+          opts: ["N", "N − 1", "N + 1", "2N"],
+          ans: 2,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "Stop-and-Wait ARQ is a special case of Go-Back-N where the send window size is:",
+          opts: ["2", "0", "1", "Unlimited"],
+          ans: 2,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "In Go-Back-N, out-of-order packets arriving at the receiver are:",
+          opts: [
+            "Accepted and stored in buffer",
+            "Accepted and delivered immediately",
+            "Discarded; entire window retransmitted",
+            "Queued until all earlier packets arrive",
+          ],
+          ans: 2,
+          topic: "Go-Back-N",
+        },
+        {
+          q: "The relation between window sizes and available sequence numbers is:",
+          opts: [
+            "Ws × WR ≤ ASN",
+            "Ws + WR ≤ ASN",
+            "Ws − WR = ASN",
+            "Ws × WR = ASN",
+          ],
+          ans: 1,
+          topic: "Go-Back-N",
+        },
+
+        // ── SELECTIVE REPEAT ──
+        {
+          q: "In Selective Repeat, which frames are retransmitted?",
+          opts: [
+            "All frames after the error",
+            "Only the erroneous or lost frames",
+            "All frames currently in the window",
+            "The last frame transmitted only",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "With m-bit sequence numbers, the maximum sender window size in Selective Repeat is:",
+          opts: ["2^m − 1", "2^m", "2^(m−1)", "m"],
+          ans: 2,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "In Selective Repeat, out-of-order but error-free frames within the window are:",
+          opts: [
+            "Discarded immediately",
+            "Accepted and buffered for later delivery",
+            "Sent back to sender with NAK",
+            "Queued at network layer",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "In Selective Repeat, the receiver window size equals:",
+          opts: [
+            "1 (same as GBN)",
+            "2^m − 1",
+            "2^(m−1)",
+            "N (same as sender window)",
+          ],
+          ans: 2,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "In Selective Repeat, receiving a NAK causes retransmission of:",
+          opts: [
+            "All outstanding frames",
+            "The oldest unacknowledged frame indicated by NAK",
+            "All frames in the window",
+            "The next expected frame",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "In Selective Repeat, ACKs are sent when:",
+          opts: [
+            "Every frame arrives regardless of order",
+            "Data is delivered to the network layer",
+            "The timer expires",
+            "NAK is received",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "Compared to Go-Back-N, Selective Repeat is:",
+          opts: [
+            "Less complex with smaller buffers needed",
+            "More complex; requires larger buffers at receiver for out-of-order storage",
+            "Identical in buffer requirement",
+            "Simpler but uses more bandwidth",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "The efficiency formula N/(1+2a) applies to which protocol(s)?",
+          opts: [
+            "Stop-and-Wait only",
+            "Go-Back-N only",
+            "Selective Repeat only",
+            "Both Go-Back-N and Selective Repeat",
+          ],
+          ans: 3,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "In the ______ protocol, if no ACK for a frame arrives, ALL outstanding frames are resent.",
+          opts: [
+            "Stop-and-Wait ARQ",
+            "Go-Back-N ARQ",
+            "Selective Repeat ARQ",
+            "Noiseless Simplest Protocol",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+        {
+          q: "Both Go-Back-N and Selective Repeat use a:",
+          opts: [
+            "Sliding frame",
+            "Sliding window",
+            "Sliding packet",
+            "Polling ring",
+          ],
+          ans: 1,
+          topic: "Selective Repeat",
+        },
+
+        // ── NOISELESS CHANNEL ──
+        {
+          q: "In the Simplest protocol (noiseless channel), which feature is deliberately NOT implemented?",
+          opts: [
+            "Data transmission",
+            "Frame creation",
+            "Error control and flow control",
+            "Data extraction at receiver",
+          ],
+          ans: 2,
+          topic: "Noiseless Channel",
+        },
+        {
+          q: "The Stop-and-Wait protocol (noiseless channel version) ensures the sender doesn't overwhelm the receiver by providing:",
+          opts: [
+            "Error correction",
+            "Flow control",
+            "Token-based access",
+            "Priority queuing",
+          ],
+          ans: 1,
+          topic: "Noiseless Channel",
+        },
+        {
+          q: "In the Simplest protocol, the sender algorithm waits for which event before sending?",
+          opts: [
+            "ArrivalNotification",
+            "RequestToSend",
+            "TimeoutEvent",
+            "TokenReceived",
+          ],
+          ans: 1,
+          topic: "Noiseless Channel",
+        },
+      ];
+
+      // ──────────────────────────────────────────────────────
+      let currentMode = "";
+      let activeQuestions = [];
+      let currentIndex = 0;
+      let userAnswers = []; // -1 = unanswered, >=0 = chosen option
+      let liveScore = 0;
+      let wrongQuestions = [];
+      let autoTimer = null;
+
+      const letters = ["A", "B", "C", "D"];
+
+      function goHome() {
+        clearAutoTimer();
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("homeScreen").classList.add("active");
+      }
+
+      function startMode(mode, questions) {
+        clearAutoTimer();
+        currentMode = mode;
+        activeQuestions = questions || shuffle([...ALL_QUESTIONS]);
+        currentIndex = 0;
+        userAnswers = new Array(activeQuestions.length).fill(-1);
+        liveScore = 0;
+        wrongQuestions = [];
+
+        const badge = document.getElementById("modeBadge");
+        badge.className =
+          "mode-badge " +
+          (mode === "learning"
+            ? "learn"
+            : mode === "rapidfire"
+            ? "rapid"
+            : "retake");
+        badge.textContent =
+          mode === "learning"
+            ? "LEARNING"
+            : mode === "rapidfire"
+            ? "RAPID FIRE"
+            : "RETAKE";
+
+        document.getElementById("liveScore").textContent = "0";
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("quizScreen").classList.add("active");
+        renderQuestion();
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function renderQuestion() {
+        clearAutoTimer();
+        const q = activeQuestions[currentIndex];
+        const total = activeQuestions.length;
+        const answered = userAnswers[currentIndex];
+
+        // Header
+        document.getElementById("progressBar").style.width =
+          (currentIndex / total) * 100 + "%";
+        document.getElementById("progressText").textContent = `Question ${
+          currentIndex + 1
+        } of ${total}`;
+        document.getElementById("topicChip").textContent =
+          q.topic.toUpperCase();
+        document.getElementById("questionNum").textContent =
+          "Q" + String(currentIndex + 1).padStart(2, "0");
+        document.getElementById("questionText").textContent = q.q;
+
+        // Animate card
+        const card = document.getElementById("questionCard");
+        card.classList.remove("entering");
+        void card.offsetWidth;
+        card.classList.add("entering");
+
+        // Options
+        const grid = document.getElementById("optionsGrid");
+        grid.innerHTML = "";
+        q.opts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+          btn.addEventListener("click", () => selectAnswer(i));
+
+          if (answered !== -1) {
+            btn.disabled = true;
+            if (i === q.ans) btn.classList.add("correct");
+            else if (i === answered) btn.classList.add("wrong");
+          }
+          grid.appendChild(btn);
+        });
+
+        // Feedback box
+        const fb = document.getElementById("feedbackBox");
+        fb.className = "feedback-box";
+        fb.textContent = "";
+
+        if (answered !== -1 && currentMode === "learning") {
+          const isCorrect = answered === q.ans;
+          fb.classList.add("show", isCorrect ? "correct" : "wrong");
+          fb.textContent = isCorrect
+            ? `✓ Correct! The answer is: ${q.opts[q.ans]}`
+            : `✗ Incorrect. The correct answer is: ${q.opts[q.ans]}`;
+        }
+
+        // Rapid fire stopped notice
+        const rfStopped = document.getElementById("rfStopped");
+        rfStopped.className = "rf-stopped";
+        if (
+          currentMode === "rapidfire" &&
+          answered !== -1 &&
+          answered !== q.ans
+        ) {
+          rfStopped.classList.add("show");
+        }
+
+        // Rapid timer
+        const rt = document.getElementById("rapidTimer");
+        rt.className = "rapid-timer";
+
+        // Buttons
+        const nextBtn = document.getElementById("nextBtn");
+        const prevBtn = document.getElementById("prevBtn");
+        prevBtn.disabled = currentIndex === 0;
+
+        if (answered === -1) {
+          nextBtn.disabled = true;
+          nextBtn.textContent =
+            currentIndex === total - 1 ? "FINISH ▶" : "NEXT ▶";
+        } else {
+          nextBtn.disabled = false;
+          nextBtn.textContent =
+            currentIndex === total - 1 ? "FINISH ▶" : "NEXT ▶";
+        }
+      }
+
+      function selectAnswer(chosen) {
+        if (userAnswers[currentIndex] !== -1) return;
+
+        const q = activeQuestions[currentIndex];
+        userAnswers[currentIndex] = chosen;
+        const isCorrect = chosen === q.ans;
+
+        if (isCorrect) liveScore++;
+        else wrongQuestions.push(currentIndex);
+        document.getElementById("liveScore").textContent = liveScore;
+
+        // Visually mark options
+        const btns = document.querySelectorAll(".option-btn");
+        btns.forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.ans) btn.classList.add("correct");
+          else if (i === chosen && !isCorrect) btn.classList.add("wrong");
+        });
+
+        const nextBtn = document.getElementById("nextBtn");
+        const total = activeQuestions.length;
+
+        if (currentMode === "learning") {
+          const fb = document.getElementById("feedbackBox");
+          fb.classList.add("show", isCorrect ? "correct" : "wrong");
+          fb.textContent = isCorrect
+            ? `✓ Correct! The answer is: ${q.opts[q.ans]}`
+            : `✗ Incorrect. The correct answer is: ${q.opts[q.ans]}`;
+          nextBtn.disabled = false;
+          nextBtn.textContent =
+            currentIndex === total - 1 ? "FINISH ▶" : "NEXT ▶";
+        } else if (currentMode === "rapidfire" || currentMode === "retake") {
+          if (isCorrect) {
+            // Flash and auto-advance
+            const overlay = document.getElementById("flashOverlay");
+            overlay.classList.add("show");
+            setTimeout(() => overlay.classList.remove("show"), 500);
+
+            nextBtn.disabled = true;
+            if (currentIndex < total - 1) {
+              // Show countdown
+              const rt = document.getElementById("rapidTimer");
+              const tb = document.getElementById("timerBar");
+              const tc = document.getElementById("timerCount");
+              rt.classList.add("show");
+              tc.textContent = "1";
+              tb.style.width = "100%";
+              let elapsed = 0;
+              autoTimer = setInterval(() => {
+                elapsed += 50;
+                tb.style.width =
+                  Math.max(0, 100 - (elapsed / 1000) * 100) + "%";
+                if (elapsed >= 1000) {
+                  clearAutoTimer();
+                  nextQuestion();
+                }
+              }, 50);
+            } else {
+              // Last question
+              setTimeout(finishQuiz, 800);
+            }
+          } else {
+            // Wrong — stop, show answer, wait for manual next
+            const rfStopped = document.getElementById("rfStopped");
+            rfStopped.classList.add("show");
+            nextBtn.disabled = false;
+            nextBtn.textContent =
+              currentIndex === total - 1 ? "FINISH ▶" : "NEXT ▶";
+          }
+        }
+      }
+
+      function clearAutoTimer() {
+        if (autoTimer) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+        }
+      }
+
+      function nextQuestion() {
+        if (currentIndex >= activeQuestions.length - 1) {
+          finishQuiz();
+          return;
+        }
+        currentIndex++;
+        renderQuestion();
+      }
+
+      function prevQuestion() {
+        if (currentIndex <= 0) return;
+        clearAutoTimer();
+        currentIndex--;
+        renderQuestion();
+      }
+
+      function finishQuiz() {
+        clearAutoTimer();
+        const total = activeQuestions.length;
+        const answered = userAnswers.filter((a) => a !== -1).length;
+        const correct = liveScore;
+        const wrong = wrongQuestions.length;
+        const skipped = total - answered;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        document.getElementById("bigScore").textContent = pct + "%";
+        document.getElementById(
+          "scoreLabel"
+        ).textContent = `${correct} correct out of ${total} questions`;
+        document.getElementById("resCorrect").textContent = correct;
+        document.getElementById("resWrong").textContent = wrong;
+        document.getElementById("resSkipped").textContent = skipped;
+
+        const tag = document.getElementById("resultsTag");
+        tag.textContent =
+          currentMode === "retake" ? "▸ RETAKE COMPLETE" : "▸ QUIZ COMPLETE";
+
+        const title = document.getElementById("resultsTitle");
+        let perf = "";
+        if (pct === 100) {
+          title.textContent = "Perfect Score!";
+          perf = "Absolutely flawless. You know this cold! 🔥";
+        } else if (pct >= 80) {
+          title.textContent = "Excellent Work!";
+          perf = `Well done! You're exam-ready. 💪`;
+        } else if (pct >= 60) {
+          title.textContent = "Good Effort!";
+          perf = `Solid foundation — review the topics you missed. 📖`;
+        } else if (pct >= 40) {
+          title.textContent = "Keep Practicing!";
+          perf = `You're getting there — revisit the weak areas and try again. 🔄`;
+        } else {
+          title.textContent = "Needs More Study!";
+          perf = `Focus on the topics below and use Learning Mode to review. 💡`;
+        }
+        document.getElementById("perfMsg").innerHTML = `<span>${perf}</span>`;
+
+        // Wrong answers list
+        const container = document.getElementById("wrongListContainer");
+        const body = document.getElementById("wrongListBody");
+        const retakeBtn = document.getElementById("retakeWrongBtn");
+        body.innerHTML = "";
+
+        if (wrongQuestions.length > 0) {
+          container.style.display = "block";
+          retakeBtn.style.display = "inline-block";
+          wrongQuestions.forEach((qi, idx) => {
+            const q = activeQuestions[qi];
+            const chosen = userAnswers[qi];
+            const item = document.createElement("div");
+            item.className = "wrong-item";
+            item.innerHTML = `
+        <div class="wi-num">${idx + 1}.</div>
+        <div>
+          <div class="wi-q">${q.q}</div>
+          ${
+            chosen !== -1
+              ? `<div style="color:var(--wrong);font-size:0.82rem;">Your answer: ${q.opts[chosen]}</div>`
+              : ""
+          }
+          <div class="wi-a">✓ Correct: ${q.opts[q.ans]}</div>
+        </div>`;
+            body.appendChild(item);
+          });
+        } else {
+          container.style.display = "none";
+          retakeBtn.style.display = "none";
+        }
+
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("resultsScreen").classList.add("active");
+      }
+
+      function retakeWrong() {
+        if (wrongQuestions.length === 0) return;
+        const wrongQs = wrongQuestions.map((i) => activeQuestions[i]);
+        startMode("retake", shuffle([...wrongQs]));
+      }
+    </script>
+  </body>
+</html>
