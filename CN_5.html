@@ -1,0 +1,3612 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>CN Quiz — Computer Networks</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;600&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #080d18;
+        --surface: #0d1526;
+        --surface2: #111d35;
+        --border: #1e2f50;
+        --cyan: #00e5ff;
+        --cyan-dim: #00b8d4;
+        --green: #00ff88;
+        --green-dim: #00c96e;
+        --red: #ff4d6d;
+        --red-dim: #cc3a57;
+        --orange: #ffaa00;
+        --text: #e2eaff;
+        --text-dim: #7a90b8;
+        --text-muted: #3d5278;
+        --glow-cyan: 0 0 20px rgba(0, 229, 255, 0.3);
+        --glow-green: 0 0 20px rgba(0, 255, 136, 0.3);
+        --glow-red: 0 0 20px rgba(255, 77, 109, 0.3);
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── GRID BACKGROUND ── */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(0, 229, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── SCREENS ── */
+      .screen {
+        position: relative;
+        z-index: 1;
+        display: none;
+        min-height: 100vh;
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── HOME SCREEN ── */
+      #home {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        animation: fadeIn 0.6s ease;
+      }
+      .home-inner {
+        max-width: 640px;
+        width: 100%;
+        text-align: center;
+      }
+      .logo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 229, 255, 0.08);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        border-radius: 100px;
+        padding: 6px 16px;
+        margin-bottom: 2rem;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--cyan);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .logo-badge::before {
+        content: "⬡";
+        font-size: 1rem;
+      }
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900;
+        line-height: 1.1;
+        background: linear-gradient(135deg, #fff 30%, var(--cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.75rem;
+      }
+      .subtitle {
+        color: var(--text-dim);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .q-count {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--cyan);
+        opacity: 0.7;
+        margin-bottom: 2.5rem;
+      }
+
+      .mode-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .mode-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.75rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+      }
+      .mode-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--card-glow, transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .mode-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--card-color, var(--cyan));
+        box-shadow: var(--card-shadow, var(--glow-cyan));
+      }
+      .mode-card:hover::before {
+        opacity: 1;
+      }
+      .mode-card.learning {
+        --card-color: var(--cyan);
+        --card-shadow: var(--glow-cyan);
+        --card-glow: radial-gradient(
+          ellipse at top left,
+          rgba(0, 229, 255, 0.07),
+          transparent 70%
+        );
+      }
+      .mode-card.rapid {
+        --card-color: var(--orange);
+        --card-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+        --card-glow: radial-gradient(
+          ellipse at top left,
+          rgba(255, 170, 0, 0.07),
+          transparent 70%
+        );
+      }
+      .mode-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .mode-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+      }
+      .mode-desc {
+        font-size: 0.82rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+      }
+      .mode-tags {
+        display: flex;
+        gap: 6px;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .tag {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.65rem;
+        padding: 2px 8px;
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+      }
+
+      .topics-preview {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: left;
+      }
+      .topics-preview-title {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.75rem;
+      }
+      .topic-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .topic-chip {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 100px;
+        background: rgba(0, 229, 255, 0.06);
+        border: 1px solid rgba(0, 229, 255, 0.15);
+        color: var(--cyan);
+      }
+
+      /* ── QUIZ SCREEN ── */
+      #quiz {
+        padding: 0;
+      }
+      .quiz-header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .back-btn {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        cursor: pointer;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        transition: all 0.2s;
+        font-family: "DM Sans", sans-serif;
+        white-space: nowrap;
+      }
+      .back-btn:hover {
+        border-color: var(--cyan);
+        color: var(--cyan);
+      }
+      .progress-wrap {
+        flex: 1;
+      }
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        margin-bottom: 5px;
+      }
+      .progress-bar-track {
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--cyan), var(--green));
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+      .mode-badge {
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.62rem;
+        letter-spacing: 1px;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .mode-badge.learning {
+        background: rgba(0, 229, 255, 0.12);
+        color: var(--cyan);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+      }
+      .mode-badge.rapid {
+        background: rgba(255, 170, 0, 0.12);
+        color: var(--orange);
+        border: 1px solid rgba(255, 170, 0, 0.3);
+      }
+
+      .score-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 4px 12px;
+        white-space: nowrap;
+      }
+      .score-chip .score-correct {
+        color: var(--green);
+      }
+      .score-chip .score-wrong {
+        color: var(--red);
+      }
+
+      .quiz-body {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem 1.5rem 5rem;
+      }
+      .question-card {
+        max-width: 720px;
+        width: 100%;
+        animation: slideUp 0.3s ease;
+      }
+      .q-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1.25rem;
+      }
+      .q-num {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .q-topic {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        border-radius: 100px;
+        background: rgba(0, 229, 255, 0.08);
+        color: var(--cyan-dim);
+        border: 1px solid rgba(0, 229, 255, 0.2);
+      }
+      .q-text {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        font-weight: 600;
+        line-height: 1.5;
+        color: var(--text);
+        margin-bottom: 1.75rem;
+        padding: 1.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+
+      .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+      }
+      .option-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        text-align: left;
+        width: 100%;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        color: var(--text);
+        line-height: 1.4;
+        position: relative;
+        overflow: hidden;
+      }
+      .option-btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--opt-glow, transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      .option-btn:not(:disabled):hover {
+        border-color: var(--cyan);
+        box-shadow: var(--glow-cyan);
+        transform: translateX(4px);
+      }
+      .option-btn:not(:disabled):hover::after {
+        --opt-glow: linear-gradient(
+          90deg,
+          rgba(0, 229, 255, 0.08),
+          transparent
+        );
+        opacity: 1;
+      }
+      .option-letter {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        font-weight: 600;
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-dim);
+        background: var(--surface2);
+        transition: all 0.2s;
+        margin-top: 1px;
+      }
+      .option-btn.correct {
+        border-color: var(--green);
+        background: rgba(0, 255, 136, 0.06);
+        box-shadow: var(--glow-green);
+        cursor: default;
+      }
+      .option-btn.correct .option-letter {
+        background: var(--green);
+        color: #000;
+        border-color: var(--green);
+      }
+      .option-btn.wrong {
+        border-color: var(--red);
+        background: rgba(255, 77, 109, 0.06);
+        box-shadow: var(--glow-red);
+        cursor: default;
+      }
+      .option-btn.wrong .option-letter {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+      }
+      .option-btn.reveal-correct {
+        border-color: var(--green);
+        background: rgba(0, 255, 136, 0.04);
+        cursor: default;
+      }
+      .option-btn.reveal-correct .option-letter {
+        background: var(--green);
+        color: #000;
+        border-color: var(--green);
+      }
+      .option-btn:disabled {
+        cursor: default;
+        transform: none !important;
+      }
+      .option-btn:disabled:hover {
+        box-shadow: none;
+      }
+
+      /* Feedback banner */
+      .feedback-banner {
+        padding: 0.875rem 1.25rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: slideDown 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 500;
+        align-items: center;
+        gap: 10px;
+      }
+      .feedback-banner.show {
+        display: flex;
+      }
+      .feedback-banner.correct {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        color: var(--green);
+      }
+      .feedback-banner.wrong {
+        background: rgba(255, 77, 109, 0.1);
+        border: 1px solid rgba(255, 77, 109, 0.3);
+        color: var(--red);
+      }
+      .feedback-icon {
+        font-size: 1.1rem;
+      }
+
+      /* Auto advance indicator */
+      .auto-advance {
+        display: none;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--green);
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: pulse 0.8s ease infinite;
+      }
+      .auto-advance.show {
+        display: block;
+      }
+
+      /* Navigation */
+      .nav-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      .prev-btn {
+        background: var(--surface);
+        color: var(--text-dim);
+      }
+      .prev-btn:hover {
+        border-color: var(--text-dim);
+        color: var(--text);
+      }
+      .next-btn {
+        background: linear-gradient(135deg, var(--cyan), var(--cyan-dim));
+        color: #000;
+        border-color: var(--cyan);
+        font-weight: 700;
+        margin-left: auto;
+      }
+      .next-btn:hover {
+        box-shadow: var(--glow-cyan);
+        transform: translateY(-1px);
+      }
+      .nav-dots {
+        display: flex;
+        gap: 4px;
+      }
+      .nav-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: background 0.2s;
+      }
+      .nav-dot.answered {
+        background: var(--cyan);
+      }
+      .nav-dot.correct-dot {
+        background: var(--green);
+      }
+      .nav-dot.wrong-dot {
+        background: var(--red);
+      }
+      .nav-dot.current {
+        background: var(--cyan);
+        box-shadow: 0 0 6px var(--cyan);
+      }
+
+      /* ── RESULT SCREEN ── */
+      #result {
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        animation: fadeIn 0.5s ease;
+      }
+      .result-inner {
+        max-width: 580px;
+        width: 100%;
+        text-align: center;
+      }
+      .result-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+      .result-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+      }
+      .result-subtitle {
+        color: var(--text-dim);
+        margin-bottom: 2rem;
+      }
+      .score-display {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      .big-score {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(3rem, 8vw, 5rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--cyan), var(--green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+      .score-label {
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+      .score-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+      .stat-box {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+      .stat-val {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+      .stat-val.c {
+        color: var(--green);
+      }
+      .stat-val.w {
+        color: var(--red);
+      }
+      .stat-val.s {
+        color: var(--orange);
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      .result-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .action-btn {
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        border: none;
+        font-family: "DM Sans", sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+      }
+      .action-btn.primary {
+        background: linear-gradient(135deg, var(--cyan), var(--cyan-dim));
+        color: #000;
+      }
+      .action-btn.primary:hover {
+        box-shadow: var(--glow-cyan);
+        transform: translateY(-2px);
+      }
+      .action-btn.secondary {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+      .action-btn.secondary:hover {
+        border-color: var(--cyan);
+        color: var(--cyan);
+      }
+      .action-btn.retake {
+        background: rgba(255, 77, 109, 0.1);
+        border: 1px solid rgba(255, 77, 109, 0.4);
+        color: var(--red);
+      }
+      .action-btn.retake:hover {
+        background: rgba(255, 77, 109, 0.2);
+        box-shadow: var(--glow-red);
+      }
+      .action-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      /* topic breakdown */
+      .topic-breakdown {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+      .topic-breakdown::-webkit-scrollbar {
+        width: 4px;
+      }
+      .topic-breakdown::-webkit-scrollbar-track {
+        background: var(--border);
+      }
+      .topic-breakdown::-webkit-scrollbar-thumb {
+        background: var(--cyan);
+        border-radius: 2px;
+      }
+      .breakdown-title {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.875rem;
+      }
+      .breakdown-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.8rem;
+      }
+      .breakdown-row:last-child {
+        border-bottom: none;
+      }
+      .breakdown-topic {
+        flex: 1;
+        color: var(--text-dim);
+      }
+      .breakdown-bar-track {
+        width: 80px;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .breakdown-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+      }
+      .breakdown-fraction {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        min-width: 40px;
+        text-align: right;
+      }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-8px);
+        }
+        40%,
+        80% {
+          transform: translateX(8px);
+        }
+      }
+      .shake {
+        animation: shake 0.4s ease;
+      }
+      @keyframes flash-correct {
+        0% {
+          background: rgba(0, 255, 136, 0.2);
+        }
+        100% {
+          background: rgba(0, 255, 136, 0.06);
+        }
+      }
+      .flash-correct {
+        animation: flash-correct 0.6s ease;
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 480px) {
+        .mode-grid {
+          grid-template-columns: 1fr;
+        }
+        .score-stats {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .nav-dots {
+          display: none;
+        }
+      }
+
+      /* rapid fire pulse ring */
+      .rf-ring {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 99;
+        border: 3px solid var(--orange);
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .rf-ring.show {
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HOME SCREEN -->
+    <div
+      id="home"
+      class="screen active">
+      <div class="home-inner">
+        <div class="logo-badge">Computer Networks · 5CN</div>
+        <h1>CN QUIZ<br />MASTER</h1>
+        <p class="subtitle">
+          Transport Layer · Application Layer · Cryptography · Security
+        </p>
+        <p
+          class="q-count"
+          id="q-count-label">
+          Loading questions…
+        </p>
+
+        <div class="mode-grid">
+          <div
+            class="mode-card learning"
+            onclick="startQuiz('learning')">
+            <span class="mode-icon">📘</span>
+            <div class="mode-title">Learning Mode</div>
+            <div class="mode-desc">
+              Select an answer and see immediate feedback. Navigate freely with
+              Prev / Next. Perfect for studying.
+            </div>
+            <div class="mode-tags">
+              <span class="tag">Manual advance</span>
+              <span class="tag">Full feedback</span>
+              <span class="tag">Free navigation</span>
+            </div>
+          </div>
+          <div
+            class="mode-card rapid"
+            onclick="startQuiz('rapid')">
+            <span class="mode-icon">⚡</span>
+            <div class="mode-title">Rapid Fire</div>
+            <div class="mode-desc">
+              Auto-advance on correct answers. Wrong answer? You stop and fix it
+              manually before moving on.
+            </div>
+            <div class="mode-tags">
+              <span class="tag">Auto-advance</span>
+              <span class="tag">High pressure</span>
+              <span class="tag">Streak mode</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="topics-preview">
+          <div class="topics-preview-title">Topics Covered</div>
+          <div
+            class="topic-chips"
+            id="topic-chips"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div
+      id="quiz"
+      class="screen">
+      <div class="quiz-header">
+        <button
+          class="back-btn"
+          onclick="goHome()">
+          ← Exit
+        </button>
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span id="prog-text">Q 1 / 100</span>
+            <span id="prog-pct">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div
+              class="progress-bar-fill"
+              id="prog-fill"
+              style="width: 0%"></div>
+          </div>
+        </div>
+        <div
+          class="mode-badge"
+          id="mode-badge">
+          LEARNING
+        </div>
+        <div class="score-chip">
+          <span
+            class="score-correct"
+            id="hdr-correct"
+            >0 ✓</span
+          >
+          <span style="color: var(--border)">|</span>
+          <span
+            class="score-wrong"
+            id="hdr-wrong"
+            >0 ✗</span
+          >
+        </div>
+      </div>
+
+      <div class="quiz-body">
+        <div
+          class="question-card"
+          id="q-card">
+          <div class="q-meta">
+            <span
+              class="q-num"
+              id="q-num-label"
+              >Q 1</span
+            >
+            <span
+              class="q-topic"
+              id="q-topic-label"
+              >Topic</span
+            >
+          </div>
+          <div
+            class="q-text"
+            id="q-text">
+            Question text here
+          </div>
+          <div
+            class="options-grid"
+            id="options-grid"></div>
+          <div
+            class="feedback-banner"
+            id="feedback-banner">
+            <span
+              class="feedback-icon"
+              id="fb-icon"
+              >✓</span
+            >
+            <span id="fb-text">Correct!</span>
+          </div>
+          <div
+            class="auto-advance"
+            id="auto-advance">
+            ⚡ Auto-advancing…
+          </div>
+          <div class="nav-buttons">
+            <button
+              class="nav-btn prev-btn"
+              id="prev-btn"
+              onclick="navigate(-1)">
+              ← Prev
+            </button>
+            <div
+              class="nav-dots"
+              id="nav-dots"></div>
+            <button
+              class="nav-btn next-btn"
+              id="next-btn"
+              onclick="navigate(1)">
+              Next →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div
+      id="result"
+      class="screen">
+      <div class="result-inner">
+        <div
+          class="result-icon"
+          id="res-icon">
+          🎯
+        </div>
+        <div
+          class="result-title"
+          id="res-title">
+          Quiz Complete!
+        </div>
+        <p
+          class="result-subtitle"
+          id="res-sub">
+          Here's how you did
+        </p>
+        <div class="score-display">
+          <div
+            class="big-score"
+            id="big-score">
+            0%
+          </div>
+          <div
+            class="score-label"
+            id="score-label">
+            0 out of 0 correct
+          </div>
+          <div class="score-stats">
+            <div class="stat-box">
+              <div
+                class="stat-val c"
+                id="stat-correct">
+                0
+              </div>
+              <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat-box">
+              <div
+                class="stat-val w"
+                id="stat-wrong">
+                0
+              </div>
+              <div class="stat-label">Wrong</div>
+            </div>
+            <div class="stat-box">
+              <div
+                class="stat-val s"
+                id="stat-skip">
+                0
+              </div>
+              <div class="stat-label">Skipped</div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="topic-breakdown"
+          id="topic-breakdown"></div>
+        <div class="result-actions">
+          <button
+            class="action-btn retake"
+            id="retake-btn"
+            onclick="retakeWrong()">
+            🔁 Retake Wrong Questions
+          </button>
+          <button
+            class="action-btn primary"
+            onclick="restartQuiz()">
+            ↺ Restart Full Quiz
+          </button>
+          <button
+            class="action-btn secondary"
+            onclick="goHome()">
+            ← Change Mode
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="rf-ring"
+      id="rf-ring"></div>
+
+    <script>
+      // ─────────────────────────────────────────────
+      //  QUESTIONS DATABASE
+      // ─────────────────────────────────────────────
+      const RAW_QUESTIONS = [
+        // ── TRANSPORT LAYER ──
+        {
+          t: "Transport Layer",
+          q: "The transport layer is located between which two layers?",
+          o: [
+            "Application layer and network layer",
+            "Network layer and data link layer",
+            "Session layer and application layer",
+            "Physical layer and data link layer",
+          ],
+          c: 0,
+        },
+        {
+          t: "Transport Layer",
+          q: "What type of communication does the transport layer provide between application layers?",
+          o: [
+            "Node-to-node communication",
+            "Host-to-host communication",
+            "Process-to-process communication",
+            "Bit-to-bit communication",
+          ],
+          c: 2,
+        },
+        {
+          t: "Transport Layer",
+          q: "What is a socket address?",
+          o: [
+            "A MAC address and port number combination",
+            "An IP address and port number combination",
+            "A domain name and IP address combination",
+            "A port number and protocol combination",
+          ],
+          c: 1,
+        },
+        {
+          t: "Transport Layer",
+          q: "Multiplexing at the transport layer refers to:",
+          o: [
+            "Delivering items from one source to many destinations",
+            "Combining data from many sources into one channel",
+            "Splitting data into packets",
+            "Error checking mechanism",
+          ],
+          c: 1,
+        },
+        {
+          t: "Transport Layer",
+          q: "Demultiplexing at the transport layer refers to:",
+          o: [
+            "Combining many packets into one",
+            "Delivering items from one entity to more than one source",
+            "Compressing data for transmission",
+            "Encrypting data before sending",
+          ],
+          c: 1,
+        },
+        {
+          t: "Transport Layer",
+          q: "Which transport layer protocol combines features of both UDP and TCP for multimedia communication?",
+          o: ["HTTP", "SCTP", "SMTP", "RTP"],
+          c: 1,
+        },
+        {
+          t: "Transport Layer",
+          q: "At the transport layer, a port number is used to:",
+          o: [
+            "Identify the physical device",
+            "Choose among multiple processes running on the destination host",
+            "Select the best network path",
+            "Determine the packet size",
+          ],
+          c: 1,
+        },
+        {
+          t: "Transport Layer",
+          q: "Flow control at the transport layer is concerned with:",
+          o: [
+            "Preventing network congestion",
+            "Balancing the production and consumption rates of data",
+            "Correcting transmission errors",
+            "Routing packets efficiently",
+          ],
+          c: 1,
+        },
+        // ── PORT NUMBERS ──
+        {
+          t: "Port Numbers",
+          q: "What is the range of well-known port numbers?",
+          o: ["0 to 255", "0 to 1023", "1024 to 49151", "49152 to 65535"],
+          c: 1,
+        },
+        {
+          t: "Port Numbers",
+          q: "What is the range of registered port numbers?",
+          o: ["0 to 1023", "1024 to 49151", "49152 to 65535", "1000 to 60000"],
+          c: 1,
+        },
+        {
+          t: "Port Numbers",
+          q: "What is the range of dynamic (private) port numbers?",
+          o: ["1024 to 49151", "49152 to 65535", "0 to 1023", "32768 to 65535"],
+          c: 1,
+        },
+        {
+          t: "Port Numbers",
+          q: "Which authority assigns and controls well-known port numbers?",
+          o: ["IEEE", "IANA", "ISO", "W3C"],
+          c: 1,
+        },
+        {
+          t: "Port Numbers",
+          q: "Well-known port 80 is used by which protocol?",
+          o: ["FTP", "SMTP", "HTTP", "DNS"],
+          c: 2,
+        },
+        {
+          t: "Port Numbers",
+          q: "Well-known port 25 is used by which protocol?",
+          o: ["HTTP", "FTP", "DNS", "SMTP"],
+          c: 3,
+        },
+        {
+          t: "Port Numbers",
+          q: "Well-known port 53 is used by which protocol?",
+          o: ["HTTP", "SMTP", "DNS", "FTP"],
+          c: 2,
+        },
+        {
+          t: "Port Numbers",
+          q: "Which ports are neither assigned nor controlled by IANA and can be used by any process?",
+          o: [
+            "Well-known ports (0–1023)",
+            "Registered ports (1024–49151)",
+            "Dynamic ports (49152–65535)",
+            "Reserved ports (256–511)",
+          ],
+          c: 2,
+        },
+        // ── UDP ──
+        {
+          t: "UDP",
+          q: "What is the fixed header size of a UDP user datagram?",
+          o: ["4 bytes", "8 bytes", "16 bytes", "20 bytes"],
+          c: 1,
+        },
+        {
+          t: "UDP",
+          q: "Is the Checksum field mandatory in UDP?",
+          o: [
+            "Yes, always mandatory",
+            "No, it is optional — set to zero if unused",
+            "Only for large datagrams",
+            "Only when using IPv6",
+          ],
+          c: 1,
+        },
+        {
+          t: "UDP",
+          q: "What does the Length field in the UDP header contain?",
+          o: [
+            "Length of the data only",
+            "Length of the header only",
+            "Length of the entire UDP segment including header and data",
+            "Number of UDP datagrams in the session",
+          ],
+          c: 2,
+        },
+        {
+          t: "UDP",
+          q: "UDP is described as:",
+          o: [
+            "A reliable, connection-oriented protocol",
+            "An unreliable, connectionless protocol",
+            "A secure, encrypted protocol",
+            "A flow-controlled, connection-oriented protocol",
+          ],
+          c: 1,
+        },
+        {
+          t: "UDP",
+          q: "Which of the following does UDP NOT provide?",
+          o: [
+            "Source port identification",
+            "Checksum computation (optional)",
+            "Reliable data delivery guarantees",
+            "Destination port identification",
+          ],
+          c: 2,
+        },
+        // ── TCP HEADER ──
+        {
+          t: "TCP",
+          q: "TCP uses which type of connection-establishment procedure?",
+          o: [
+            "Two-way handshake",
+            "Three-way handshake",
+            "Four-way handshake",
+            "One-way handshake",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "Which TCP flag is used to synchronize sequence numbers during connection establishment?",
+          o: ["ACK", "FIN", "SYN", "RST"],
+          c: 2,
+        },
+        {
+          t: "TCP",
+          q: "Which TCP flag signals 'no more data from sender', used in connection termination?",
+          o: ["RST", "URG", "SYN", "FIN"],
+          c: 3,
+        },
+        {
+          t: "TCP",
+          q: "Which TCP flag causes the receiver to immediately push all buffered data to the application?",
+          o: ["SYN", "URG", "PSH", "ACK"],
+          c: 2,
+        },
+        {
+          t: "TCP",
+          q: "The TCP Sequence Number field is how many bits?",
+          o: ["16 bits", "24 bits", "32 bits", "64 bits"],
+          c: 2,
+        },
+        {
+          t: "TCP",
+          q: "What is the minimum TCP header size?",
+          o: ["8 bytes", "16 bytes", "20 bytes", "24 bytes"],
+          c: 2,
+        },
+        {
+          t: "TCP",
+          q: "The TCP Window field is how many bits, and it defines:",
+          o: [
+            "8 bits — type of service",
+            "16 bits — window size of the sending TCP in bytes",
+            "32 bits — sequence range",
+            "4 bits — header length",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "The Data Offset field in the TCP header indicates:",
+          o: [
+            "Amount of data in the segment",
+            "Number of 32-bit words in the TCP header",
+            "Offset of the first byte of data",
+            "Starting sequence number",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "TCP provides which type of communication between endpoints?",
+          o: ["Half-duplex", "Simplex", "Full-duplex", "Broadcast"],
+          c: 2,
+        },
+        {
+          t: "TCP",
+          q: "The CWR flag in TCP is set by the sender to acknowledge:",
+          o: [
+            "Connection was refused",
+            "It received an ECE signal and reduced its congestion window",
+            "Checksum was wrong",
+            "Connection was reset",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "The ECE flag in TCP is set by the receiver to inform the sender that:",
+          o: [
+            "Error correction is enabled",
+            "A packet with the Congestion Experienced (CE) mark was received",
+            "End-to-end connection is established",
+            "Encryption is complete",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "The TCP Acknowledgment Number field contains:",
+          o: [
+            "The sequence number of the last byte received",
+            "The sequence number of the next data octet expected to be received",
+            "The total bytes transmitted so far",
+            "The source port number",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP",
+          q: "TCP is a ___-oriented protocol with respect to data delivery.",
+          o: ["Packet", "Message", "Byte stream", "Frame"],
+          c: 2,
+        },
+        // ── TCP CONNECTION ──
+        {
+          t: "TCP Connection",
+          q: "In the TCP three-way handshake, the correct sequence of segments is:",
+          o: [
+            "ACK → SYN → SYN-ACK",
+            "SYN → ACK → SYN-ACK",
+            "SYN → SYN-ACK → ACK",
+            "SYN-ACK → SYN → ACK",
+          ],
+          c: 2,
+        },
+        {
+          t: "TCP Connection",
+          q: "What is ISN (Initial Sequence Number)?",
+          o: [
+            "The IP address used to start a session",
+            "A random number chosen during connection establishment",
+            "The port number of the client",
+            "The maximum segment size",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP Connection",
+          q: "A SYN segment in TCP:",
+          o: [
+            "Carries application data and consumes sequence numbers",
+            "Cannot carry data but consumes one sequence number",
+            "Carries data and does not consume a sequence number",
+            "Does not consume any sequence number",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP Connection",
+          q: "In TCP 'half-close' connection termination:",
+          o: [
+            "Both parties close simultaneously",
+            "Client stops sending but can still receive data from server",
+            "Server closes while client remains active",
+            "Neither party can send after this point",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP Connection",
+          q: "'Piggybacking' in TCP refers to:",
+          o: [
+            "Sending duplicate ACKs for congestion signaling",
+            "Acknowledgment data carried on the same segment as actual data",
+            "Compressing multiple packets together",
+            "Attaching security headers to data",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP Connection",
+          q: "TCP connection-oriented transmission requires how many phases?",
+          o: [
+            "Two: establishment and termination",
+            "Three: establishment, data transfer, termination",
+            "Four: setup, auth, transfer, teardown",
+            "One: just data transfer",
+          ],
+          c: 1,
+        },
+        {
+          t: "TCP Connection",
+          q: "Which applications use TCP? (Select the most complete correct answer)",
+          o: [
+            "DNS, DHCP, VoIP",
+            "Web browsing (HTTP), File transfer (FTP), Email (SMTP)",
+            "Video streaming only",
+            "Only encrypted (HTTPS) connections",
+          ],
+          c: 1,
+        },
+        // ── FLOW CONTROL ──
+        {
+          t: "Flow Control",
+          q: "The TCP window size is determined by:",
+          o: [
+            "Maximum of rwnd and cwnd",
+            "Minimum of rwnd and cwnd",
+            "Sum of rwnd and cwnd",
+            "Only the congestion window (cwnd)",
+          ],
+          c: 1,
+        },
+        {
+          t: "Flow Control",
+          q: "What does rwnd (Receiver Window) represent?",
+          o: [
+            "Router window — network processing capacity",
+            "Receiver Window — how much data the receiver can accept",
+            "Retransmit window — for lost packets",
+            "Resilience window — error tolerance level",
+          ],
+          c: 1,
+        },
+        {
+          t: "Flow Control",
+          q: "What does cwnd (Congestion Window) represent?",
+          o: [
+            "Connection window — number of open connections",
+            "Congestion Window — sender-side limit based on network congestion",
+            "Checksum window — error detection range",
+            "Cipher window — encryption block size",
+          ],
+          c: 1,
+        },
+        {
+          t: "Flow Control",
+          q: "Silly Window Syndrome occurs when:",
+          o: [
+            "The network has too many routers causing loops",
+            "TCP receiver advertises very small window sizes, causing inefficient transmission (data smaller than header)",
+            "The sender transmits packets larger than the MTU",
+            "Sequence numbers overflow and wrap around",
+          ],
+          c: 1,
+        },
+        {
+          t: "Flow Control",
+          q: "TCP sliding windows are oriented by:",
+          o: ["Packets", "Bytes", "Frames", "Messages"],
+          c: 1,
+        },
+        {
+          t: "Flow Control",
+          q: "A 'shrinking window' in TCP occurs when:",
+          o: [
+            "cwnd decreases due to congestion",
+            "The receiver's buffer fills up, forcing it to advertise smaller window sizes",
+            "The sender voluntarily reduces speed",
+            "IP fragmentation splits TCP segments",
+          ],
+          c: 1,
+        },
+        // ── ERROR CONTROL ──
+        {
+          t: "Error Control",
+          q: "How many duplicate ACKs trigger fast retransmission in TCP?",
+          o: [
+            "Two duplicate ACKs",
+            "Three duplicate ACKs",
+            "Four duplicate ACKs",
+            "Five duplicate ACKs",
+          ],
+          c: 1,
+        },
+        {
+          t: "Error Control",
+          q: "Do ACK segments in TCP consume sequence numbers?",
+          o: [
+            "Yes, always",
+            "No — ACK segments do not consume sequence numbers",
+            "Only in connection establishment",
+            "Only when carrying data",
+          ],
+          c: 1,
+        },
+        {
+          t: "Error Control",
+          q: "When a gap in sequence is detected (out-of-order segment arrives), the receiver should:",
+          o: [
+            "Discard the out-of-order segment immediately",
+            "Store the out-of-order segment and send an immediate duplicate ACK",
+            "Wait 500ms before sending ACK",
+            "Send a NAK to signal missing data",
+          ],
+          c: 1,
+        },
+        {
+          t: "Error Control",
+          q: "TCP ACK Rule 2 states:",
+          o: [
+            "Send ACK immediately for every received segment",
+            "Wait up to 500ms before sending ACK (then send if no second segment arrives)",
+            "Send cumulative ACK after receiving 3 segments",
+            "Send NAK for missing segments",
+          ],
+          c: 1,
+        },
+        {
+          t: "Error Control",
+          q: "TCP ACK Rule 3 states:",
+          o: [
+            "Always send ACK immediately",
+            "Wait indefinitely for more data",
+            "Send a cumulative ACK for two received segments",
+            "Discard out-of-order segments",
+          ],
+          c: 2,
+        },
+        {
+          t: "Error Control",
+          q: "In TCP error control, what does 'lost acknowledgment' refer to?",
+          o: [
+            "An ACK segment that was corrupted",
+            "An ACK segment that was lost in the network",
+            "A segment acknowledged twice",
+            "A premature timeout",
+          ],
+          c: 1,
+        },
+        // ── CONGESTION CONTROL ──
+        {
+          t: "Congestion Control",
+          q: "What is the initial value of cwnd at the start of TCP slow start?",
+          o: ["0", "1", "2", "ssthresh"],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "During the TCP slow start phase, how does cwnd grow?",
+          o: [
+            "Linearly — by 1 segment per RTT",
+            "Exponentially — doubles each RTT",
+            "Logarithmically",
+            "It remains constant until ssthresh",
+          ],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "What is the default value of ssthresh in most TCP implementations?",
+          o: ["32,767 bytes", "65,535 bytes", "131,072 bytes", "1,024 bytes"],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "During TCP congestion avoidance, how does cwnd increase?",
+          o: [
+            "Exponentially — doubles each RTT",
+            "Additively — by 1 segment per RTT",
+            "It stays constant",
+            "By the value of ssthresh",
+          ],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "When congestion is detected by a TIMEOUT, cwnd and ssthresh are set to:",
+          o: [
+            "cwnd = ssthresh/2, ssthresh unchanged",
+            "cwnd = 1 and ssthresh = half of current window, restart slow start",
+            "cwnd = ssthresh, continue congestion avoidance",
+            "Both remain unchanged",
+          ],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "When congestion is detected by THREE DUPLICATE ACKs, cwnd is set to:",
+          o: [
+            "1",
+            "ssthresh (which was already halved)",
+            "0",
+            "Previous cwnd / 4",
+          ],
+          c: 1,
+        },
+        {
+          t: "Congestion Control",
+          q: "In both congestion detection scenarios (timeout and 3 ACKs), ssthresh is set to:",
+          o: [
+            "1",
+            "Current window size unchanged",
+            "Half of the current window size",
+            "Double the current window size",
+          ],
+          c: 2,
+        },
+        {
+          t: "Congestion Control",
+          q: "Congestion in a network occurs when:",
+          o: [
+            "Packets have errors in transmission",
+            "The load (number of packets sent) exceeds the capacity of the network",
+            "Too many connections are established simultaneously",
+            "ACK packets are lost",
+          ],
+          c: 1,
+        },
+        // ── QoS ──
+        {
+          t: "QoS",
+          q: "Jitter in network QoS refers to:",
+          o: [
+            "Packet loss rate",
+            "Variation in packet arrival times caused by congestion or routing changes",
+            "Network bandwidth capacity",
+            "Router processing delay",
+          ],
+          c: 1,
+        },
+        {
+          t: "QoS",
+          q: "Which applications have HIGH jitter sensitivity?",
+          o: [
+            "FTP and HTTP",
+            "Email (SMTP) and DNS",
+            "Audio-on-demand and Video-on-demand",
+            "File transfer and database queries",
+          ],
+          c: 2,
+        },
+        {
+          t: "QoS",
+          q: "Which applications require HIGH reliability?",
+          o: [
+            "VoIP and Video-over-IP",
+            "Audio-on-demand and Video-on-demand",
+            "FTP and HTTP",
+            "Only encrypted HTTPS connections",
+          ],
+          c: 2,
+        },
+        {
+          t: "QoS",
+          q: "VoIP (Voice over IP) bandwidth requirement is classified as:",
+          o: ["High", "Medium", "Low", "Variable"],
+          c: 2,
+        },
+        {
+          t: "QoS",
+          q: "What are the four key flow characteristics in QoS?",
+          o: [
+            "Speed, latency, loss, encryption",
+            "Reliability, delay, jitter, bandwidth",
+            "Throughput, congestion, routing, protocol",
+            "Checksum, sequencing, flow, error",
+          ],
+          c: 1,
+        },
+        {
+          t: "QoS",
+          q: "For delay sensitivity, which application is MOST affected by high delays?",
+          o: [
+            "File transfer (FTP)",
+            "Email (SMTP)",
+            "Telephony / audio conferencing",
+            "Background data sync",
+          ],
+          c: 2,
+        },
+        // ── SCHEDULING ──
+        {
+          t: "QoS – Scheduling",
+          q: "In FIFO queuing, what happens when the buffer is full?",
+          o: [
+            "New packets are queued at lower priority",
+            "New incoming packets are discarded",
+            "Old packets are removed from the queue",
+            "The network slows down automatically",
+          ],
+          c: 1,
+        },
+        {
+          t: "QoS – Scheduling",
+          q: "In priority queuing, when does a lower-priority queue get served?",
+          o: [
+            "At fixed regular intervals",
+            "When the higher-priority queue is empty",
+            "Never — low-priority traffic is always discarded",
+            "When a timeout occurs",
+          ],
+          c: 1,
+        },
+        {
+          t: "QoS – Scheduling",
+          q: "In priority queuing, the system processes packets in the highest-priority queue:",
+          o: [
+            "In round-robin order",
+            "Until it has sent one packet, then moves on",
+            "Until the queue is empty",
+            "For a fixed time slice only",
+          ],
+          c: 2,
+        },
+        {
+          t: "QoS – Scheduling",
+          q: "In weighted fair queuing with weights 3, 2, 1 for three queues, how many packets are taken from Queue 1 per cycle?",
+          o: ["1", "2", "3", "6"],
+          c: 2,
+        },
+        {
+          t: "QoS – Scheduling",
+          q: "Weighted fair queuing differs from priority queuing in that:",
+          o: [
+            "It only uses one queue",
+            "It selects packets from ALL queues in a weighted round-robin fashion",
+            "It disregards packet priority entirely",
+            "It uses random selection",
+          ],
+          c: 1,
+        },
+        // ── TRAFFIC SHAPING ──
+        {
+          t: "Traffic Shaping",
+          q: "What does the leaky bucket algorithm do to bursty network traffic?",
+          o: [
+            "Amplifies bursts for faster delivery",
+            "Smooths bursty traffic into a fixed-rate output",
+            "Drops all burst traffic immediately",
+            "Queues bursts indefinitely without any shaping",
+          ],
+          c: 1,
+        },
+        {
+          t: "Traffic Shaping",
+          q: "What happens in a leaky bucket when the bucket (queue) is full?",
+          o: [
+            "Packets are queued in a secondary buffer",
+            "Packets are sent at double the rate",
+            "Incoming packets are discarded",
+            "The sending rate increases temporarily",
+          ],
+          c: 2,
+        },
+        {
+          t: "Traffic Shaping",
+          q: "In a token bucket, a packet can be sent when:",
+          o: [
+            "The bucket has any number of tokens (even 1)",
+            "The number of tokens in the bucket is greater than or equal to the packet size",
+            "The bucket is completely full",
+            "No other packets are waiting",
+          ],
+          c: 1,
+        },
+        {
+          t: "Traffic Shaping",
+          q: "The token bucket algorithm:",
+          o: [
+            "Enforces a strict constant output rate",
+            "Allows bursty traffic up to a regulated maximum rate",
+            "Drops all packets when tokens run out permanently",
+            "Operates identically to leaky bucket",
+          ],
+          c: 1,
+        },
+        {
+          t: "Traffic Shaping",
+          q: "Admission control at a router refers to:",
+          o: [
+            "Physically controlling who can access the network room",
+            "Accepting or rejecting a flow based on predefined flow specifications and current capacity",
+            "Compressing admitted packets for efficiency",
+            "Encrypting admitted traffic",
+          ],
+          c: 1,
+        },
+        {
+          t: "Traffic Shaping",
+          q: "Resource reservation for QoS involves:",
+          o: [
+            "Reserving IP addresses for critical services",
+            "Reserving resources (buffer, bandwidth, CPU) beforehand to improve QoS",
+            "Reserving time slots in TDMA",
+            "Blocking lower-priority traffic permanently",
+          ],
+          c: 1,
+        },
+        // ── DNS ──
+        {
+          t: "DNS",
+          q: "DNS stands for:",
+          o: [
+            "Dynamic Naming System",
+            "Domain Name System",
+            "Distributed Network Service",
+            "Data Network Standard",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "DNS is implemented as:",
+          o: [
+            "A single central server with all mappings",
+            "A distributed database in a hierarchy of name servers",
+            "A peer-to-peer network without central authority",
+            "A flat file replicated on each client machine",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "DNS uses well-known port number:",
+          o: ["25", "53", "80", "110"],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "What are the three components of DNS?",
+          o: [
+            "Router, Switch, Host",
+            "Name Space, Resolvers, Name Servers",
+            "Client, Server, Proxy",
+            "IP, MAC, Port",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "In a flat name space, a name is:",
+          o: [
+            "Divided into hierarchical parts",
+            "A sequence of characters without structure",
+            "Always based on IP address",
+            "Limited to 7 characters",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "The generic top-level domain '.edu' represents:",
+          o: [
+            "Electronic domains",
+            "Educational institutions",
+            "Enterprise networks",
+            "External domains",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "The inverse domain in DNS is used for:",
+          o: [
+            "Registering new domain names",
+            "Mapping an IP address to a domain name (reverse lookup)",
+            "Storing email server records",
+            "Assigning MAC addresses",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "A DNS 'A' record maps:",
+          o: [
+            "Domain name to IPv6 address",
+            "Domain name to IPv4 address",
+            "Domain to mail server",
+            "Domain to authoritative name server",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "A DNS 'AAAA' record maps:",
+          o: [
+            "Domain name to four separate IPs",
+            "Domain name to a 128-bit IPv6 address",
+            "Domain to multiple mail servers",
+            "Domain to all authoritative servers",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "A DNS 'MX' record specifies:",
+          o: [
+            "The main host computer for a domain",
+            "Mail servers responsible for receiving email for a domain",
+            "Maximum transfer size of DNS packets",
+            "Mapping of domain name to IP",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "A DNS 'NS' record identifies:",
+          o: [
+            "Network switches for the domain",
+            "Authoritative name servers responsible for the DNS zone",
+            "Next-hop server in routing",
+            "Nearest subnet",
+          ],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "The inverse domain for IPv4 reverse lookup uses the special domain:",
+          o: ["arpa.in-addr", "in-addr.arpa", "ipv4.reverse", "reverse.ip.net"],
+          c: 1,
+        },
+        {
+          t: "DNS",
+          q: "In recursive DNS resolution:",
+          o: [
+            "The resolver does all the work on behalf of the client",
+            "The client iteratively contacts each DNS server",
+            "Only the root server is contacted",
+            "No caching is used",
+          ],
+          c: 0,
+        },
+        // ── EMAIL ──
+        {
+          t: "Email",
+          q: "The User Agent (UA) in an email system is:",
+          o: [
+            "The physical mail server hardware",
+            "A program used to send and receive mail (e.g., Gmail client)",
+            "The protocol that transfers mail between servers",
+            "A file containing outgoing emails",
+          ],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "The Message Transfer Agent (MTA) is responsible for:",
+          o: [
+            "Composing emails for users",
+            "Transferring mail from one system to another",
+            "Storing received emails in a mailbox",
+            "Encrypting email content",
+          ],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "A spool file in an email system:",
+          o: [
+            "Stores received emails for reading",
+            "Contains emails that are waiting to be sent",
+            "Encrypts emails before transmission",
+            "Automatically deletes spam",
+          ],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "SMTP (Simple Mail Transfer Protocol) uses TCP port:",
+          o: ["110", "143", "25", "587"],
+          c: 2,
+        },
+        {
+          t: "Email",
+          q: "SMTP is described as a ___ protocol:",
+          o: ["Pull", "Push", "Duplex", "Broadcast"],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "Which protocol(s) allow email clients to ACCESS (download) emails from a mailbox?",
+          o: ["SMTP", "FTP", "IMAP or POP3", "HTTP"],
+          c: 2,
+        },
+        {
+          t: "Email",
+          q: "The 'Bcc:' field in an email header stands for:",
+          o: [
+            "Basic carbon copy",
+            "Blind carbon copy",
+            "Broadcast copy",
+            "Block carbon copy",
+          ],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "E-mail allows one name (alias) to represent multiple email addresses. This feature is called:",
+          o: [
+            "Email forwarding",
+            "Distribution list / mailing list",
+            "Broadcast email",
+            "Carbon copy",
+          ],
+          c: 1,
+        },
+        {
+          t: "Email",
+          q: "Which component in the email architecture finds the receiver's mail server using DNS MX records?",
+          o: [
+            "User Agent",
+            "Spool file",
+            "Message Transfer Agent (MTA)",
+            "Mailbox",
+          ],
+          c: 2,
+        },
+        // ── TELNET ──
+        {
+          t: "TELNET",
+          q: "TELNET is an abbreviation for:",
+          o: [
+            "Telephone Network",
+            "TErminaL NETwork (or TEletype NETwork)",
+            "Transmission Electronic Network",
+            "Terminal Emulation Link Network",
+          ],
+          c: 1,
+        },
+        {
+          t: "TELNET",
+          q: "NVT in TELNET stands for:",
+          o: [
+            "Network Value Transfer",
+            "New Virtual Terminal",
+            "Network Virtual Terminal",
+            "Node Validation Tool",
+          ],
+          c: 2,
+        },
+        {
+          t: "TELNET",
+          q: "In NVT, data characters use a character set where the highest-order bit is set to:",
+          o: [
+            "1",
+            "0 (uses 7-bit ASCII for the lower bits)",
+            "Alternates 0 and 1",
+            "Not defined",
+          ],
+          c: 1,
+        },
+        {
+          t: "TELNET",
+          q: "In NVT, control characters sent between computers have the highest-order bit set to:",
+          o: ["0", "1", "The same as data characters", "Not used"],
+          c: 1,
+        },
+        {
+          t: "TELNET",
+          q: "In TELNET remote login, the local computer sends characters to:",
+          o: [
+            "Directly to the remote OS",
+            "The TELNET client, which converts to NVT characters",
+            "The DNS server first",
+            "The local printer",
+          ],
+          c: 1,
+        },
+        // ── FTP ──
+        {
+          t: "FTP",
+          q: "How many TCP connections does FTP use?",
+          o: ["One", "Two", "Three", "Four"],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "FTP's control connection uses which well-known port?",
+          o: ["20", "21", "23", "25"],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "FTP's data connection uses which well-known port?",
+          o: ["21", "20", "25", "23"],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "The FTP command RETR is used to:",
+          o: [
+            "Delete a remote file",
+            "Retrieve (download) a file from server to client",
+            "Rename a remote file",
+            "Return a list of files",
+          ],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "The FTP command STOR is used to:",
+          o: [
+            "Display file storage information",
+            "Store (upload) a file from client to server",
+            "Start the FTP session",
+            "Stream data from the server",
+          ],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "The FTP command LIST is used to:",
+          o: [
+            "List all active FTP sessions",
+            "Send a directory or file name listing from server to client",
+            "Log in to the FTP server",
+            "List the transfer modes available",
+          ],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "The default file type for transferring TEXT files in FTP is:",
+          o: ["Image", "EBCDIC", "ASCII", "Stream"],
+          c: 2,
+        },
+        {
+          t: "FTP",
+          q: "The default file type for transferring BINARY files in FTP is:",
+          o: ["ASCII", "EBCDIC", "Image", "Block"],
+          c: 2,
+        },
+        {
+          t: "FTP",
+          q: "In FTP stream mode, who is responsible for chopping data into segments?",
+          o: [
+            "FTP itself",
+            "The application layer",
+            "TCP",
+            "The network layer",
+          ],
+          c: 2,
+        },
+        {
+          t: "FTP",
+          q: "In FTP block mode, each data block is preceded by:",
+          o: [
+            "A 1-byte checksum",
+            "A 3-byte header (1 block descriptor + 2 size bytes)",
+            "A 8-byte FTP header",
+            "An end-of-file marker",
+          ],
+          c: 1,
+        },
+        {
+          t: "FTP",
+          q: "SMB (Server Message Block) is a protocol used for:",
+          o: [
+            "Sending email between servers",
+            "DNS name resolution",
+            "Sharing network resources such as files, directories, and printers",
+            "Cryptographic key exchange",
+          ],
+          c: 2,
+        },
+        {
+          t: "FTP",
+          q: "FTP uses the same communication approach as SMTP for its control connection, using:",
+          o: [
+            "Binary encoding",
+            "7-bit ASCII character set with commands and responses",
+            "Encrypted TLS frames",
+            "UDP datagrams",
+          ],
+          c: 1,
+        },
+        // ── HTTP / WWW ──
+        {
+          t: "HTTP / WWW",
+          q: "HTTP uses TCP on which well-known port?",
+          o: ["21", "25", "80", "443"],
+          c: 2,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "Unlike FTP, HTTP uses how many TCP connections?",
+          o: ["Zero (it uses UDP)", "One", "Two", "Three"],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "A URL (Uniform Resource Locator) defines these four elements:",
+          o: [
+            "Username, password, host, path",
+            "Protocol, host, port, path",
+            "Domain, subdomain, page, query",
+            "IP, port, method, encoding",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "Static web documents:",
+          o: [
+            "Are created dynamically by CGI scripts",
+            "Are fixed-content documents created and stored on a server",
+            "Execute code on the client side",
+            "Are generated fresh on every request",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "Dynamic web documents (e.g., using CGI/JSP):",
+          o: [
+            "Are stored pre-built on the server",
+            "Are created by the web server whenever a browser requests them",
+            "Run as executable code inside the browser",
+            "Are only sent over encrypted connections",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "Active web documents (e.g., Java applets) are executed:",
+          o: [
+            "On the web server",
+            "On the DNS server",
+            "At the client (browser) side",
+            "On intermediate proxy servers",
+          ],
+          c: 2,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "The HTTP GET method is used to:",
+          o: [
+            "Upload data to the server",
+            "Request a document from the server",
+            "Delete a server resource",
+            "Modify a server resource",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "The HTTP POST method is used to:",
+          o: [
+            "Retrieve a document from the server",
+            "Send information from the client to the server",
+            "Delete content from the server",
+            "Test the connection path",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP TRACE method:",
+          o: [
+            "Transfers files securely",
+            "Echoes the incoming request back to the client",
+            "Deletes a resource on the server",
+            "Reserves a connection",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP status code 200 means:",
+          o: [
+            "Created — new URL created",
+            "Request is successful (OK)",
+            "Accepted but not acted upon immediately",
+            "No content in body",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP status code 404 means:",
+          o: [
+            "Bad request — syntax error",
+            "Unauthorized — lacking proper authorization",
+            "Document not found",
+            "Internal server error",
+          ],
+          c: 2,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP status code 301 means:",
+          o: [
+            "Moved temporarily",
+            "Moved permanently",
+            "Not modified",
+            "Multiple choices available",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP status code 500 means:",
+          o: [
+            "Not found",
+            "Not implemented",
+            "Internal server error",
+            "Service unavailable",
+          ],
+          c: 2,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "Non-persistent HTTP response time is calculated as:",
+          o: [
+            "RTT + file transmission time",
+            "2RTT + file transmission time",
+            "3RTT + file transmission time",
+            "File transmission time only",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "In persistent HTTP, the server:",
+          o: [
+            "Closes connection immediately after each response",
+            "Leaves the connection open for more requests after sending a response",
+            "Opens a new connection for each requested file",
+            "Uses UDP instead of TCP for efficiency",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "A key disadvantage of non-persistent HTTP is:",
+          o: [
+            "It cannot handle large files",
+            "It requires 2 RTTs per object and incurs OS overhead for each TCP connection",
+            "It only works with HTTP/2.0",
+            "It doesn't support images",
+          ],
+          c: 1,
+        },
+        {
+          t: "HTTP / WWW",
+          q: "HTTP functions as a combination of:",
+          o: ["DNS and SMTP", "FTP and SMTP", "FTP and DNS", "SMTP and POP3"],
+          c: 1,
+        },
+        // ── CRYPTOGRAPHY ──
+        {
+          t: "Cryptography",
+          q: "The word 'cryptography' in Greek means:",
+          o: [
+            "Hidden message",
+            "Secret writing",
+            "Coded language",
+            "Encrypted data",
+          ],
+          c: 1,
+        },
+        {
+          t: "Cryptography",
+          q: "In symmetric-key cryptography:",
+          o: [
+            "Different keys are used for encryption and decryption",
+            "The same key is used for both encryption and decryption",
+            "A public key is used for encryption",
+            "No key is needed — only an algorithm",
+          ],
+          c: 1,
+        },
+        {
+          t: "Cryptography",
+          q: "Which of these is a SYMMETRIC-key algorithm?",
+          o: ["RSA", "ECC", "AES", "Diffie-Hellman"],
+          c: 2,
+        },
+        {
+          t: "Cryptography",
+          q: "Which of these is an ASYMMETRIC-key algorithm?",
+          o: ["AES", "DES", "RC4", "RSA"],
+          c: 3,
+        },
+        {
+          t: "Cryptography",
+          q: "In asymmetric-key cryptography, encryption uses:",
+          o: [
+            "Sender's private key",
+            "Receiver's private key",
+            "Receiver's public key",
+            "A shared session key",
+          ],
+          c: 2,
+        },
+        {
+          t: "Cryptography",
+          q: "In a substitution cipher:",
+          o: [
+            "Character positions are rearranged",
+            "One symbol is substituted with another",
+            "Characters are deleted",
+            "Symbols are XOR-ed with the key",
+          ],
+          c: 1,
+        },
+        {
+          t: "Cryptography",
+          q: "Julius Caesar used which type of cipher to communicate with his officers?",
+          o: [
+            "Transposition cipher",
+            "XOR cipher",
+            "Shift (Caesar) cipher",
+            "RSA cipher",
+          ],
+          c: 2,
+        },
+        {
+          t: "Cryptography",
+          q: "In a transposition cipher:",
+          o: [
+            "Characters are replaced with other characters",
+            "Characters are deleted from the message",
+            "Character POSITIONS / LOCATIONS are changed — no substitution",
+            "Characters are encoded in binary",
+          ],
+          c: 2,
+        },
+        {
+          t: "Cryptography",
+          q: "In an XOR cipher, the sizes of the key, plaintext, and ciphertext are:",
+          o: [
+            "Key is half the plaintext size",
+            "Key is twice the plaintext size",
+            "All different sizes",
+            "All the same size",
+          ],
+          c: 3,
+        },
+        {
+          t: "Cryptography",
+          q: "A rotation cipher has the property that after N rotations on an N-bit input:",
+          o: [
+            "Output is double the original",
+            "Output is all zeros",
+            "Original input stream is recovered",
+            "Output is inverted",
+          ],
+          c: 2,
+        },
+        {
+          t: "Cryptography",
+          q: "In cryptography, which parts are kept SECRET?",
+          o: [
+            "The encryption algorithms",
+            "The keys",
+            "Both algorithms and keys",
+            "Neither — everything is public",
+          ],
+          c: 1,
+        },
+        // ── DES ──
+        {
+          t: "DES / 3DES",
+          q: "DES (Data Encryption Standard) is classified as:",
+          o: [
+            "Asymmetric stream cipher",
+            "Symmetric block cipher",
+            "Hash function",
+            "Public-key algorithm",
+          ],
+          c: 1,
+        },
+        {
+          t: "DES / 3DES",
+          q: "DES encrypts data in blocks of:",
+          o: ["32 bits", "64 bits", "128 bits", "256 bits"],
+          c: 1,
+        },
+        {
+          t: "DES / 3DES",
+          q: "The main key length in DES is 64 bits, but the effective key length (after skipping every 8th bit) is:",
+          o: ["32 bits", "48 bits", "56 bits", "64 bits"],
+          c: 2,
+        },
+        {
+          t: "DES / 3DES",
+          q: "DES performs how many rounds of encryption?",
+          o: ["8 rounds", "12 rounds", "16 rounds", "32 rounds"],
+          c: 2,
+        },
+        {
+          t: "DES / 3DES",
+          q: "Each DES round uses a subkey of:",
+          o: ["32 bits", "48 bits", "56 bits", "64 bits"],
+          c: 1,
+        },
+        {
+          t: "DES / 3DES",
+          q: "The DES encryption order in Triple DES (3DES) is:",
+          o: [
+            "Encrypt–Encrypt–Encrypt",
+            "Decrypt–Encrypt–Decrypt",
+            "Encrypt–Decrypt–Encrypt",
+            "Decrypt–Decrypt–Encrypt",
+          ],
+          c: 2,
+        },
+        {
+          t: "DES / 3DES",
+          q: "In 3DES with TWO keys, which relationship holds?",
+          o: [
+            "Key1 = Key2",
+            "Key2 = Key3",
+            "Key1 = Key3",
+            "All three keys are the same",
+          ],
+          c: 2,
+        },
+        {
+          t: "DES / 3DES",
+          q: "3DES with THREE KEYS increases the effective key size to:",
+          o: ["128 bits", "168 bits", "192 bits", "256 bits"],
+          c: 2,
+        },
+        {
+          t: "DES / 3DES",
+          q: "DES was found vulnerable to attacks and was replaced by:",
+          o: [
+            "3DES only",
+            "RSA",
+            "AES (Advanced Encryption Standard)",
+            "Blowfish",
+          ],
+          c: 2,
+        },
+        // ── RSA ──
+        {
+          t: "RSA",
+          q: "RSA is named after its inventors. They are:",
+          o: [
+            "Robertson, Singh, Almeida",
+            "Rivest, Shamir, Adleman",
+            "Ramirez, Schneier, Anderson",
+            "Rivest, Schneier, Adleman",
+          ],
+          c: 1,
+        },
+        {
+          t: "RSA",
+          q: "In RSA, the modulus n is computed as:",
+          o: ["n = p + q", "n = p × q", "n = p^q mod p", "n = p – q"],
+          c: 1,
+        },
+        {
+          t: "RSA",
+          q: "The RSA ENCRYPTION formula is:",
+          o: [
+            "C = P + e mod n",
+            "C = P^e mod n",
+            "C = e^P mod n",
+            "C = P × e mod n",
+          ],
+          c: 1,
+        },
+        {
+          t: "RSA",
+          q: "The RSA DECRYPTION formula is:",
+          o: [
+            "P = C + d mod n",
+            "P = d^C mod n",
+            "P = C^d mod n",
+            "P = C × d mod n",
+          ],
+          c: 2,
+        },
+        {
+          t: "RSA",
+          q: "In RSA, Φ(n) is calculated as:",
+          o: [
+            "(p + 1) × (q + 1)",
+            "(p – 1) × (q – 1)",
+            "p × q – 1",
+            "(p × q) / 2",
+          ],
+          c: 1,
+        },
+        {
+          t: "RSA",
+          q: "In RSA, the PUBLIC key consists of:",
+          o: ["n and d", "e and d", "n and e", "p and q"],
+          c: 2,
+        },
+        {
+          t: "RSA",
+          q: "In RSA, the PRIVATE key consists of:",
+          o: ["n and e", "e and p", "n and d", "p and q"],
+          c: 2,
+        },
+        {
+          t: "RSA",
+          q: "RSA uses which types of numbers p and q in key generation?",
+          o: [
+            "Very large even numbers",
+            "Very large prime numbers",
+            "Random composite numbers",
+            "Fibonacci numbers",
+          ],
+          c: 1,
+        },
+        // ── DIFFIE-HELLMAN ──
+        {
+          t: "Diffie-Hellman",
+          q: "The Diffie-Hellman key exchange protocol is used to:",
+          o: [
+            "Encrypt messages directly between parties",
+            "Securely establish a shared symmetric session key over a public channel",
+            "Create digital signatures for authentication",
+            "Authenticate users with username and password",
+          ],
+          c: 1,
+        },
+        {
+          t: "Diffie-Hellman",
+          q: "The shared secret key in Diffie-Hellman is expressed as:",
+          o: [
+            "K = g^x mod p",
+            "K = g^y mod p",
+            "K = g^(xy) mod p",
+            "K = p^g mod x",
+          ],
+          c: 2,
+        },
+        {
+          t: "Diffie-Hellman",
+          q: "In Diffie-Hellman, what does Alice send to Bob (NOT her private value)?",
+          o: [
+            "Her private exponent x",
+            "R1 = g^x mod p",
+            "R2 = g^y mod p",
+            "The shared key K directly",
+          ],
+          c: 1,
+        },
+        {
+          t: "Diffie-Hellman",
+          q: "In Diffie-Hellman, the publicly shared values are:",
+          o: [
+            "x and y (private exponents)",
+            "Only the generator g",
+            "Only the prime p",
+            "Both g (generator) and p (large prime)",
+          ],
+          c: 3,
+        },
+        {
+          t: "Diffie-Hellman",
+          q: "The key difference between RSA and Diffie-Hellman is:",
+          o: [
+            "RSA is symmetric; DH is asymmetric",
+            "DH is only for key exchange; RSA can also encrypt data and sign documents",
+            "DH uses three keys; RSA uses two",
+            "RSA uses prime numbers; DH does not",
+          ],
+          c: 1,
+        },
+        // ── DIGITAL SIGNATURES ──
+        {
+          t: "Digital Signature",
+          q: "A digital signature provides which security services?",
+          o: [
+            "Confidentiality and availability",
+            "Authentication, integrity, and nonrepudiation",
+            "Only encryption of the message",
+            "Compression and routing",
+          ],
+          c: 1,
+        },
+        {
+          t: "Digital Signature",
+          q: "When creating a digital signature, the message digest is encrypted using:",
+          o: [
+            "Receiver's public key",
+            "Receiver's private key",
+            "Sender's public key",
+            "Sender's private key",
+          ],
+          c: 3,
+        },
+        {
+          t: "Digital Signature",
+          q: "To VERIFY a digital signature, the receiver uses:",
+          o: [
+            "Their own private key",
+            "Their own public key",
+            "Sender's private key",
+            "Sender's public key",
+          ],
+          c: 3,
+        },
+        {
+          t: "Digital Signature",
+          q: "Does a digital signature provide message PRIVACY / CONFIDENTIALITY?",
+          o: [
+            "Yes, always — it encrypts the full message",
+            "No — digital signature does not provide privacy by itself",
+            "Only for short messages",
+            "Only when used with RSA",
+          ],
+          c: 1,
+        },
+        {
+          t: "Digital Signature",
+          q: "Which property of a hash function ensures the same output cannot be produced by two different inputs (no collision)?",
+          o: [
+            "Reversibility",
+            "One-wayness",
+            "Strong collision resistance",
+            "Variable output length",
+          ],
+          c: 2,
+        },
+        {
+          t: "Digital Signature",
+          q: "In 'signing the digest', the first step is to apply a hash function to:",
+          o: [
+            "The ciphertext",
+            "The original message (to produce a fixed-length digest)",
+            "The receiver's public key",
+            "The session key",
+          ],
+          c: 1,
+        },
+        // ── SECURITY SERVICES ──
+        {
+          t: "Security Services",
+          q: "Message NONREPUDIATION means:",
+          o: [
+            "Message cannot be read by third parties",
+            "Data arrives unchanged at receiver",
+            "Sender cannot deny having sent the message",
+            "Receiver confirms the sender's identity in real-time",
+          ],
+          c: 2,
+        },
+        {
+          t: "Security Services",
+          q: "Message INTEGRITY means:",
+          o: [
+            "Message is encrypted during transfer",
+            "No changes occur during transmission (accidentally or maliciously)",
+            "Sender's identity is verified",
+            "Message is compressed for efficiency",
+          ],
+          c: 1,
+        },
+        {
+          t: "Security Services",
+          q: "Message AUTHENTICATION goes beyond integrity to also ensure:",
+          o: [
+            "Data arrives in order",
+            "The receiver is sure of the sender's identity (no impostor)",
+            "The message is encrypted end-to-end",
+            "The message was compressed before sending",
+          ],
+          c: 1,
+        },
+        {
+          t: "Security Services",
+          q: "In entity authentication, the verification of identity occurs:",
+          o: [
+            "For each individual message exchanged",
+            "Once for the entire duration of system access",
+            "Every 30 minutes automatically",
+            "Only at the initial TCP connection",
+          ],
+          c: 1,
+        },
+        {
+          t: "Security Services",
+          q: "Which of the five security services is about protecting data from unauthorized reading?",
+          o: [
+            "Message integrity",
+            "Message confidentiality (privacy)",
+            "Nonrepudiation",
+            "Entity authentication",
+          ],
+          c: 1,
+        },
+        // ── ENTITY AUTHENTICATION ──
+        {
+          t: "Entity Authentication",
+          q: "Which authentication category does a 'fingerprint' fall under?",
+          o: [
+            "Something known",
+            "Something possessed",
+            "Something inherent",
+            "Something shared",
+          ],
+          c: 2,
+        },
+        {
+          t: "Entity Authentication",
+          q: "Which is an example of 'something possessed' for authentication?",
+          o: [
+            "Password",
+            "PIN number",
+            "Fingerprint",
+            "Smart card / credit card",
+          ],
+          c: 3,
+        },
+        {
+          t: "Entity Authentication",
+          q: "Which is an example of 'something known' for authentication?",
+          o: [
+            "Fingerprint",
+            "Smart card",
+            "Password or PIN",
+            "Retinal pattern",
+          ],
+          c: 2,
+        },
+        {
+          t: "Entity Authentication",
+          q: "In challenge-response authentication, after the user sends a login request, the server sends:",
+          o: [
+            "The user's stored password hash",
+            "A random challenge string",
+            "An access token directly",
+            "The session key for the day",
+          ],
+          c: 1,
+        },
+        {
+          t: "Entity Authentication",
+          q: "A Key Distribution Center (KDC) is used to solve the problem of:",
+          o: [
+            "Routing packets efficiently",
+            "Distributing too many symmetric keys when N people need to communicate",
+            "Preventing denial of service attacks",
+            "Compressing public key certificates",
+          ],
+          c: 1,
+        },
+        {
+          t: "Entity Authentication",
+          q: "If Alice needs to communicate with N people using symmetric encryption, how many TOTAL keys are needed?",
+          o: ["N keys", "N-1 keys", "N(N-1)/2 keys", "N² keys"],
+          c: 2,
+        },
+        // ── IPSec ──
+        {
+          t: "IPSec",
+          q: "IPSec operates at which OSI layer?",
+          o: [
+            "Application Layer",
+            "Transport Layer",
+            "Network (IP) Layer",
+            "Data Link Layer",
+          ],
+          c: 2,
+        },
+        {
+          t: "IPSec",
+          q: "In IPSec TRANSPORT Mode, what is encrypted?",
+          o: [
+            "The entire original IP packet including its header",
+            "Only the payload; the original IP header remains intact",
+            "Only the IP header; payload is unprotected",
+            "The new IP header only",
+          ],
+          c: 1,
+        },
+        {
+          t: "IPSec",
+          q: "In IPSec TUNNEL Mode, what happens to the original IP packet?",
+          o: [
+            "Only the payload is encrypted; header stays",
+            "The entire original IP packet (header + payload) is encrypted and put inside a new IP packet",
+            "Only ports are hidden; everything else is clear",
+            "No new IP header is added",
+          ],
+          c: 1,
+        },
+        {
+          t: "IPSec",
+          q: "The Authentication Header (AH) protocol provides:",
+          o: [
+            "Message authentication and data integrity, but NOT privacy/encryption",
+            "Privacy (encryption) only",
+            "Privacy plus authentication but not integrity",
+            "Only digital signatures",
+          ],
+          c: 0,
+        },
+        {
+          t: "IPSec",
+          q: "The Encapsulating Security Payload (ESP) protocol provides:",
+          o: [
+            "Authentication only, no encryption",
+            "Data integrity only",
+            "Message authentication, integrity, AND privacy (encryption)",
+            "Only IP header protection",
+          ],
+          c: 2,
+        },
+        {
+          t: "IPSec",
+          q: "Which IPSec mode is typically used for network-to-network VPN connections?",
+          o: [
+            "Transport mode",
+            "Tunnel mode",
+            "Both are equally used",
+            "Neither — VPN uses a separate protocol",
+          ],
+          c: 1,
+        },
+        // ── SSL/TLS ──
+        {
+          t: "SSL / TLS",
+          q: "SSL/TLS provides security at which layer?",
+          o: [
+            "Application Layer",
+            "Network Layer",
+            "Transport Layer",
+            "Data Link Layer",
+          ],
+          c: 2,
+        },
+        {
+          t: "SSL / TLS",
+          q: "How many protocols does SSL define?",
+          o: ["Two", "Three", "Four", "Five"],
+          c: 2,
+        },
+        {
+          t: "SSL / TLS",
+          q: "The SSL RECORD Protocol acts as:",
+          o: [
+            "The authentication and key exchange module",
+            "The carrier that transports all SSL messages",
+            "The alert and error reporting system",
+            "The cipher negotiation mechanism",
+          ],
+          c: 1,
+        },
+        {
+          t: "SSL / TLS",
+          q: "The SSL HANDSHAKE Protocol is responsible for:",
+          o: [
+            "Transporting encrypted data",
+            "Signaling readiness to switch cipher specs",
+            "Establishing cipher sets, providing keys and security parameters",
+            "Reporting errors and abnormal conditions",
+          ],
+          c: 2,
+        },
+        {
+          t: "SSL / TLS",
+          q: "Which statement about TLS vs SSL is correct?",
+          o: [
+            "TLS is older and less secure than SSL",
+            "TLS is the newer, more secure successor to SSL",
+            "TLS and SSL are functionally identical",
+            "TLS uses UDP while SSL uses TCP",
+          ],
+          c: 1,
+        },
+        {
+          t: "SSL / TLS",
+          q: "TLS 'Forward Secrecy' ensures that:",
+          o: [
+            "All future messages use the same session key",
+            "Session keys are not compromised even if the server's private key is later exposed",
+            "Messages are delivered guaranteed in-order",
+            "Only the server can initiate key changes",
+          ],
+          c: 1,
+        },
+        // ── PGP ──
+        {
+          t: "PGP",
+          q: "PGP stands for:",
+          o: [
+            "Private Gateway Protocol",
+            "Pretty Good Privacy",
+            "Public Gateway Protocol",
+            "Protected Group Policy",
+          ],
+          c: 1,
+        },
+        {
+          t: "PGP",
+          q: "PGP is designed to provide security at which layer?",
+          o: [
+            "Network Layer",
+            "Transport Layer",
+            "Application Layer (specifically for email)",
+            "Physical Layer",
+          ],
+          c: 2,
+        },
+        {
+          t: "PGP",
+          q: "PGP uses which cryptographic approach?",
+          o: [
+            "Only symmetric encryption",
+            "Only asymmetric (public-key) encryption",
+            "Only hash functions",
+            "A hybrid combining symmetric and asymmetric encryption",
+          ],
+          c: 3,
+        },
+        {
+          t: "PGP",
+          q: "PGP's trust model is described as:",
+          o: [
+            "Centralized — relies on a certificate authority",
+            "Decentralized — users verify each other's public keys directly",
+            "Government-controlled and mandated",
+            "Based on blockchain consensus",
+          ],
+          c: 1,
+        },
+        {
+          t: "PGP",
+          q: "In PGP confidentiality with a one-time session key, the session key itself is protected by:",
+          o: [
+            "Hashing it with MD5",
+            "Encrypting it with Bob's public key",
+            "Encrypting it with Alice's private key",
+            "Storing it in plaintext alongside the message",
+          ],
+          c: 1,
+        },
+        // ── FIREWALLS ──
+        {
+          t: "Firewalls",
+          q: "A packet-filter firewall filters at which layers?",
+          o: [
+            "Application layer only",
+            "Network or transport layer (based on IP/TCP/UDP headers)",
+            "Data link layer only",
+            "Physical layer only",
+          ],
+          c: 1,
+        },
+        {
+          t: "Firewalls",
+          q: "A proxy firewall (application gateway) filters at:",
+          o: [
+            "Network layer",
+            "Transport layer",
+            "Application layer",
+            "Data link layer",
+          ],
+          c: 2,
+        },
+        {
+          t: "Firewalls",
+          q: "A proxy firewall is also called:",
+          o: [
+            "Packet inspector",
+            "Application gateway",
+            "Network gateway",
+            "Session broker",
+          ],
+          c: 1,
+        },
+        {
+          t: "Firewalls",
+          q: "In a packet-filter firewall rule table, the asterisk (*) symbol means:",
+          o: [
+            "Blocked — deny all",
+            "Any — matches everything",
+            "Encrypted — secure traffic only",
+            "Default route",
+          ],
+          c: 1,
+        },
+        {
+          t: "Firewalls",
+          q: "Why is a packet-filter firewall insufficient for controlling HTTP access based on URLs?",
+          o: [
+            "It cannot handle TCP connections",
+            "It cannot distinguish between different HTTP requests arriving at TCP port 80 based on content",
+            "It is too slow for high-traffic networks",
+            "It cannot be configured dynamically",
+          ],
+          c: 1,
+        },
+      ];
+
+      // Shuffle helper
+      function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      // Prepare questions (shuffle options but remember correct index)
+      function prepareQuestions(rawList) {
+        return rawList.map((raw) => {
+          const indexed = raw.o.map((text, i) => ({ text, originalIndex: i }));
+          const shuffled = shuffle(indexed);
+          const newCorrect = shuffled.findIndex(
+            (x) => x.originalIndex === raw.c
+          );
+          return {
+            t: raw.t,
+            q: raw.q,
+            options: shuffled.map((x) => x.text),
+            correct: newCorrect,
+          };
+        });
+      }
+
+      // ─────────────────────────────────────────────
+      //  STATE
+      // ─────────────────────────────────────────────
+      let questions = [];
+      let currentIndex = 0;
+      let userAnswers = []; // -1 = unanswered, else option index
+      let mode = "learning";
+      let isRetake = false;
+      let autoAdvanceTimer = null;
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      // ─────────────────────────────────────────────
+      //  INIT
+      // ─────────────────────────────────────────────
+      window.addEventListener("DOMContentLoaded", () => {
+        const topics = [...new Set(RAW_QUESTIONS.map((q) => q.t))];
+        document.getElementById(
+          "q-count-label"
+        ).textContent = `${RAW_QUESTIONS.length} questions across ${topics.length} topics`;
+        const chips = document.getElementById("topic-chips");
+        topics.forEach((t) => {
+          const c = document.createElement("span");
+          c.className = "topic-chip";
+          c.textContent = t;
+          chips.appendChild(c);
+        });
+      });
+
+      function goHome() {
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = null;
+        }
+        showScreen("home");
+      }
+
+      function showScreen(id) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+      }
+
+      function startQuiz(selectedMode) {
+        mode = selectedMode;
+        isRetake = false;
+        questions = shuffle(prepareQuestions(RAW_QUESTIONS));
+        userAnswers = new Array(questions.length).fill(-1);
+        correctCount = 0;
+        wrongCount = 0;
+        currentIndex = 0;
+        document.getElementById("mode-badge").textContent =
+          mode === "learning" ? "LEARNING" : "RAPID FIRE";
+        document.getElementById("mode-badge").className =
+          "mode-badge " + (mode === "learning" ? "learning" : "rapid");
+        showScreen("quiz");
+        renderQuestion();
+      }
+
+      function retakeWrong() {
+        const wrongIndices = userAnswers
+          .map((a, i) => (a !== questions[i].correct ? i : -1))
+          .filter((i) => i >= 0);
+        if (wrongIndices.length === 0) return;
+        const wrongRaw = wrongIndices.map((i) => {
+          const q = questions[i];
+          // re-map back to raw format
+          return { t: q.t, q: q.q, o: q.options, c: q.correct };
+        });
+        isRetake = true;
+        questions = shuffle(prepareQuestions(wrongRaw));
+        userAnswers = new Array(questions.length).fill(-1);
+        correctCount = 0;
+        wrongCount = 0;
+        currentIndex = 0;
+        showScreen("quiz");
+        renderQuestion();
+      }
+
+      function restartQuiz() {
+        startQuiz(mode);
+      }
+
+      // ─────────────────────────────────────────────
+      //  RENDER
+      // ─────────────────────────────────────────────
+      function renderQuestion() {
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = null;
+        }
+        const q = questions[currentIndex];
+        const answered = userAnswers[currentIndex] !== -1;
+        const selected = userAnswers[currentIndex];
+        const total = questions.length;
+
+        // Header
+        document.getElementById("prog-text").textContent = `Q ${
+          currentIndex + 1
+        } / ${total}`;
+        const pct = Math.round((currentIndex / total) * 100);
+        document.getElementById("prog-pct").textContent = pct + "%";
+        document.getElementById("prog-fill").style.width = pct + "%";
+        document.getElementById("hdr-correct").textContent =
+          correctCount + " ✓";
+        document.getElementById("hdr-wrong").textContent = wrongCount + " ✗";
+
+        // Question meta
+        document.getElementById("q-num-label").textContent = `Q ${
+          currentIndex + 1
+        }`;
+        document.getElementById("q-topic-label").textContent = q.t;
+        document.getElementById("q-text").textContent = q.q;
+
+        // Options
+        const grid = document.getElementById("options-grid");
+        grid.innerHTML = "";
+        const letters = ["A", "B", "C", "D"];
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+          if (answered) {
+            btn.disabled = true;
+            if (i === q.correct)
+              btn.classList.add(
+                selected === q.correct ? "correct" : "reveal-correct"
+              );
+            if (i === selected && selected !== q.correct)
+              btn.classList.add("wrong");
+          } else {
+            btn.addEventListener("click", () => selectAnswer(i));
+          }
+          grid.appendChild(btn);
+        });
+
+        // Feedback
+        const fb = document.getElementById("feedback-banner");
+        const auto = document.getElementById("auto-advance");
+        fb.className = "feedback-banner";
+        auto.className = "auto-advance";
+        if (answered) {
+          if (selected === q.correct) {
+            fb.className = "feedback-banner correct show";
+            document.getElementById("fb-icon").textContent = "✓";
+            document.getElementById("fb-text").textContent =
+              "Correct! Well done.";
+          } else {
+            fb.className = "feedback-banner wrong show";
+            document.getElementById("fb-icon").textContent = "✗";
+            document.getElementById(
+              "fb-text"
+            ).textContent = `Incorrect. The correct answer is: "${
+              q.options[q.correct]
+            }"`;
+          }
+        }
+
+        // Nav buttons
+        document.getElementById("prev-btn").disabled = currentIndex === 0;
+        const nextBtn = document.getElementById("next-btn");
+        if (currentIndex === total - 1) {
+          nextBtn.textContent = "Finish ✓";
+        } else {
+          nextBtn.textContent = "Next →";
+        }
+        // In learning mode: next always available once answered (or for free nav)
+        // In rapid fire: next available anytime (for navigation), but auto-advance handles correct
+        nextBtn.disabled = false;
+
+        // Render dots (show max 10 around current)
+        renderDots();
+
+        // Animate card
+        const card = document.getElementById("q-card");
+        card.style.animation = "none";
+        card.offsetHeight;
+        card.style.animation = "slideUp 0.3s ease";
+      }
+
+      function renderDots() {
+        const dotsEl = document.getElementById("nav-dots");
+        dotsEl.innerHTML = "";
+        const total = questions.length;
+        let start = Math.max(0, currentIndex - 5);
+        let end = Math.min(total - 1, start + 9);
+        if (end - start < 9) start = Math.max(0, end - 9);
+        for (let i = start; i <= end; i++) {
+          const d = document.createElement("div");
+          d.className = "nav-dot";
+          if (i === currentIndex) d.classList.add("current");
+          else if (userAnswers[i] !== -1) {
+            if (userAnswers[i] === questions[i].correct)
+              d.classList.add("correct-dot");
+            else d.classList.add("wrong-dot");
+          } else {
+            d.classList.add("answered"); // unanswered just shows as border
+          }
+          d.style.background =
+            userAnswers[i] === -1
+              ? i === currentIndex
+                ? ""
+                : "var(--border)"
+              : "";
+          dotsEl.appendChild(d);
+        }
+      }
+
+      // ─────────────────────────────────────────────
+      //  ANSWER LOGIC
+      // ─────────────────────────────────────────────
+      function selectAnswer(optionIndex) {
+        if (userAnswers[currentIndex] !== -1) return; // already answered
+        const q = questions[currentIndex];
+        const isCorrect = optionIndex === q.correct;
+        userAnswers[currentIndex] = optionIndex;
+        if (isCorrect) correctCount++;
+        else wrongCount++;
+
+        // Update buttons
+        const btns = document.querySelectorAll(".option-btn");
+        btns.forEach((btn, i) => {
+          btn.disabled = true;
+          if (i === q.correct)
+            btn.classList.add(
+              isCorrect && i === optionIndex ? "correct" : "reveal-correct"
+            );
+          if (i === optionIndex && !isCorrect) {
+            btn.classList.add("wrong");
+            btn.classList.add("shake");
+          }
+        });
+
+        // Feedback
+        const fb = document.getElementById("feedback-banner");
+        if (isCorrect) {
+          fb.className = "feedback-banner correct show";
+          document.getElementById("fb-icon").textContent = "✓";
+          document.getElementById("fb-text").textContent =
+            "Correct! Well done.";
+          if (mode === "rapid") {
+            const autoEl = document.getElementById("auto-advance");
+            autoEl.className = "auto-advance show";
+            autoEl.textContent = "⚡ Auto-advancing in 1s…";
+            autoAdvanceTimer = setTimeout(() => {
+              autoEl.className = "auto-advance";
+              navigate(1);
+            }, 1000);
+          }
+        } else {
+          fb.className = "feedback-banner wrong show";
+          document.getElementById("fb-icon").textContent = "✗";
+          document.getElementById(
+            "fb-text"
+          ).textContent = `Incorrect. Correct answer: "${
+            q.options[q.correct]
+          }"`;
+          if (mode === "rapid") {
+            const ring = document.getElementById("rf-ring");
+            ring.classList.add("show");
+            setTimeout(() => ring.classList.remove("show"), 600);
+          }
+        }
+        document.getElementById("hdr-correct").textContent =
+          correctCount + " ✓";
+        document.getElementById("hdr-wrong").textContent = wrongCount + " ✗";
+        renderDots();
+      }
+
+      function navigate(dir) {
+        if (autoAdvanceTimer) {
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = null;
+          document.getElementById("auto-advance").className = "auto-advance";
+        }
+        const newIndex = currentIndex + dir;
+        if (newIndex < 0) return;
+        if (newIndex >= questions.length) {
+          showResult();
+          return;
+        }
+        currentIndex = newIndex;
+        renderQuestion();
+      }
+
+      // ─────────────────────────────────────────────
+      //  RESULT SCREEN
+      // ─────────────────────────────────────────────
+      function showResult() {
+        const total = questions.length;
+        const answered = userAnswers.filter((a) => a !== -1).length;
+        const correct = userAnswers.filter(
+          (a, i) => a !== -1 && a === questions[i].correct
+        ).length;
+        const wrong = answered - correct;
+        const skipped = total - answered;
+        const pct = Math.round((correct / total) * 100);
+
+        document.getElementById("big-score").textContent = pct + "%";
+        document.getElementById(
+          "score-label"
+        ).textContent = `${correct} out of ${total} correct`;
+        document.getElementById("stat-correct").textContent = correct;
+        document.getElementById("stat-wrong").textContent = wrong;
+        document.getElementById("stat-skip").textContent = skipped;
+
+        // Icon and title
+        let icon, title, sub;
+        if (pct >= 90) {
+          icon = "🏆";
+          title = "Excellent!";
+          sub = "You crushed it — exam ready!";
+        } else if (pct >= 75) {
+          icon = "🎯";
+          title = "Great Job!";
+          sub = "Strong performance, almost there!";
+        } else if (pct >= 60) {
+          icon = "📚";
+          title = "Good Effort!";
+          sub = "Review the wrong ones and retry.";
+        } else if (pct >= 40) {
+          icon = "💪";
+          title = "Keep Studying!";
+          sub = "You can improve — retake the wrong ones!";
+        } else {
+          icon = "🔁";
+          title = "Need More Practice";
+          sub = "Retake wrong questions to learn from them.";
+        }
+        document.getElementById("res-icon").textContent = icon;
+        document.getElementById("res-title").textContent = title;
+        document.getElementById("res-sub").textContent = sub;
+
+        // Topic breakdown
+        const topicMap = {};
+        questions.forEach((q, i) => {
+          if (!topicMap[q.t]) topicMap[q.t] = { total: 0, correct: 0 };
+          topicMap[q.t].total++;
+          if (userAnswers[i] !== -1 && userAnswers[i] === q.correct)
+            topicMap[q.t].correct++;
+        });
+        const bdown = document.getElementById("topic-breakdown");
+        bdown.innerHTML =
+          '<div class="breakdown-title">Performance by Topic</div>';
+        Object.entries(topicMap)
+          .sort((a, b) => a[1].correct / a[1].total - b[1].correct / b[1].total)
+          .forEach(([topic, data]) => {
+            const pctT = Math.round((data.correct / data.total) * 100);
+            const color =
+              pctT >= 80
+                ? "var(--green)"
+                : pctT >= 50
+                ? "var(--orange)"
+                : "var(--red)";
+            const row = document.createElement("div");
+            row.className = "breakdown-row";
+            row.innerHTML = `
+      <span class="breakdown-topic">${topic}</span>
+      <div class="breakdown-bar-track"><div class="breakdown-bar-fill" style="width:${pctT}%;background:${color}"></div></div>
+      <span class="breakdown-fraction" style="color:${color}">${data.correct}/${data.total}</span>
+    `;
+            bdown.appendChild(row);
+          });
+
+        // Retake button
+        const hasWrong = userAnswers.some(
+          (a, i) => a === -1 || a !== questions[i].correct
+        );
+        document.getElementById("retake-btn").disabled = !hasWrong;
+
+        showScreen("result");
+      }
+    </script>
+  </body>
+</html>
